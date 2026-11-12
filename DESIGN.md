@@ -221,7 +221,9 @@ PokeAPI has no town, building or trainer art, so the storefronts, town landmarks
 
 ## Saving
 
-localStorage autosave every 10s and on tab hide. Offline earnings at 50% (raised by drivers), capped at 8h. Export/import as a string.
+localStorage autosave every 10s and on tab hide. Export/import as a string.
+
+**Offline earnings** (built): time away pays shelf sales at 50% (raised by drivers later), capped at 2h. Kanto takes about 2h to clear, so a longer cap would let one night away skip most of the region. Raise the cap with each region as runs get longer. Clicks don't count. The game saves the wall-clock time it has paid sales up to. Any gap since then (a closed tab, a hidden tab the browser paused, a sleeping laptop) pays the first minute at full rate and the rest at half rate, so a longer absence never pays less. A "Welcome back" dialog shows the time counted and ₽ earned, and lifetime stats track "Earned while away".
 
 ## Layout
 
@@ -237,7 +239,7 @@ Each one is playable.
 4. **Staff** — Clerk, Stocker, Driver, Promoter.
 5. **Flash sales** — spawning tag, four outcomes, buff bar.
 6. **Mart scene** — storefront per town, staff and customer Pokémon, shelves filling up. Next up, pulled ahead of 3's remaining work, 4 and 5, because the game feels lifeless without it.
-7. **Polish** — offline earnings, stats, export/import, balance pass.
+7. **Polish** — export/import, balance pass. (Offline earnings and stats pulled forward.)
 8. **Prestige** — Master Ball, badges, region select.
 9. **Johto** — trade routes.
 10. **Hoenn** — weather.

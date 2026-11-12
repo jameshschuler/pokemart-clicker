@@ -6,6 +6,7 @@ import {
   chainSalesPerSecond,
   clickValue,
   maxAffordable,
+  offlineEarnings,
   openRequirements,
   purchaseQuote,
   restockLevel,
@@ -253,7 +254,7 @@ describe('format', () => {
     [0, '0s'],
     [45.9, '45s'],
     [754, '12m 34s'],
-    [3_600, '1h 0m'],
+    [3_600, '1h'],
     [7_380, '2h 3m'],
   ])('formats %d seconds as %s', (seconds, expected) => {
     expect(formatDuration(seconds)).toBe(expected)
@@ -280,5 +281,17 @@ describe('formatWholeMoney', () => {
     [45_600_000_000, '45,600,000,000'],
   ])('shows %d as %s', (value, expected) => {
     expect(formatWholeMoney(value)).toBe(expected)
+  })
+})
+
+describe('offlineEarnings', () => {
+  it.each([
+    [10, 600, 600, 3_000],
+    [10, 2 * 3600, 2 * 3600, 36_000],
+    [10, 8 * 3600, 2 * 3600, 36_000],
+    [10, -30, 0, 0],
+    [0, 3600, 3600, 0],
+  ])('at ₽%d/s for %ds counts %ds and earns ₽%d', (salesPerSecond, away, seconds, earned) => {
+    expect(offlineEarnings(salesPerSecond, away)).toEqual({ seconds, earned })
   })
 })

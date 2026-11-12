@@ -27,14 +27,14 @@ export function formatWholeMoney(value: number): string {
   return Math.floor(value).toLocaleString('en-US')
 }
 
-/** Play time: 45 → "45s", 754 → "12m 34s", 7_380 → "2h 3m". */
+/** Play time: 45 → "45s", 754 → "12m 34s", 7_200 → "2h", 7_380 → "2h 3m". */
 export function formatDuration(seconds: number): string {
   const whole = Math.floor(seconds)
   const hours = Math.floor(whole / 3600)
   const minutes = Math.floor((whole % 3600) / 60)
 
   if (hours > 0) {
-    return `${hours}h ${minutes}m`
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`
   }
 
   if (minutes > 0) {

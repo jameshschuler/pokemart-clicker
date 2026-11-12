@@ -19,12 +19,29 @@ interface SaveFile {
 }
 
 export function saveGame() {
-  const { coins, marts, martsOwned, selectedMart, registerUpgrades, stats, achievements } =
-    useGame.getState()
+  const {
+    coins,
+    marts,
+    martsOwned,
+    selectedMart,
+    registerUpgrades,
+    stats,
+    achievements,
+    paidUntil,
+  } = useGame.getState()
   const file: SaveFile = {
     version: SAVE_VERSION,
     savedAt: Date.now(),
-    state: { coins, marts, martsOwned, selectedMart, registerUpgrades, stats, achievements },
+    state: {
+      coins,
+      marts,
+      martsOwned,
+      selectedMart,
+      registerUpgrades,
+      stats,
+      achievements,
+      paidUntil,
+    },
   }
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(file))
@@ -84,6 +101,9 @@ export function loadGame() {
       TOWN_IDS.has(file.state.selectedMart) && isTownOpen(file.state.selectedMart, martsOwned)
         ? file.state.selectedMart
         : base.selectedMart
+    const now = Date.now()
+    const savedAt = clamp(file.savedAt, 0, now, now)
+
     useGame.setState({
       ...base,
       ...file.state,
@@ -96,7 +116,10 @@ export function loadGame() {
       ),
       stats: { ...base.stats, ...file.state.stats },
       achievements: mergeAchievements(file.state.achievements),
+      paidUntil: clamp(file.state.paidUntil, 0, now, savedAt),
     })
+
+    useGame.getState().advanceTo(now)
   } catch {
     // Corrupt save; start fresh.
   }
