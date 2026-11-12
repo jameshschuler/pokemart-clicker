@@ -15,17 +15,17 @@ export function Store() {
   const stock = ITEMS.filter((item) => stocks(selectedMart, item.id))
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex flex-col gap-4">
       <div className="min-w-0">
-        <h2 className="truncate text-sm font-medium">{townById(selectedMart).name} Mart</h2>
-        <p className="truncate text-xs text-muted-foreground tabular-nums">
+        <h2 className="truncate text-base font-medium">{townById(selectedMart).name} Mart</h2>
+        <p className="truncate text-sm text-muted-foreground tabular-nums">
           ₽{formatRate(martSales)} per second
         </p>
       </div>
 
       <RestockStatus />
 
-      <ul className="flex flex-col gap-1">
+      <ul className="flex flex-col gap-2">
         {stock.map((item) => (
           <li key={item.id}>
             <ItemRow item={item} />

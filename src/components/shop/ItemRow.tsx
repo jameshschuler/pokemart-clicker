@@ -15,28 +15,28 @@ export function ItemRow({ item }: ItemRowProps) {
   const multiplier = useGame((state) => chainMultiplier(state))
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg px-3 py-2 hover:bg-muted/50">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-lg bg-muted/30 px-4 py-3 transition-colors hover:bg-muted/60">
       <img
         src={itemSpriteUrl(item)}
         alt=""
-        width={30}
-        height={30}
-        className="size-7.5 shrink-0 [image-rendering:pixelated]"
+        width={40}
+        height={40}
+        className="size-10 shrink-0 [image-rendering:pixelated]"
       />
-      <div className="flex min-w-28 flex-1 flex-col">
+      <div className="flex min-w-32 flex-1 flex-col gap-0.5">
         <Tooltip>
-          <TooltipTrigger className="min-w-0 truncate rounded-sm text-left text-sm font-medium outline-none focus-visible:ring-1 focus-visible:ring-ring">
+          <TooltipTrigger className="min-w-0 truncate rounded-sm text-left text-base font-medium outline-none focus-visible:ring-1 focus-visible:ring-ring">
             {item.name}
           </TooltipTrigger>
           <TooltipContent className="max-w-64">{item.description}</TooltipContent>
         </Tooltip>
-        <span className="truncate text-xs text-muted-foreground tabular-nums">
+        <span className="truncate text-sm text-muted-foreground tabular-nums">
           ₽{formatRate(item.salesPerSecond * multiplier)}/s each
         </span>
       </div>
-      <div className="flex shrink-0 flex-col items-end tabular-nums">
-        <span className="font-mono text-lg leading-none font-semibold">{owned}</span>
-        <span className="text-[11px] text-muted-foreground">
+      <div className="flex min-w-12 shrink-0 flex-col items-end gap-0.5 tabular-nums">
+        <span className="font-mono text-2xl leading-none font-semibold">{owned}</span>
+        <span className="text-xs text-muted-foreground">
           /{SHELF_CAPACITY}
           <span className="sr-only"> on the shelf</span>
         </span>

@@ -25,7 +25,7 @@ export default function App() {
   }
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-4xl flex-col gap-6 p-4 sm:p-6">
+    <div className="mx-auto flex min-h-svh max-w-6xl flex-col gap-6 p-4 sm:p-6 lg:p-8">
       <header className="flex items-baseline justify-between gap-3">
         <div className="min-w-0">
           <h1 className="truncate text-base font-semibold">PokéMart Clicker</h1>
@@ -44,7 +44,7 @@ export default function App() {
 
       <RouteMap />
 
-      <main className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+      <main className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-8">
         <Counter />
         <Store />
       </main>
