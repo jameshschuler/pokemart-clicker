@@ -11,7 +11,7 @@ import {
   restockLevel,
   shelfSales,
 } from './economy'
-import { formatDuration, formatMoney, formatPercent, formatRate } from './format'
+import { formatDuration, formatMoney, formatPercent, formatRate, formatWholeMoney } from './format'
 import { ITEMS, type ItemId } from './items'
 import { emptyShelves, initialState } from './store'
 
@@ -153,13 +153,19 @@ describe('chainMultiplier', () => {
   })
 
   it('adds +5% per restock milestone', () => {
-    const restocked = { ...chain, marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 25 } } }
+    const restocked = {
+      ...chain,
+      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 25 } },
+    }
 
     expect(chainMultiplier(restocked)).toBeCloseTo(1.1)
   })
 
   it('adds +1% per achievement tier', () => {
-    const achieved = { ...chain, achievements: { ...chain.achievements, totalEarned: 3, martsOpened: 1 } }
+    const achieved = {
+      ...chain,
+      achievements: { ...chain.achievements, totalEarned: 3, martsOpened: 1 },
+    }
 
     expect(chainMultiplier(achieved)).toBeCloseTo(1.04)
   })
@@ -167,7 +173,10 @@ describe('chainMultiplier', () => {
 
 describe('openRequirements', () => {
   const chain = initialState()
-  const palletStocked = { ...chain, marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 15 } } }
+  const palletStocked = {
+    ...chain,
+    marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 15 } },
+  }
 
   it('is ready with coins, sales and a stocked newest mart', () => {
     expect(openRequirements(palletStocked, 180)).toMatchObject({
@@ -183,7 +192,10 @@ describe('openRequirements', () => {
     ['coins', 15, 179],
     ['sales', 14, 1e9],
   ])('is not ready without enough %s', (_, potions, coins) => {
-    const pallet = { ...chain, marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: potions } } }
+    const pallet = {
+      ...chain,
+      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: potions } },
+    }
 
     expect(openRequirements(pallet, coins)?.ready).toBe(false)
   })
@@ -257,5 +269,16 @@ describe('format', () => {
     expect(formatRate(0.1)).toBe('0.1')
     expect(formatRate(34.25)).toBe('34.3')
     expect(formatRate(1_500)).toBe('1,500')
+  })
+})
+
+describe('formatWholeMoney', () => {
+  it.each([
+    [0, '0'],
+    [999.9, '999'],
+    [1_040_123.9, '1,040,123'],
+    [45_600_000_000, '45,600,000,000'],
+  ])('shows %d as %s', (value, expected) => {
+    expect(formatWholeMoney(value)).toBe(expected)
   })
 })
