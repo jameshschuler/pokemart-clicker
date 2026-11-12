@@ -12,7 +12,7 @@ import {
   restockLevel,
   shelfSales,
 } from './economy'
-import { formatDuration, formatMoney, formatPercent, formatRate } from './format'
+import { formatDuration, formatMoney, formatPercent, formatRate, formatWholeMoney } from './format'
 import { ITEMS, type ItemId } from './items'
 import { emptyShelves, initialState } from './store'
 
@@ -270,6 +270,17 @@ describe('format', () => {
     expect(formatRate(0.1)).toBe('0.1')
     expect(formatRate(34.25)).toBe('34.3')
     expect(formatRate(1_500)).toBe('1,500')
+  })
+})
+
+describe('formatWholeMoney', () => {
+  it.each([
+    [0, '0'],
+    [999.9, '999'],
+    [1_040_123.9, '1,040,123'],
+    [45_600_000_000, '45,600,000,000'],
+  ])('shows %d as %s', (value, expected) => {
+    expect(formatWholeMoney(value)).toBe(expected)
   })
 })
 

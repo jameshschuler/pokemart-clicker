@@ -218,6 +218,63 @@ describe('achievements', () => {
   })
 })
 
+describe('Premier Balls', () => {
+  function buyPokeBalls(amount: 1 | 10) {
+    useGame.setState({ martsOwned: 2, coins: 1e9 })
+    useGame.getState().buyItem('viridian', 'pokeBall', amount)
+    useGame.getState().tick(0)
+  }
+
+  it('come free with 10 Poké Balls bought at once and earn Premier Customer', () => {
+    buyPokeBalls(10)
+
+    expect(useGame.getState()).toMatchObject({
+      stats: { premierBalls: 1 },
+      achievements: { premierCustomer: 1 },
+    })
+  })
+
+  it('do not come with single Poké Balls', () => {
+    buyPokeBalls(1)
+
+    expect(useGame.getState()).toMatchObject({
+      stats: { premierBalls: 0 },
+      achievements: { premierCustomer: 0 },
+    })
+  })
+
+  it('come with a Max purchase of 10 or more', () => {
+    useGame.setState({ martsOwned: 2, coins: 1e9 })
+
+    useGame.getState().buyItem('viridian', 'pokeBall', 'max')
+
+    expect(useGame.getState().stats.premierBalls).toBe(1)
+  })
+
+  it('do not come when the shelf cap cuts ×10 below 10', () => {
+    const state = useGame.getState()
+    useGame.setState({
+      martsOwned: 2,
+      coins: 1e12,
+      marts: { ...state.marts, viridian: { ...emptyShelves(), pokeBall: 95 } },
+    })
+
+    useGame.getState().buyItem('viridian', 'pokeBall', 10)
+
+    expect(useGame.getState()).toMatchObject({
+      marts: { viridian: { pokeBall: 100 } },
+      stats: { premierBalls: 0 },
+    })
+  })
+
+  it('do not come with 10 of another item', () => {
+    useGame.setState({ coins: 1e9 })
+    useGame.getState().buyItem('pallet', 'potion', 10)
+
+    expect(useGame.getState().stats.premierBalls).toBe(0)
+  })
+})
+
 describe('tick across a gap', () => {
   it('pays the first minute at full rate and the rest at half rate', () => {
     stockPallet(9)

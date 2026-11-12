@@ -9,23 +9,21 @@ import { currentTown, newStock } from '@/game/towns'
 import { RequirementLine } from './RequirementLine'
 
 export function OpenNextTown() {
-  const { town, hasCoins, hasSales, missing, ready, newestMart, shelfCount, missingCount } =
-    useGame(
-      useShallow((state) => {
-        const requirements = openRequirements(state, state.coins)
+  const { town, hasCoins, hasSales, ready, newestMart, shelfCount, missingCount } = useGame(
+    useShallow((state) => {
+      const requirements = openRequirements(state, state.coins)
 
-        return {
-          town: requirements?.town,
-          hasCoins: requirements?.hasCoins ?? false,
-          hasSales: requirements?.hasSales ?? false,
-          missing: itemNames(requirements?.missing ?? []),
-          ready: requirements?.ready ?? false,
-          newestMart: currentTown(state.martsOwned).name,
-          shelfCount: currentTown(state.martsOwned).stock.length,
-          missingCount: requirements?.missing.length ?? 0,
-        }
-      }),
-    )
+      return {
+        town: requirements?.town,
+        hasCoins: requirements?.hasCoins ?? false,
+        hasSales: requirements?.hasSales ?? false,
+        ready: requirements?.ready ?? false,
+        newestMart: currentTown(state.martsOwned).name,
+        shelfCount: currentTown(state.martsOwned).stock.length,
+        missingCount: requirements?.missing.length ?? 0,
+      }
+    }),
+  )
   const openNextTown = useGame((state) => state.openNextTown)
 
   if (!town) {
@@ -49,9 +47,6 @@ export function OpenNextTown() {
           <ul className="flex min-w-0 flex-1 flex-col gap-1 text-xs tabular-nums">
             <RequirementLine met={missingCount === 0}>
               Stock every shelf in {newestMart} · {shelfCount - missingCount}/{shelfCount}
-              {missingCount > 0 && (
-                <span className="block text-muted-foreground/80">Still empty: {missing}</span>
-              )}
             </RequirementLine>
             <RequirementLine met={hasSales}>
               Chain sales ₽{formatRate(town.requiredSalesPerSecond)}/s

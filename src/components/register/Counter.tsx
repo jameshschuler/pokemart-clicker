@@ -1,8 +1,9 @@
 import { useRef, useState, type MouseEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import { chainSalesPerSecond, clickValue } from '@/game/economy'
-import { formatMoney, formatRate } from '@/game/format'
+import { formatMoney } from '@/game/format'
 import { useGame } from '@/game/store'
+import { Balance } from './Balance'
 import { ChainBonus } from './ChainBonus'
 import { RegisterUpgrades } from './RegisterUpgrades'
 
@@ -16,8 +17,6 @@ interface Popup {
 const POPUP_MS = 800
 
 export function Counter() {
-  const coins = useGame((state) => state.coins)
-  const perSecond = useGame((state) => chainSalesPerSecond(state))
   const perClick = useGame((state) =>
     clickValue(state.registerUpgrades, chainSalesPerSecond(state)),
   )
@@ -42,14 +41,7 @@ export function Counter() {
 
   return (
     <section className="flex min-w-0 flex-col gap-4">
-      <div className="min-w-0">
-        <p className="truncate font-mono text-3xl font-semibold tabular-nums">
-          ₽{formatMoney(coins)}
-        </p>
-        <p className="text-sm text-muted-foreground tabular-nums">
-          ₽{formatRate(perSecond)} per second
-        </p>
-      </div>
+      <Balance />
 
       <Button
         variant="outline"

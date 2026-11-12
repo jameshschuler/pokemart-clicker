@@ -10,7 +10,7 @@ const TRUNCATE_EPSILON = 1e-9
 export function formatMoney(value: number): string {
   const whole = Math.floor(value)
   if (whole < 1_000_000) {
-    return whole.toLocaleString('en-US')
+    return formatWholeMoney(whole)
   }
 
   const tier = Math.min(Math.floor(Math.log10(whole) / 3), SUFFIXES.length - 1)
@@ -20,6 +20,11 @@ export function formatMoney(value: number): string {
   const truncated = Math.floor(scaled * factor + TRUNCATE_EPSILON) / factor
 
   return `${truncated.toFixed(decimals)}${SUFFIXES[tier]}`
+}
+
+/** Money with every digit: 1_040_123.9 → "1,040,123". */
+export function formatWholeMoney(value: number): string {
+  return Math.floor(value).toLocaleString('en-US')
 }
 
 /** Play time: 45 → "45s", 754 → "12m 34s", 7_200 → "2h", 7_380 → "2h 3m". */
