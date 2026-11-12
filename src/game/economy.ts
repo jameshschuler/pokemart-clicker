@@ -10,6 +10,10 @@ export const SHELF_CAPACITY = 100
 export const RESTOCK_MILESTONES = [10, 25, 50, 100]
 export const MILESTONE_BONUS = 0.05
 export const ACHIEVEMENT_BONUS = 0.01
+export const OFFLINE_RATE = 0.5
+export const OFFLINE_CAP_SECONDS = 2 * 3600
+/** The first minute of any gap pays full rate; only time past it counts as away. */
+export const FULL_RATE_SECONDS = 60
 
 export type BuyAmount = 1 | 10 | 'max'
 
@@ -163,4 +167,16 @@ export function clickValue(registerUpgrades: RegisterUpgradeId[], salesPerSecond
   }
 
   return BASE_CLICK_VALUE * 2 ** doublings + salesShare * salesPerSecond
+}
+
+export interface AwayReport {
+  seconds: number
+  earned: number
+}
+
+/** Shelf sales while the game wasn't running: half rate, at most 2 hours. */
+export function offlineEarnings(salesPerSecond: number, secondsAway: number): AwayReport {
+  const seconds = Math.min(Math.max(secondsAway, 0), OFFLINE_CAP_SECONDS)
+
+  return { seconds, earned: salesPerSecond * OFFLINE_RATE * seconds }
 }

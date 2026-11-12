@@ -12,13 +12,13 @@ export const debugCommands = {
     useGame.setState({ martsOwned: Math.min(Math.max(count, 1), TOWNS.length) })
   },
 
-  /** Runs the shelves for `seconds` as if that time had passed. */
-  skip(seconds: number) {
+  /** Pretends the game was closed for `seconds`: full rate for a minute, then half rate. */
+  away(seconds: number) {
     useGame.getState().tick(seconds)
   },
 
   help() {
-    return 'mart.addMoney(amount) · mart.openMarts(count = all) · mart.skip(seconds)'
+    return 'mart.addMoney(amount) · mart.openMarts(count = all) · mart.away(seconds)'
   },
 }
 

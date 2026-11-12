@@ -217,3 +217,68 @@ describe('achievements', () => {
     expect(useGame.getState().coins - before).toBeCloseTo(9 * ITEMS[0].salesPerSecond * 1.01)
   })
 })
+
+describe('tick across a gap', () => {
+  it('pays the first minute at full rate and the rest at half rate', () => {
+    stockPallet(9)
+
+    useGame.getState().tick(600)
+
+    expect(useGame.getState()).toMatchObject({
+      coins: 297,
+      stats: { salesEarnings: 54, awayEarnings: 243, playSeconds: 60 },
+      awayReport: { seconds: 540, earned: 243 },
+    })
+  })
+
+  it('never pays less for a longer gap', () => {
+    stockPallet(9)
+    useGame.getState().tick(59)
+    const shorter = useGame.getState().coins
+    useGame.setState({ coins: 0 })
+
+    useGame.getState().tick(61)
+
+    expect(useGame.getState().coins).toBeGreaterThan(shorter)
+  })
+
+  it.each([
+    ['a gap under a minute', 9, 60],
+    ['empty shelves', 0, 3600],
+  ])('shows no welcome back report for %s', (_, potions, seconds) => {
+    stockPallet(potions)
+
+    useGame.getState().tick(seconds)
+
+    expect(useGame.getState().awayReport).toBeUndefined()
+  })
+
+  it('clears the report when dismissed', () => {
+    stockPallet(9)
+    useGame.getState().tick(600)
+
+    useGame.getState().dismissAwayReport()
+
+    expect(useGame.getState().awayReport).toBeUndefined()
+  })
+})
+
+describe('advanceTo', () => {
+  it('pays for the wall-clock time since sales were last paid', () => {
+    stockPallet(9)
+    useGame.setState({ paidUntil: 1_000 })
+
+    useGame.getState().advanceTo(601_000)
+
+    expect(useGame.getState()).toMatchObject({ coins: 297, paidUntil: 601_000 })
+  })
+
+  it('pays nothing when the clock goes backwards', () => {
+    stockPallet(9)
+    useGame.setState({ paidUntil: 1_000 })
+
+    useGame.getState().advanceTo(500)
+
+    expect(useGame.getState()).toMatchObject({ coins: 0, paidUntil: 500 })
+  })
+})

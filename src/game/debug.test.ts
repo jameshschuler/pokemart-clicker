@@ -27,13 +27,13 @@ describe('debug commands', () => {
     expect(useGame.getState().martsOwned).toBe(expected)
   })
 
-  it('skip pays the shelves for the time skipped', () => {
+  it('away pays a minute at full rate, the rest at half, and opens the report', () => {
     useGame.setState((state) => ({
       marts: { ...state.marts, pallet: { ...emptyShelves(), potion: 5 } },
     }))
 
-    debugCommands.skip(60)
+    debugCommands.away(600)
 
-    expect(useGame.getState().coins).toBeCloseTo(5 * 0.1 * 60)
+    expect(useGame.getState()).toMatchObject({ coins: 165, awayReport: { seconds: 540 } })
   })
 })
