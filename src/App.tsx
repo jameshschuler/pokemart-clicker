@@ -1,5 +1,6 @@
 import { AchievementsDialog } from '@/components/achievements/AchievementsDialog'
 import { AchievementToast } from '@/components/achievements/AchievementToast'
+import { WelcomeBackDialog } from '@/components/away/WelcomeBackDialog'
 import { RouteMap } from '@/components/map/RouteMap'
 import { Counter } from '@/components/register/Counter'
 import { Store } from '@/components/shop/Store'
@@ -56,6 +57,7 @@ export default function App() {
       </footer>
 
       <AchievementToast />
+      <WelcomeBackDialog />
     </div>
   )
 }

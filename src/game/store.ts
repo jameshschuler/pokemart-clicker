@@ -3,7 +3,10 @@ import { checkAchievements, emptyAchievements, type EarnedAchievements } from '.
 import {
   chainSalesPerSecond,
   clickValue,
+  FULL_RATE_SECONDS,
+  offlineEarnings,
   openRequirements,
+  type AwayReport,
   purchaseQuote,
   type BuyAmount,
   type Marts,
@@ -22,6 +25,10 @@ export interface GameState {
   registerUpgrades: RegisterUpgradeId[]
   stats: LifetimeStats
   achievements: EarnedAchievements
+  /** Wall-clock ms that shelf sales have been paid up to. */
+  paidUntil: number
+  /** Shown once after returning; never saved. */
+  awayReport?: AwayReport
 }
 
 interface GameActions {
@@ -31,6 +38,8 @@ interface GameActions {
   buyRegisterUpgrade: (upgradeId: RegisterUpgradeId) => void
   selectMart: (townId: TownId) => void
   tick: (seconds: number) => void
+  advanceTo: (now: number) => void
+  dismissAwayReport: () => void
   reset: () => void
 }
 
@@ -50,6 +59,8 @@ export function initialState(): GameState {
     registerUpgrades: [],
     stats: emptyStats(Date.now()),
     achievements: emptyAchievements(),
+    paidUntil: Date.now(),
+    awayReport: undefined,
   }
 }
 
@@ -137,18 +148,31 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
 
   tick: (seconds) => {
     const state = get()
-    const earned = chainSalesPerSecond(state) * seconds
+    const salesPerSecond = chainSalesPerSecond(state)
+    const activeSeconds = Math.min(seconds, FULL_RATE_SECONDS)
+    const earned = salesPerSecond * activeSeconds
+    const away = offlineEarnings(salesPerSecond, seconds - activeSeconds)
     const stats = {
       ...state.stats,
-      playSeconds: state.stats.playSeconds + seconds,
+      playSeconds: state.stats.playSeconds + activeSeconds,
       salesEarnings: state.stats.salesEarnings + earned,
+      awayEarnings: state.stats.awayEarnings + away.earned,
     }
+
     set({
-      coins: state.coins + earned,
+      coins: state.coins + earned + away.earned,
       stats,
       achievements: checkAchievements({ ...state, stats }),
+      awayReport: away.earned > 0 ? away : state.awayReport,
     })
   },
+
+  advanceTo: (now) => {
+    get().tick(Math.max((now - get().paidUntil) / 1000, 0))
+    set({ paidUntil: now })
+  },
+
+  dismissAwayReport: () => set({ awayReport: undefined }),
 
   reset: () => set(initialState()),
 }))

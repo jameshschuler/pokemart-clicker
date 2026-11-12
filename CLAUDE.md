@@ -19,12 +19,14 @@ Cookie Clicker–style idle game: you own the PokéMart in Pallet Town and expan
 
 Open design questions: retro handheld look vs. clean dashboard (currently default shadcn theme); pacing target (~2h to clear Kanto, unconfirmed).
 
+TODO later: cache chain sales and the chain multiplier until marts, marts owned or achievements change. Components recompute them about 20 times a frame. Measured at 0.056 ms per frame with all 11 Kanto marts stocked, so it isn't worth doing yet. Revisit when Johto or Hoenn add towns, or if the game feels slow.
+
 ## Commands
 
 - `npm run dev` — Vite dev server
 - `npm test` — Vitest (economy math)
 - `npm run build` — typecheck + build
-- Dev console: `mart.addMoney(1e6)`, `mart.openMarts(5)`, `mart.skip(3600)`, `mart.help()` (dev builds only)
+- Dev console: `mart.addMoney(1e6)`, `mart.openMarts(5)`, `mart.away(3600)`, `mart.help()` (dev builds only)
 - `npm run lint` — oxlint (the two `only-export-components` warnings in `components/ui/` are expected)
 
 ## Code layout

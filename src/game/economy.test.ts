@@ -6,6 +6,7 @@ import {
   chainSalesPerSecond,
   clickValue,
   maxAffordable,
+  offlineEarnings,
   openRequirements,
   purchaseQuote,
   restockLevel,
@@ -153,13 +154,19 @@ describe('chainMultiplier', () => {
   })
 
   it('adds +5% per restock milestone', () => {
-    const restocked = { ...chain, marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 25 } } }
+    const restocked = {
+      ...chain,
+      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 25 } },
+    }
 
     expect(chainMultiplier(restocked)).toBeCloseTo(1.1)
   })
 
   it('adds +1% per achievement tier', () => {
-    const achieved = { ...chain, achievements: { ...chain.achievements, totalEarned: 3, martsOpened: 1 } }
+    const achieved = {
+      ...chain,
+      achievements: { ...chain.achievements, totalEarned: 3, martsOpened: 1 },
+    }
 
     expect(chainMultiplier(achieved)).toBeCloseTo(1.04)
   })
@@ -167,7 +174,10 @@ describe('chainMultiplier', () => {
 
 describe('openRequirements', () => {
   const chain = initialState()
-  const palletStocked = { ...chain, marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 15 } } }
+  const palletStocked = {
+    ...chain,
+    marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 15 } },
+  }
 
   it('is ready with coins, sales and a stocked newest mart', () => {
     expect(openRequirements(palletStocked, 180)).toMatchObject({
@@ -183,7 +193,10 @@ describe('openRequirements', () => {
     ['coins', 15, 179],
     ['sales', 14, 1e9],
   ])('is not ready without enough %s', (_, potions, coins) => {
-    const pallet = { ...chain, marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: potions } } }
+    const pallet = {
+      ...chain,
+      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: potions } },
+    }
 
     expect(openRequirements(pallet, coins)?.ready).toBe(false)
   })
@@ -241,7 +254,7 @@ describe('format', () => {
     [0, '0s'],
     [45.9, '45s'],
     [754, '12m 34s'],
-    [3_600, '1h 0m'],
+    [3_600, '1h'],
     [7_380, '2h 3m'],
   ])('formats %d seconds as %s', (seconds, expected) => {
     expect(formatDuration(seconds)).toBe(expected)
@@ -257,5 +270,17 @@ describe('format', () => {
     expect(formatRate(0.1)).toBe('0.1')
     expect(formatRate(34.25)).toBe('34.3')
     expect(formatRate(1_500)).toBe('1,500')
+  })
+})
+
+describe('offlineEarnings', () => {
+  it.each([
+    [10, 600, 600, 3_000],
+    [10, 2 * 3600, 2 * 3600, 36_000],
+    [10, 8 * 3600, 2 * 3600, 36_000],
+    [10, -30, 0, 0],
+    [0, 3600, 3600, 0],
+  ])('at ₽%d/s for %ds counts %ds and earns ₽%d', (salesPerSecond, away, seconds, earned) => {
+    expect(offlineEarnings(salesPerSecond, away)).toEqual({ seconds, earned })
   })
 })

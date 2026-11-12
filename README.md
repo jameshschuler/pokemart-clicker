@@ -29,7 +29,7 @@ The dev server adds a `mart` object to the browser console for playtesting. Prod
 ```js
 mart.addMoney(1e6)   // add ₽ without counting it as earned
 mart.openMarts(5)    // own the first 5 marts for free (no number: all 11)
-mart.skip(3600)      // pay out an hour of shelf sales
+mart.away(3600)      // pretend you were away an hour (half rate, welcome back dialog)
 mart.help()          // list the commands
 ```
 

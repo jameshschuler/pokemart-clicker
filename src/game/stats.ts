@@ -4,6 +4,7 @@ export interface LifetimeStats {
   clicks: number
   clickEarnings: number
   salesEarnings: number
+  awayEarnings: number
   totalSpent: number
   itemsStocked: number
 }
@@ -15,11 +16,12 @@ export function emptyStats(startedAt: number): LifetimeStats {
     clicks: 0,
     clickEarnings: 0,
     salesEarnings: 0,
+    awayEarnings: 0,
     totalSpent: 0,
     itemsStocked: 0,
   }
 }
 
 export function totalEarned(stats: LifetimeStats): number {
-  return stats.clickEarnings + stats.salesEarnings
+  return stats.clickEarnings + stats.salesEarnings + stats.awayEarnings
 }
