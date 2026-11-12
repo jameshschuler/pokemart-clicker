@@ -12,6 +12,7 @@ export type AchievementId =
   | 'allRegisterUpgrades'
   | 'itemsStocked'
   | 'potionHoarder'
+  | 'premierCustomer'
 
 export type AchievementCategory =
   'register' | 'earnings' | 'chain' | 'shelves' | 'upgrades' | 'stocking' | 'hidden'
@@ -148,6 +149,18 @@ export const ACHIEVEMENTS: Achievement[] = [
       },
     ],
     progress: (state) => state.marts.pallet.potion,
+  },
+  {
+    id: 'premierCustomer',
+    category: 'hidden',
+    tiers: [
+      {
+        goal: 1,
+        name: 'Premier Customer',
+        description: 'Buy 10 Poké Balls at once. The clerk throws in a Premier Ball.',
+      },
+    ],
+    progress: (state) => state.stats.premierBalls,
   },
 ]
 

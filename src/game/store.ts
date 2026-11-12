@@ -34,6 +34,7 @@ interface GameActions {
   reset: () => void
 }
 
+const PREMIER_BALL_BULK = 10
 const ITEM_BY_ID = new Map(ITEMS.map((item) => [item.id, item]))
 const UPGRADE_BY_ID = new Map(REGISTER_UPGRADES.map((upgrade) => [upgrade.id, upgrade]))
 
@@ -51,6 +52,10 @@ export function initialState(): GameState {
     stats: emptyStats(Date.now()),
     achievements: emptyAchievements(),
   }
+}
+
+function earnsPremierBall(itemId: ItemId, count: number): boolean {
+  return itemId === 'pokeBall' && count >= PREMIER_BALL_BULK
 }
 
 function spend(state: GameState, cost: number): Pick<GameState, 'coins' | 'stats'> {
@@ -95,7 +100,11 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
     set({
       ...spent,
       marts: { ...marts, [townId]: { ...shelves, [itemId]: shelves[itemId] + count } },
-      stats: { ...spent.stats, itemsStocked: spent.stats.itemsStocked + count },
+      stats: {
+        ...spent.stats,
+        itemsStocked: spent.stats.itemsStocked + count,
+        premierBalls: spent.stats.premierBalls + (earnsPremierBall(itemId, count) ? 1 : 0),
+      },
     })
   },
 
