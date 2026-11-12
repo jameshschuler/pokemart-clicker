@@ -14,8 +14,9 @@ Cookie Clicker–style idle game: you own the PokéMart in Pallet Town and expan
 
 - [x] Iteration 1 — register click, Potion + Poké Ball, passive sales, buy ×1/×10/Max, autosave
 - [x] Iteration 2 — towns: full Kanto item ladder gated by towns, route map, open next town
-- [ ] Iteration 3 — upgrades: register upgrades, lifetime stats and base achievements done; item doublings, tier synergies, marketing to go
-- [ ] 4 staff · 5 flash sales · 6 shop floor · 7 polish · 8 prestige · 9 Johto · 10 Hoenn
+- [ ] Iteration 3 — upgrades: register upgrades, lifetime stats and base achievements done; town perks, item doublings, tier synergies to go
+- [ ] Next: Iteration 6 — mart scene, pulled forward
+- [ ] 4 staff · 5 flash sales · 7 polish · 8 prestige · 9 Johto · 10 Hoenn
 
 Open design questions: retro handheld look vs. clean dashboard (currently default shadcn theme); pacing target (~2h to clear Kanto, unconfirmed).
 

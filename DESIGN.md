@@ -112,7 +112,23 @@ One-time purchases.
 
 - **Item upgrades** — ×2 an item at 1 / 5 / 25 / 50 / 100 owned.
 - **Tier synergies** — every 25 of a higher tier ×2 the tier below (Great Ball → Poké Ball).
-- **Marketing** — permanent global %.
+- **Town perks** (the marketing group) — one or two per town, themed on what the town is known for, unlocking when its mart opens. Effects vary on purpose so they don't all read as another "+%":
+
+  | Town | Perk | Effect |
+  |---|---|---|
+  | Pallet Town | Prof. Oak's Recommendation | Potions ×2 |
+  | Viridian City | Trainer School Field Trips | +₽1 per click per mart owned |
+  | Pewter City | Museum Gift Shop | +10% all sales |
+  | Cerulean City | Bike Shop Cross-Promo | Restock milestones give +7% instead of +5% |
+  | Vermilion City | S.S. Anne Supply Contract | Poké, Great and Ultra Balls ×2 |
+  | Lavender Town | Pokémon Tower Vigil Supplies | Escape Ropes and Repels ×2 |
+  | Celadon City | Game Corner Prize Counter | Each click has a 1% chance to pay ×77 |
+  | Fuchsia City | Safari Zone Kiosk | Offline cap 2h → 3h |
+  | Saffron City | Silph Co. Partnership | +25% all sales |
+  | Cinnabar Island | Lab Research Grant | Offline rate 50% → 75% (stacks with Delivery Drivers, capped at 100%) |
+  | Indigo Plateau | Elite Four Sponsorship | +1% all sales per achievement tier, doubling the achievement bonus |
+
+  Costs and exact values get tuned with the pacing sim when built.
 - **Register** (built) — at least one per town, each unlocking when its town's mart opens. They follow how a real checkout modernizes (cash → electric → scanner → cards → tap → tablet → self checkout), with Pokémon working the counter where it fits:
 
   | Upgrade | Town | Cost | Effect |
@@ -160,6 +176,18 @@ Opening the last town unlocks **Expand to next region**: reset ₽, items, towns
 - **Johto** — trade routes between marts (Magnet Train links Goldenrod ↔ Saffron).
 - **Hoenn** — weather demand shifts which items sell best.
 
+## Mart scene
+
+The game currently reads as lists of numbers. The mart scene gives it life and replaces the plain "Serve customer" box.
+
+- **Storefront:** an original drawing of the selected town's PokéMart (blue roof, counter, shelves), tinted per town with a small landmark: Pewter rocks, Cerulean water, Vermilion's ship, Lavender's tower, and so on.
+- **Staff:** register upgrades with Pokémon (Meowth, Machop, Chansey, Alakazam, Machamp, Porygon) stand behind the counter once bought. Staff hires from Iteration 4 join them.
+- **Customers:** wild Pokémon from that town's nearby routes walk in (Pidgey and Rattata in Pallet, Geodude in Pewter, Gastly in Lavender). More ₽/s means more customers in the queue.
+- **Shelves:** item sprites appear on the shelves as they're stocked, so a fuller mart looks fuller.
+- **Clicking:** click the counter to serve the front customer. They walk out with a bag and the ₽ earned floats up.
+
+Customers are Pokémon rather than trainers because PokeAPI has Pokémon sprites but no trainer sprites.
+
 ## Lifetime stats
 
 Tracked from the first session and saved: time played, customers served (clicks), earned at the register, earned from shelves, total earned, total spent, items stocked, and the date of the first mart. Shown under the register. Pulled forward from iteration 7 because counts can't be backfilled.
@@ -168,7 +196,7 @@ Tracked from the first session and saved: time played, customers served (clicks)
 
 Earned from game state and saved, so they survive later prestige resets. Each earned tier gives **+1% all sales** chain-wide, shown as its own line in the chain bonus. A toast pops up when one is earned. Some achievements have tiers earned in order; others are one-time. Hidden ones show "???" until earned.
 
-Base set, one per category (15 tiers):
+Base set, one per category plus a second hidden one (16 tiers):
 
 | Category | Achievement | Tiers |
 |---|---|---|
@@ -179,12 +207,17 @@ Base set, one per category (15 tiers):
 | Upgrades | Self-Service | Buy every register upgrade |
 | Stocking | Stock Boy / Warehouse Run / Supply Chain | Stock 100 / 1K / 10K items |
 | Hidden | Potion Hoarder | Fill Pallet Town with 100 Potions |
+| Hidden | Premier Customer | Buy 10 Poké Balls at once (the games throw in a free Premier Ball) |
+
+Later, with item upgrades: make the Premier Ball a real bonus item. Each purchase of 10+ Poké Balls adds a free Premier Ball to that shelf. It doesn't count toward the cap and sells a little.
 
 More to come per category. Ideas: idle for 10 minutes without clicking, open Pewter in under 10 minutes.
 
 ## Art
 
-Item icons are PokeAPI sprites, hotlinked, for now. Grouped items use one member: X Attack, Protein, a Normal TM, Fire Stone. The game is personal and not distributed, and the footer carries a disclaimer. Other art (register, route map, shop floor) is original inline SVG/CSS.
+Item icons and Pokémon (mart scene staff and customers) are PokeAPI sprites, hotlinked, for now. Grouped items use one member: X Attack, Protein, a Normal TM, Fire Stone. The game is personal and not distributed, and the footer carries a disclaimer.
+
+PokeAPI has no town, building or trainer art, so the storefronts, town landmarks and route map are original inline SVG/CSS.
 
 ## Saving
 
@@ -192,7 +225,7 @@ localStorage autosave every 10s and on tab hide. Offline earnings at 50% (raised
 
 ## Layout
 
-Three columns: **counter** (₽, chain sales/s, register, buffs) · **shop floor** (the selected mart's shelves, customers, flash sales) · **store** (the selected mart's items with its ₽/s, upgrades, Items/Staff tabs, open next town). Route map across the top: click an opened town to switch to that mart. Stacks on mobile.
+Three columns: **counter** (₽, chain sales/s, register, buffs) · **mart scene** (the selected mart's storefront, staff, customers, stocked shelves, flash sales) · **store** (the selected mart's items with its ₽/s, upgrades, Items/Staff tabs, open next town). Each item row has its own ×1 / ×10 / Max buttons showing their cost, and the shelf count is shown large. Click the balance to switch between short (₽1.04M) and full (₽1,040,123). Route map across the top: click an opened town to switch to that mart. Stacks on mobile.
 
 ## Iterations
 
@@ -200,10 +233,10 @@ Each one is playable.
 
 1. **Register + first items** — click for ₽, buy Potion / Poké Ball, passive sales, buy ×1/×10/Max, autosave.
 2. **Towns** — chain of marts, one per town, each with its own shelves and per-mart pricing; full Kanto item ladder; route map doubles as the mart switcher; open next town (needs ₽/s + lump sum); 100-unit shelf cap; restock milestones.
-3. **Upgrades** — register upgrades (done, with lifetime stats); next: item doublings, tier synergies, marketing.
+3. **Upgrades** — register upgrades and base achievements (done, with lifetime stats); next: town perks, item doublings, tier synergies.
 4. **Staff** — Clerk, Stocker, Driver, Promoter.
 5. **Flash sales** — spawning tag, four outcomes, buff bar.
-6. **Shop floor** — shelves filling up, customers walking through.
+6. **Mart scene** — storefront per town, staff and customer Pokémon, shelves filling up. Next up, pulled ahead of 3's remaining work, 4 and 5, because the game feels lifeless without it.
 7. **Polish** — offline earnings, stats, export/import, balance pass.
 8. **Prestige** — Master Ball, badges, region select.
 9. **Johto** — trade routes.
