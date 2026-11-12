@@ -1,39 +1,21 @@
-import { useShallow } from 'zustand/react/shallow'
-import { Button } from '@/components/ui/button'
-import { chainMultiplier, purchaseQuote, SHELF_CAPACITY, type BuyAmount } from '@/game/economy'
-import { formatMoney, formatRate } from '@/game/format'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { chainMultiplier, SHELF_CAPACITY } from '@/game/economy'
+import { formatRate } from '@/game/format'
 import { itemSpriteUrl, type Item } from '@/game/items'
 import { useGame } from '@/game/store'
-import { cn } from '@/lib/utils'
+import { BUY_AMOUNTS } from './buy-amounts'
+import { BuyButton } from './BuyButton'
 
 interface ItemRowProps {
   item: Item
-  amount: BuyAmount
 }
 
-export function ItemRow({ item, amount }: ItemRowProps) {
-  const selectedMart = useGame((state) => state.selectedMart)
+export function ItemRow({ item }: ItemRowProps) {
   const owned = useGame((state) => state.marts[state.selectedMart][item.id])
   const multiplier = useGame((state) => chainMultiplier(state))
-  // Subscribe to the quote, not raw coins, so rows only re-render when it changes.
-  const { count, cost, affordable } = useGame(
-    useShallow((state) => {
-      const quote = purchaseQuote(item.baseCost, owned, state.coins, amount)
-
-      return { ...quote, affordable: quote.count > 0 && quote.cost <= state.coins }
-    }),
-  )
-  const buyItem = useGame((state) => state.buyItem)
-  const isFull = owned >= SHELF_CAPACITY
 
   return (
-    <Button
-      variant="ghost"
-      disabled={!affordable}
-      onClick={() => buyItem(selectedMart, item.id, amount)}
-      title={item.description}
-      className="h-auto w-full justify-between gap-3 px-3 py-2 text-left disabled:opacity-100"
-    >
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg px-3 py-2 hover:bg-muted/50">
       <img
         src={itemSpriteUrl(item)}
         alt=""
@@ -41,28 +23,33 @@ export function ItemRow({ item, amount }: ItemRowProps) {
         height={30}
         className="size-7.5 shrink-0 [image-rendering:pixelated]"
       />
-      <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate font-medium">
-          {item.name}
-          {amount !== 1 && !isFull && <span className="ml-1 text-muted-foreground">×{count}</span>}
-        </span>
-        <span className="truncate text-xs font-normal text-muted-foreground">
+      <div className="flex min-w-28 flex-1 flex-col">
+        <Tooltip>
+          <TooltipTrigger className="min-w-0 truncate rounded-sm text-left text-sm font-medium outline-none focus-visible:ring-1 focus-visible:ring-ring">
+            {item.name}
+          </TooltipTrigger>
+          <TooltipContent className="max-w-64">{item.description}</TooltipContent>
+        </Tooltip>
+        <span className="truncate text-xs text-muted-foreground tabular-nums">
           ₽{formatRate(item.salesPerSecond * multiplier)}/s each
         </span>
-      </span>
-      <span className="flex shrink-0 items-center gap-3">
-        <span
-          className={cn(
-            'font-mono text-sm tabular-nums',
-            affordable ? 'text-foreground' : 'text-muted-foreground/60',
-          )}
-        >
-          {isFull ? 'Full' : `₽${formatMoney(Math.ceil(cost))}`}
+      </div>
+      <div className="flex shrink-0 flex-col items-end tabular-nums">
+        <span className="font-mono text-lg leading-none font-semibold">{owned}</span>
+        <span className="text-[11px] text-muted-foreground">
+          /{SHELF_CAPACITY}
+          <span className="sr-only"> on the shelf</span>
         </span>
-        <span className="w-8 text-right font-mono text-lg font-semibold tabular-nums text-muted-foreground">
-          {owned}
-        </span>
-      </span>
-    </Button>
+      </div>
+      {owned >= SHELF_CAPACITY ? (
+        <span className="ml-auto shrink-0 text-sm text-muted-foreground">Full</span>
+      ) : (
+        <div role="group" aria-label={`Buy ${item.name}`} className="ml-auto flex shrink-0 gap-1">
+          {BUY_AMOUNTS.map((amount) => (
+            <BuyButton key={amount} item={item} owned={owned} amount={amount} />
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
