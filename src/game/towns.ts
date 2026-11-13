@@ -1,4 +1,4 @@
-import type { ItemId } from './items'
+import { ITEMS, type Item, type ItemId } from './items'
 
 export type TownId =
   | 'pallet'
@@ -13,13 +13,69 @@ export type TownId =
   | 'cinnabar'
   | 'indigoPlateau'
 
+export interface Floor {
+  name: string
+  stock: ItemId[]
+}
+
 export interface Town {
   id: TownId
   name: string
   openCost: number
   requiredSalesPerSecond: number
   stock: ItemId[]
+  /** Defaults to "<town> Mart". */
+  storeName?: string
+  floors?: Floor[]
 }
+
+/** The FRLG Department Store's selling floors and rooftop. Potions through Escape Ropes are added to 2F. */
+const CELADON_FLOORS: Floor[] = [
+  {
+    name: "2F · Trainer's Market",
+    stock: [
+      'potion',
+      'antidote',
+      'pokeBall',
+      'paralyzeHeal',
+      'awakening',
+      'burnHeal',
+      'repel',
+      'escapeRope',
+      'superPotion',
+      'iceHeal',
+      'superRepel',
+      'greatBall',
+      'revive',
+      'tmRoar',
+      'tmHyperBeam',
+      'tmDig',
+      'tmBrickBreak',
+      'tmSecretPower',
+      'tmAttract',
+    ],
+  },
+  { name: '4F · Wise Man Gifts', stock: ['fireStone', 'thunderStone', 'waterStone', 'leafStone'] },
+  {
+    name: '5F · Drugstore',
+    stock: [
+      'xAttack',
+      'xDefend',
+      'xSpeed',
+      'xSpecial',
+      'xAccuracy',
+      'guardSpec',
+      'direHit',
+      'hpUp',
+      'protein',
+      'iron',
+      'calcium',
+      'zinc',
+      'carbos',
+    ],
+  },
+  { name: 'Roof · Vending Machines', stock: ['freshWater', 'sodaPop', 'lemonade'] },
+]
 
 export const TOWNS: Town[] = [
   {
@@ -97,21 +153,9 @@ export const TOWNS: Town[] = [
     name: 'Celadon City',
     openCost: 920_000,
     requiredSalesPerSecond: 7_700,
-    stock: [
-      'antidote',
-      'paralyzeHeal',
-      'awakening',
-      'burnHeal',
-      'iceHeal',
-      'superPotion',
-      'superRepel',
-      'greatBall',
-      'xItems',
-      'revive',
-      'evolutionStones',
-      'tms',
-      'vitamins',
-    ],
+    storeName: 'Celadon City Department Store',
+    floors: CELADON_FLOORS,
+    stock: CELADON_FLOORS.flatMap((floor) => floor.stock),
   },
   {
     id: 'fuchsia',
@@ -152,7 +196,6 @@ export const TOWNS: Town[] = [
 ]
 
 const ROUTE_ORDER = new Map(TOWNS.map((town, index) => [town.id, index]))
-const STOCK_BY_TOWN = new Map(TOWNS.map((town) => [town.id, new Set(town.stock)]))
 
 export function townById(townId: TownId): Town {
   return TOWNS[ROUTE_ORDER.get(townId) ?? 0]
@@ -162,22 +205,27 @@ export function isTownOpen(townId: TownId, martsOwned: number): boolean {
   return (ROUTE_ORDER.get(townId) ?? TOWNS.length) < martsOwned
 }
 
-export function stocks(townId: TownId, itemId: ItemId): boolean {
-  return STOCK_BY_TOWN.get(townId)?.has(itemId) ?? false
+export function storeName(town: Town): string {
+  return town.storeName ?? `${town.name} Mart`
 }
 
-/** The most recently opened mart. */
-export function currentTown(martsOwned: number): Town {
-  return TOWNS[martsOwned - 1]
+export interface FloorSection {
+  name: string
+  items: Item[]
 }
 
-export function nextTown(martsOwned: number): Town | undefined {
-  return TOWNS[martsOwned]
+function itemsIn(stock: ItemId[]): Item[] {
+  const stocked = new Set(stock)
+
+  return ITEMS.filter((item) => stocked.has(item.id))
 }
 
-/** Items a town's mart is the first on the route to sell. */
-export function newStock(town: Town): ItemId[] {
-  const earlier = new Set(TOWNS.slice(0, ROUTE_ORDER.get(town.id)).flatMap((stop) => stop.stock))
+/** Everything a store sells, in route-ladder order. */
+export function storeItems(town: Town): Item[] {
+  return itemsIn(town.stock)
+}
 
-  return town.stock.filter((itemId) => !earlier.has(itemId))
+/** A store's items grouped by floor, or undefined for a single-floor mart. */
+export function storeFloors(town: Town): FloorSection[] | undefined {
+  return town.floors?.map((floor) => ({ name: floor.name, items: itemsIn(floor.stock) }))
 }

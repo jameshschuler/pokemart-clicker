@@ -1,8 +1,8 @@
 # PokéMart Clicker
 
-An idle clicker game. You run the PokéMart in Pallet Town and grow it into a chain across Kanto, one town at a time.
+An idle clicker game. You start a PokéMart in Pallet Town and grow it into a franchise across Kanto.
 
-Click the register to serve customers. Stock shelves so items sell on their own. Save up to open the next town's mart, which brings better items and a chain-wide sales bonus. Register upgrades make each click worth more, and achievements add a small permanent boost to all sales.
+Click the register to serve customers. Buy producers, starting with flyers around Pallet Town, so sales keep coming while you're away. You're building a PokéMart franchise; the game is being rebuilt one piece at a time. Register upgrades make each click worth more, and achievements add a small permanent boost to all sales.
 
 Game design lives in [DESIGN.md](DESIGN.md). Working notes for contributors are in [CLAUDE.md](CLAUDE.md).
 
@@ -29,7 +29,7 @@ The dev server adds a `mart` object to the browser console for playtesting. Prod
 ```js
 mart.addMoney(1e6)   // add ₽ without counting it as earned
 mart.openMarts(5)    // own the first 5 marts for free (no number: all 11)
-mart.away(3600)      // pretend you were away an hour (half rate, welcome back dialog)
+mart.away(3600)      // pretend you were away an hour (welcome back dialog)
 mart.help()          // list the commands
 ```
 

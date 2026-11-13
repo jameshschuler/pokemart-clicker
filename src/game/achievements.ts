@@ -1,29 +1,17 @@
-import { restockLevel } from './economy'
 import { totalEarned } from './stats'
 import type { GameState } from './store'
-import { TOWNS } from './towns'
 import { REGISTER_UPGRADES } from './upgrades'
 
 export type AchievementId =
-  | 'customersServed'
-  | 'totalEarned'
-  | 'martsOpened'
-  | 'firstRestock'
-  | 'allRegisterUpgrades'
-  | 'itemsStocked'
-  | 'potionHoarder'
-  | 'premierCustomer'
+  'customersServed' | 'totalEarned' | 'allRegisterUpgrades' | 'flyersPosted' | 'idleHands'
 
-export type AchievementCategory =
-  'register' | 'earnings' | 'chain' | 'shelves' | 'upgrades' | 'stocking' | 'hidden'
+export type AchievementCategory = 'register' | 'earnings' | 'upgrades' | 'producers' | 'hidden'
 
 export const CATEGORY_LABELS: Record<AchievementCategory, string> = {
   register: 'Register',
   earnings: 'Earnings',
-  chain: 'Chain',
-  shelves: 'Shelves',
   upgrades: 'Upgrades',
-  stocking: 'Stocking',
+  producers: 'Producers',
   hidden: 'Hidden',
 }
 
@@ -86,33 +74,6 @@ export const ACHIEVEMENTS: Achievement[] = [
     progress: (state) => totalEarned(state.stats),
   },
   {
-    id: 'martsOpened',
-    category: 'chain',
-    tiers: [
-      { goal: 3, name: 'Small Chain', description: 'Own 3 marts.' },
-      { goal: 6, name: 'Regional Chain', description: 'Own 6 marts.' },
-      {
-        goal: TOWNS.length,
-        name: 'Kanto Chain',
-        description: 'Own a mart in every Kanto town.',
-      },
-    ],
-    progress: (state) => state.martsOwned,
-  },
-  {
-    id: 'firstRestock',
-    category: 'shelves',
-    tiers: [
-      {
-        goal: 1,
-        name: 'Restocked',
-        description: 'Reach a restock milestone in any mart.',
-      },
-    ],
-    progress: (state) =>
-      Math.max(...TOWNS.map((town) => restockLevel(state.marts[town.id], town.stock))),
-  },
-  {
     id: 'allRegisterUpgrades',
     category: 'upgrades',
     tiers: [
@@ -125,42 +86,26 @@ export const ACHIEVEMENTS: Achievement[] = [
     progress: (state) => state.registerUpgrades.length,
   },
   {
-    id: 'itemsStocked',
-    category: 'stocking',
+    id: 'flyersPosted',
+    category: 'producers',
     tiers: [
-      { goal: 100, name: 'Stock Boy', description: 'Stock 100 items.' },
-      { goal: 1_000, name: 'Warehouse Run', description: 'Stock 1,000 items.' },
-      {
-        goal: 10_000,
-        name: 'Supply Chain',
-        description: 'Stock 10,000 items.',
-      },
+      { goal: 1, name: 'Grand Opening', description: 'Post a flyer.' },
+      { goal: 10, name: 'Papered the Town', description: 'Post 10 flyers.' },
+      { goal: 25, name: 'Every Lamppost', description: 'Post 25 flyers.' },
     ],
-    progress: (state) => state.stats.itemsStocked,
+    progress: (state) => state.producers.flyer,
   },
   {
-    id: 'potionHoarder',
+    id: 'idleHands',
     category: 'hidden',
     tiers: [
       {
-        goal: 100,
-        name: 'Potion Hoarder',
-        description: 'Fill Pallet Town with 100 Potions.',
+        goal: 1e6,
+        name: 'Idle Hands',
+        description: 'Earn ₽1M while you were away.',
       },
     ],
-    progress: (state) => state.marts.pallet.potion,
-  },
-  {
-    id: 'premierCustomer',
-    category: 'hidden',
-    tiers: [
-      {
-        goal: 1,
-        name: 'Premier Customer',
-        description: 'Buy 10 Poké Balls at once. The clerk throws in a Premier Ball.',
-      },
-    ],
-    progress: (state) => state.stats.premierBalls,
+    progress: (state) => state.stats.awayEarnings,
   },
 ]
 

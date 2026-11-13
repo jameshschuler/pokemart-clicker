@@ -1,106 +1,45 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { ITEMS } from './items'
-import { emptyShelves, initialState, useGame } from './store'
+import { emptyProducers, initialState, useGame } from './store'
 
 beforeEach(() => {
   useGame.setState(initialState())
 })
 
-function stockPallet(potions: number) {
-  const state = useGame.getState()
-  useGame.setState({ marts: { ...state.marts, pallet: { ...emptyShelves(), potion: potions } } })
+/** Each flyer earns ₽0.1/s: a ₽1 sale every 10 seconds. */
+function postFlyers(flyers: number) {
+  useGame.setState({ producers: { ...emptyProducers(), flyer: flyers } })
 }
 
-describe('openNextTown', () => {
-  it('opens Viridian, charges its cost and switches to it', () => {
-    stockPallet(15)
-    useGame.setState({ coins: 200 })
-
-    useGame.getState().openNextTown()
-
-    expect(useGame.getState()).toMatchObject({ martsOwned: 2, coins: 20, selectedMart: 'viridian' })
-  })
-
-  it('needs enough chain sales, not just coins', () => {
-    stockPallet(14)
-    useGame.setState({ coins: 10_000 })
-
-    useGame.getState().openNextTown()
-
-    expect(useGame.getState()).toMatchObject({ martsOwned: 1, coins: 10_000 })
-  })
-
-  it('needs enough coins, not just sales', () => {
-    stockPallet(15)
-    useGame.setState({ coins: 179 })
-
-    useGame.getState().openNextTown()
-
-    expect(useGame.getState().martsOwned).toBe(1)
-  })
-
-  it('needs every shelf in the newest mart stocked', () => {
-    stockPallet(100)
-    useGame.setState({ coins: 1e9, martsOwned: 2 })
-
-    useGame.getState().openNextTown()
-
-    expect(useGame.getState()).toMatchObject({ martsOwned: 2, coins: 1e9 })
-  })
-
-  it('does nothing once every town is open', () => {
-    useGame.setState({ coins: 1e20, martsOwned: 11 })
-
-    useGame.getState().openNextTown()
-
-    expect(useGame.getState()).toMatchObject({ martsOwned: 11, coins: 1e20 })
+describe('serveCustomer', () => {
+  it('earns one sale per click', () => {
+    expect(useGame.getState().serveCustomer()).toBe(1)
+    expect(useGame.getState().coins).toBe(1)
   })
 })
 
-describe('buyItem', () => {
-  it('stocks only the chosen mart', () => {
-    useGame.setState({ coins: 1_000, martsOwned: 2 })
+describe('buyProducer', () => {
+  it('buys a flyer', () => {
+    useGame.setState({ coins: 100 })
 
-    useGame.getState().buyItem('viridian', 'potion', 1)
+    useGame.getState().buyProducer('flyer', 1)
 
-    const { marts, coins } = useGame.getState()
-    expect(marts.viridian.potion).toBe(1)
-    expect(marts.pallet.potion).toBe(0)
-    expect(coins).toBe(985)
+    expect(useGame.getState()).toMatchObject({ coins: 85, producers: { flyer: 1 } })
   })
 
-  it('prices each mart separately', () => {
-    stockPallet(20)
-    useGame.setState({ coins: 1_000, martsOwned: 2 })
+  it('raises the price 15% per purchase', () => {
+    useGame.setState({ coins: 1e6 })
 
-    useGame.getState().buyItem('viridian', 'potion', 1)
+    useGame.getState().buyProducer('flyer', 10)
 
-    expect(useGame.getState().coins).toBe(985)
+    expect(useGame.getState().coins).toBeCloseTo(1e6 - (15 * (1.15 ** 10 - 1)) / 0.15)
   })
 
-  it('refuses marts that are not open', () => {
-    useGame.setState({ coins: 1_000 })
+  it('refuses without enough coins', () => {
+    useGame.setState({ coins: 14 })
 
-    useGame.getState().buyItem('viridian', 'pokeBall', 1)
+    useGame.getState().buyProducer('flyer', 1)
 
-    expect(useGame.getState().coins).toBe(1_000)
-  })
-
-  it('refuses a full shelf', () => {
-    stockPallet(100)
-    useGame.setState({ coins: 1e30 })
-
-    useGame.getState().buyItem('pallet', 'potion', 1)
-
-    expect(useGame.getState()).toMatchObject({ coins: 1e30, marts: { pallet: { potion: 100 } } })
-  })
-
-  it('refuses items the mart does not sell', () => {
-    useGame.setState({ coins: 1_000 })
-
-    useGame.getState().buyItem('pallet', 'pokeBall', 1)
-
-    expect(useGame.getState().coins).toBe(1_000)
+    expect(useGame.getState()).toMatchObject({ coins: 14, producers: { flyer: 0 } })
   })
 })
 
@@ -115,7 +54,7 @@ describe('buyRegisterUpgrade', () => {
     expect(earned).toBe(2)
   })
 
-  it('refuses an upgrade whose town is not open', () => {
+  it('refuses an upgrade out of order', () => {
     useGame.setState({ coins: 1e9 })
 
     useGame.getState().buyRegisterUpgrade('machopBagger')
@@ -148,171 +87,99 @@ describe('lifetime stats', () => {
     expect(useGame.getState().stats).toMatchObject({ clicks: 2, clickEarnings: 2 })
   })
 
-  it('counts items stocked and money spent', () => {
-    useGame.setState({ coins: 1_000 })
+  it('counts money spent', () => {
+    useGame.setState({ coins: 1e6 })
 
-    useGame.getState().buyItem('pallet', 'potion', 10)
+    useGame.getState().buyProducer('flyer', 10)
     useGame.getState().buyRegisterUpgrade('secondTill')
 
     const { stats, coins } = useGame.getState()
-    expect(stats.itemsStocked).toBe(10)
-    expect(stats.totalSpent).toBeCloseTo(1_000 - coins)
+    expect(stats.totalSpent).toBeCloseTo(1e6 - coins)
   })
 
   it('ignores refused purchases', () => {
-    useGame.getState().buyItem('pallet', 'potion', 1)
+    useGame.getState().buyProducer('flyer', 1)
 
-    expect(useGame.getState().stats).toMatchObject({ itemsStocked: 0, totalSpent: 0 })
+    expect(useGame.getState().stats.totalSpent).toBe(0)
   })
 
-  it('counts play time and shelf earnings', () => {
-    stockPallet(10)
+  it('counts play time and sales earnings', () => {
+    postFlyers(10)
 
     useGame.getState().tick(3)
 
-    expect(useGame.getState().stats.playSeconds).toBe(3)
-    expect(useGame.getState().stats.salesEarnings).toBeCloseTo(useGame.getState().coins)
-  })
-})
-
-describe('selectMart', () => {
-  it('ignores marts that are not open', () => {
-    useGame.getState().selectMart('celadon')
-
-    expect(useGame.getState().selectedMart).toBe('pallet')
+    expect(useGame.getState().stats).toMatchObject({ playSeconds: 3, salesEarnings: 3 })
   })
 })
 
 describe('tick', () => {
-  it('pays every mart with mart and restock bonuses', () => {
-    const { marts } = useGame.getState()
-    useGame.setState({
-      martsOwned: 3,
-      marts: {
-        ...marts,
-        pallet: { ...emptyShelves(), potion: 10 },
-        viridian: { ...emptyShelves(), pokeBall: 10 },
-      },
-    })
+  it('pays sales with the franchise bonus', () => {
+    useGame.setState({ martsOwned: 3, producers: { flyer: 10 } })
 
     useGame.getState().tick(2)
 
-    const rates = new Map(ITEMS.map((item) => [item.id, item.salesPerSecond]))
-    const perSecond = 10 * (rates.get('potion') ?? 0) + 10 * (rates.get('pokeBall') ?? 0)
-
-    expect(useGame.getState().coins).toBeCloseTo(perSecond * 1.15 * 2)
+    expect(useGame.getState().coins).toBeCloseTo(1 * 1.1 * 2)
   })
 })
 
 describe('achievements', () => {
   it('are earned on the next tick and boost sales', () => {
-    stockPallet(9)
-    const before = useGame.getState().coins
+    postFlyers(1)
     useGame.setState((state) => ({ stats: { ...state.stats, clicks: 100 } }))
 
     useGame.getState().tick(0)
+    const before = useGame.getState().coins
     useGame.getState().tick(1)
 
-    expect(useGame.getState().achievements.customersServed).toBe(1)
-    expect(useGame.getState().coins - before).toBeCloseTo(9 * ITEMS[0].salesPerSecond * 1.01)
-  })
-})
-
-describe('Premier Balls', () => {
-  function buyPokeBalls(amount: 1 | 10) {
-    useGame.setState({ martsOwned: 2, coins: 1e9 })
-    useGame.getState().buyItem('viridian', 'pokeBall', amount)
-    useGame.getState().tick(0)
-  }
-
-  it('come free with 10 Poké Balls bought at once and earn Premier Customer', () => {
-    buyPokeBalls(10)
-
-    expect(useGame.getState()).toMatchObject({
-      stats: { premierBalls: 1 },
-      achievements: { premierCustomer: 1 },
-    })
-  })
-
-  it('do not come with single Poké Balls', () => {
-    buyPokeBalls(1)
-
-    expect(useGame.getState()).toMatchObject({
-      stats: { premierBalls: 0 },
-      achievements: { premierCustomer: 0 },
-    })
-  })
-
-  it('come with a Max purchase of 10 or more', () => {
-    useGame.setState({ martsOwned: 2, coins: 1e9 })
-
-    useGame.getState().buyItem('viridian', 'pokeBall', 'max')
-
-    expect(useGame.getState().stats.premierBalls).toBe(1)
-  })
-
-  it('do not come when the shelf cap cuts ×10 below 10', () => {
-    const state = useGame.getState()
-    useGame.setState({
-      martsOwned: 2,
-      coins: 1e12,
-      marts: { ...state.marts, viridian: { ...emptyShelves(), pokeBall: 95 } },
-    })
-
-    useGame.getState().buyItem('viridian', 'pokeBall', 10)
-
-    expect(useGame.getState()).toMatchObject({
-      marts: { viridian: { pokeBall: 100 } },
-      stats: { premierBalls: 0 },
-    })
-  })
-
-  it('do not come with 10 of another item', () => {
-    useGame.setState({ coins: 1e9 })
-    useGame.getState().buyItem('pallet', 'potion', 10)
-
-    expect(useGame.getState().stats.premierBalls).toBe(0)
+    expect(useGame.getState().achievements).toMatchObject({ customersServed: 1, flyersPosted: 1 })
+    expect(useGame.getState().coins - before).toBeCloseTo(0.1 * 1.02)
   })
 })
 
 describe('tick across a gap', () => {
-  it('pays the first minute at full rate and the rest at half rate', () => {
-    stockPallet(9)
+  it('pays time away in full and reports it', () => {
+    postFlyers(10)
 
-    useGame.getState().tick(600)
+    useGame.getState().tick(1200)
 
     expect(useGame.getState()).toMatchObject({
-      coins: 297,
-      stats: { salesEarnings: 54, awayEarnings: 243, playSeconds: 60 },
-      awayReport: { seconds: 540, earned: 243 },
+      coins: 1200,
+      stats: { salesEarnings: 0, awayEarnings: 1200, playSeconds: 0 },
+      awayReport: { seconds: 1200, earned: 1200 },
     })
   })
 
-  it('never pays less for a longer gap', () => {
-    stockPallet(9)
-    useGame.getState().tick(59)
-    const shorter = useGame.getState().coins
-    useGame.setState({ coins: 0 })
+  it('stops paying at the offline cap', () => {
+    postFlyers(10)
 
-    useGame.getState().tick(61)
+    useGame.getState().tick(5 * 3600)
 
-    expect(useGame.getState().coins).toBeGreaterThan(shorter)
+    expect(useGame.getState()).toMatchObject({
+      coins: 2 * 3600,
+      awayReport: { seconds: 2 * 3600 },
+    })
   })
 
-  it.each([
-    ['a gap under a minute', 9, 60],
-    ['empty shelves', 0, 3600],
-  ])('shows no welcome back report for %s', (_, potions, seconds) => {
-    stockPallet(potions)
+  it('counts a gap under 15 minutes as play, with no report', () => {
+    postFlyers(10)
 
-    useGame.getState().tick(seconds)
+    useGame.getState().tick(899)
+
+    expect(useGame.getState()).toMatchObject({
+      stats: { awayEarnings: 0, playSeconds: 899 },
+      awayReport: undefined,
+    })
+  })
+
+  it('shows no report when nobody was working', () => {
+    useGame.getState().tick(3600)
 
     expect(useGame.getState().awayReport).toBeUndefined()
   })
 
   it('clears the report when dismissed', () => {
-    stockPallet(9)
-    useGame.getState().tick(600)
+    postFlyers(10)
+    useGame.getState().tick(1200)
 
     useGame.getState().dismissAwayReport()
 
@@ -322,16 +189,16 @@ describe('tick across a gap', () => {
 
 describe('advanceTo', () => {
   it('pays for the wall-clock time since sales were last paid', () => {
-    stockPallet(9)
+    postFlyers(10)
     useGame.setState({ paidUntil: 1_000 })
 
     useGame.getState().advanceTo(601_000)
 
-    expect(useGame.getState()).toMatchObject({ coins: 297, paidUntil: 601_000 })
+    expect(useGame.getState()).toMatchObject({ coins: 600, paidUntil: 601_000 })
   })
 
   it('pays nothing when the clock goes backwards', () => {
-    stockPallet(9)
+    postFlyers(10)
     useGame.setState({ paidUntil: 1_000 })
 
     useGame.getState().advanceTo(500)

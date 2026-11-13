@@ -1,26 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import {
   bulkCost,
-  chainBonus,
-  chainMultiplier,
-  chainSalesPerSecond,
   clickValue,
+  franchiseBonus,
+  franchiseMultiplier,
+  incomePerSecond,
   maxAffordable,
-  offlineEarnings,
-  openRequirements,
+  producerIncome,
   purchaseQuote,
-  restockLevel,
-  shelfSales,
+  salesPerSecond,
 } from './economy'
 import { formatDuration, formatMoney, formatPercent, formatRate, formatWholeMoney } from './format'
-import { ITEMS, type ItemId } from './items'
-import { emptyShelves, initialState } from './store'
+import { PRODUCERS } from './producers'
+import { emptyProducers, initialState } from './store'
 
-const RATES = new Map(ITEMS.map((item) => [item.id, item.salesPerSecond]))
-
-function rate(itemId: ItemId): number {
-  return RATES.get(itemId) ?? 0
-}
+const [FLYER] = PRODUCERS
 
 describe('bulkCost', () => {
   it('matches summing single purchases', () => {
@@ -58,165 +52,83 @@ describe('purchaseQuote', () => {
     expect(purchaseQuote(100, 0, 0, 'max')).toEqual({ count: 1, cost: 100 })
   })
 
-  it('stops at shelf capacity', () => {
-    expect(purchaseQuote(15, 95, 1e30, 10).count).toBe(5)
-    expect(purchaseQuote(15, 95, 1e30, 'max').count).toBe(5)
-  })
-
-  it('quotes nothing for a full shelf', () => {
-    expect(purchaseQuote(15, 100, 1e30, 1)).toEqual({ count: 0, cost: 0 })
+  it.each([1, 10] as const)('quotes ×%s past 100 owned', (amount) => {
+    expect(purchaseQuote(15, 100, 1e30, amount).count).toBe(amount)
   })
 })
 
-describe('restockLevel', () => {
-  const stock = ['potion', 'antidote'] as const
+describe('salesPerSecond', () => {
+  it('adds up every producer', () => {
+    expect(salesPerSecond({ ...emptyProducers(), flyer: 3 })).toBeCloseTo(0.3)
+  })
 
-  it.each([
-    [0, 50, 0],
-    [9, 50, 0],
-    [10, 10, 1],
-    [25, 49, 2],
-    [100, 100, 4],
-  ])('with %i and %i units → level %i', (potions, antidotes, expected) => {
-    const shelves = { ...emptyShelves(), potion: potions, antidote: antidotes }
-
-    expect(restockLevel(shelves, [...stock])).toBe(expected)
+  it('is zero with no producers', () => {
+    expect(salesPerSecond(emptyProducers())).toBe(0)
   })
 })
 
-describe('shelfSales', () => {
-  it('sums one mart', () => {
-    expect(shelfSales({ ...emptyShelves(), potion: 10, pokeBall: 2 })).toBeCloseTo(
-      10 * rate('potion') + 2 * rate('pokeBall'),
-    )
+describe('producerIncome', () => {
+  const franchise = initialState()
+
+  it('is a flyer’s sales times the sale value', () => {
+    expect(producerIncome(franchise, FLYER)).toBeCloseTo(0.1)
   })
 
-  it('is zero for empty shelves', () => {
-    expect(shelfSales(emptyShelves())).toBe(0)
-  })
-})
-
-describe('chainSalesPerSecond', () => {
-  const chain = initialState()
-  const stocked = {
-    ...chain,
-    marts: {
-      ...chain.marts,
-      pallet: { ...emptyShelves(), potion: 10 },
-      viridian: { ...emptyShelves(), potion: 5, pokeBall: 2 },
-    },
-  }
-
-  const base = 15 * rate('potion') + 2 * rate('pokeBall')
-
-  it('sums every mart', () => {
-    expect(chainSalesPerSecond(stocked)).toBeCloseTo(base * 1.05)
-  })
-
-  it('applies the mart bonus on top', () => {
-    expect(chainSalesPerSecond({ ...stocked, martsOwned: 3 })).toBeCloseTo(base * 1.15)
-  })
-
-  it('is zero with nothing stocked', () => {
-    expect(chainSalesPerSecond({ ...chain, martsOwned: 11 })).toBe(0)
+  it('includes the franchise bonus', () => {
+    expect(producerIncome({ ...franchise, martsOwned: 3 }, FLYER)).toBeCloseTo(0.11)
   })
 })
 
-describe('chainBonus', () => {
+describe('incomePerSecond', () => {
+  const franchise = initialState()
+
+  it('is sales per second times the sale value, with the franchise bonus', () => {
+    const grown = { ...franchise, martsOwned: 2, producers: { ...emptyProducers(), flyer: 10 } }
+
+    expect(incomePerSecond(grown)).toBeCloseTo(1.05)
+  })
+
+  it('is zero with no producers', () => {
+    expect(incomePerSecond({ ...franchise, martsOwned: 11 })).toBe(0)
+  })
+})
+
+describe('franchiseBonus', () => {
   it('splits the bonus by source', () => {
-    const chain = initialState()
-    const restocked = {
-      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 25 } },
+    const franchise = initialState()
+    const grown = {
+      ...franchise,
       martsOwned: 3,
-      achievements: { ...chain.achievements, customersServed: 2, potionHoarder: 1 },
+      achievements: { ...franchise.achievements, customersServed: 2, idleHands: 1 },
     }
 
-    expect(chainBonus(restocked)).toEqual({
-      extraMarts: 2,
-      milestones: 2,
+    expect(franchiseBonus(grown)).toEqual({
+      extraTowns: 2,
       achievementTiers: 3,
-      fromMarts: 0.1,
-      fromRestocks: 0.1,
+      fromTowns: 0.1,
       fromAchievements: 0.03,
     })
   })
 })
 
-describe('chainMultiplier', () => {
-  const chain = initialState()
+describe('franchiseMultiplier', () => {
+  const franchise = initialState()
 
   it.each([
     [1, 1],
     [2, 1.05],
     [11, 1.5],
-  ])('with %i marts and no milestones is %d', (martsOwned, expected) => {
-    expect(chainMultiplier({ ...chain, martsOwned })).toBeCloseTo(expected)
-  })
-
-  it('adds +5% per restock milestone', () => {
-    const restocked = {
-      ...chain,
-      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 25 } },
-    }
-
-    expect(chainMultiplier(restocked)).toBeCloseTo(1.1)
+  ])('with %i towns is %d', (martsOwned, expected) => {
+    expect(franchiseMultiplier({ ...franchise, martsOwned })).toBeCloseTo(expected)
   })
 
   it('adds +1% per achievement tier', () => {
     const achieved = {
-      ...chain,
-      achievements: { ...chain.achievements, totalEarned: 3, martsOpened: 1 },
+      ...franchise,
+      achievements: { ...franchise.achievements, totalEarned: 3, idleHands: 1 },
     }
 
-    expect(chainMultiplier(achieved)).toBeCloseTo(1.04)
-  })
-})
-
-describe('openRequirements', () => {
-  const chain = initialState()
-  const palletStocked = {
-    ...chain,
-    marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 15 } },
-  }
-
-  it('is ready with coins, sales and a stocked newest mart', () => {
-    expect(openRequirements(palletStocked, 180)).toMatchObject({
-      town: { id: 'viridian' },
-      hasCoins: true,
-      hasSales: true,
-      missing: [],
-      ready: true,
-    })
-  })
-
-  it.each([
-    ['coins', 15, 179],
-    ['sales', 14, 1e9],
-  ])('is not ready without enough %s', (_, potions, coins) => {
-    const pallet = {
-      ...chain,
-      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: potions } },
-    }
-
-    expect(openRequirements(pallet, coins)?.ready).toBe(false)
-  })
-
-  it('lists empty shelves in the newest mart', () => {
-    const viridianPartly = {
-      ...palletStocked,
-      martsOwned: 2,
-      marts: { ...palletStocked.marts, viridian: { ...emptyShelves(), potion: 1, antidote: 1 } },
-    }
-
-    expect(openRequirements(viridianPartly, 1e9)).toMatchObject({
-      town: { id: 'pewter' },
-      missing: ['pokeBall', 'paralyzeHeal'],
-      ready: false,
-    })
-  })
-
-  it('is undefined once every mart is open', () => {
-    expect(openRequirements({ ...chain, martsOwned: 11 }, 1e30)).toBeUndefined()
+    expect(franchiseMultiplier(achieved)).toBeCloseTo(1.04)
   })
 })
 
@@ -228,8 +140,8 @@ describe('clickValue', () => {
     [['barcodeScanner'], 1_000, 11],
     [['secondTill', 'barcodeScanner', 'loyaltyStamps'], 1_000, 22],
     [['barcodeScanner'], 0, 1],
-  ] as const)('with %j at ₽%d/s is ₽%d', (upgrades, salesPerSecond, expected) => {
-    expect(clickValue([...upgrades], salesPerSecond)).toBeCloseTo(expected)
+  ] as const)('with %j at ₽%d/s is ₽%d', (upgrades, income, expected) => {
+    expect(clickValue([...upgrades], income)).toBeCloseTo(expected)
   })
 })
 
@@ -281,17 +193,5 @@ describe('formatWholeMoney', () => {
     [45_600_000_000, '45,600,000,000'],
   ])('shows %d as %s', (value, expected) => {
     expect(formatWholeMoney(value)).toBe(expected)
-  })
-})
-
-describe('offlineEarnings', () => {
-  it.each([
-    [10, 600, 600, 3_000],
-    [10, 2 * 3600, 2 * 3600, 36_000],
-    [10, 8 * 3600, 2 * 3600, 36_000],
-    [10, -30, 0, 0],
-    [0, 3600, 3600, 0],
-  ])('at ₽%d/s for %ds counts %ds and earns ₽%d', (salesPerSecond, away, seconds, earned) => {
-    expect(offlineEarnings(salesPerSecond, away)).toEqual({ seconds, earned })
   })
 })

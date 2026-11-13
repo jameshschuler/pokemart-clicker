@@ -6,9 +6,6 @@ export interface LifetimeStats {
   salesEarnings: number
   awayEarnings: number
   totalSpent: number
-  itemsStocked: number
-  /** One per purchase of 10+ Poké Balls at once, like the games' free Premier Ball. */
-  premierBalls: number
 }
 
 export function emptyStats(startedAt: number): LifetimeStats {
@@ -20,8 +17,6 @@ export function emptyStats(startedAt: number): LifetimeStats {
     salesEarnings: 0,
     awayEarnings: 0,
     totalSpent: 0,
-    itemsStocked: 0,
-    premierBalls: 0,
   }
 }
 

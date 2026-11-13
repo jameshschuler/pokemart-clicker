@@ -1,25 +1,30 @@
 import { describe, expect, it } from 'vitest'
-import { ITEMS, itemNames, itemSpriteUrl } from './items'
+import { ITEMS, itemSpriteUrl } from './items'
 
-describe('item sprites', () => {
-  it('gives every item its own PokeAPI sprite', () => {
-    const urls = new Set(ITEMS.map(itemSpriteUrl))
+describe('items', () => {
+  it('have unique ids', () => {
+    expect(new Set(ITEMS.map((item) => item.id)).size).toBe(ITEMS.length)
+  })
 
-    expect(urls.size).toBe(ITEMS.length)
-    for (const url of urls) {
-      expect(url).toMatch(
-        /^https:\/\/raw\.githubusercontent\.com\/PokeAPI\/sprites\/.+\/[a-z-]+\.png$/,
-      )
+  it('all have a real shop price', () => {
+    for (const item of ITEMS) {
+      expect(item.price).toBeGreaterThanOrEqual(100)
     }
   })
 })
 
-describe('itemNames', () => {
-  it.each([
-    [[], ''],
-    [['potion'], 'Potion'],
-    [['potion', 'pokeBall'], 'Potion, Poké Ball'],
-  ] as const)('lists %j as "%s"', (itemIds, expected) => {
-    expect(itemNames([...itemIds])).toBe(expected)
+describe('item sprites', () => {
+  it('point at PokeAPI item sprites', () => {
+    for (const item of ITEMS) {
+      expect(itemSpriteUrl(item)).toMatch(
+        /^https:\/\/raw\.githubusercontent\.com\/PokeAPI\/sprites\/.+\/[a-z-]+\.png$/,
+      )
+    }
+  })
+
+  it('give each item its own sprite, except TMs which share their type', () => {
+    const nonTms = ITEMS.filter((item) => !item.name.startsWith('TM'))
+
+    expect(new Set(nonTms.map(itemSpriteUrl)).size).toBe(nonTms.length)
   })
 })

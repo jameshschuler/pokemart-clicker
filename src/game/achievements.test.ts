@@ -5,7 +5,7 @@ import {
   tiersReached,
   TOTAL_ACHIEVEMENT_TIERS,
 } from './achievements'
-import { emptyShelves, initialState } from './store'
+import { initialState } from './store'
 
 const CUSTOMERS = ACHIEVEMENTS.find((achievement) => achievement.id === 'customersServed')!
 
@@ -25,7 +25,7 @@ describe('achievement data', () => {
   })
 
   it('counts every tier in the total', () => {
-    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(16)
+    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(11)
   })
 })
 
@@ -53,16 +53,13 @@ describe('checkAchievements', () => {
     const base = initialState()
     const state = {
       ...base,
-      martsOwned: 3,
-      marts: { ...base.marts, pallet: { ...emptyShelves(), potion: 100 } },
+      producers: { flyer: 1 },
       stats: { ...base.stats, clicks: 1_500 },
     }
 
     expect(checkAchievements(state)).toMatchObject({
       customersServed: 2,
-      martsOpened: 1,
-      firstRestock: 1,
-      potionHoarder: 1,
+      flyersPosted: 1,
       totalEarned: 0,
     })
   })
@@ -71,9 +68,35 @@ describe('checkAchievements', () => {
     const base = initialState()
     const state = {
       ...base,
-      achievements: { ...base.achievements, martsOpened: 3 },
+      achievements: { ...base.achievements, customersServed: 3 },
     }
 
-    expect(checkAchievements(state).martsOpened).toBe(3)
+    expect(checkAchievements(state).customersServed).toBe(3)
+  })
+})
+
+describe('flyers posted', () => {
+  it.each([
+    [0, 0],
+    [1, 1],
+    [10, 2],
+    [25, 3],
+  ])('with %i flyers is %i tiers', (flyer, expected) => {
+    const base = initialState()
+
+    expect(checkAchievements({ ...base, producers: { flyer } }).flyersPosted).toBe(expected)
+  })
+})
+
+describe('Idle Hands', () => {
+  it.each([
+    [999_999, 0],
+    [1e6, 1],
+  ])('with ₽%d earned while away is %i', (awayEarnings, expected) => {
+    const base = initialState()
+
+    expect(checkAchievements({ ...base, stats: { ...base.stats, awayEarnings } }).idleHands).toBe(
+      expected,
+    )
   })
 })
