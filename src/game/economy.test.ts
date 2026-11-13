@@ -1,26 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import {
   bulkCost,
-  chainBonus,
-  chainMultiplier,
-  chainSalesPerSecond,
   clickValue,
-  isStocked,
+  franchiseBonus,
+  franchiseMultiplier,
+  incomePerSecond,
   maxAffordable,
-  openRequirements,
+  producerIncome,
   purchaseQuote,
-  milestoneLevel,
-  martSales,
+  salesPerSecond,
 } from './economy'
 import { formatDuration, formatMoney, formatPercent, formatRate, formatWholeMoney } from './format'
-import { ITEMS, type ItemId } from './items'
-import { emptyOrders, initialState } from './store'
+import { PRODUCERS } from './producers'
+import { emptyProducers, initialState } from './store'
 
-const RATES = new Map(ITEMS.map((item) => [item.id, item.salesPerSecond]))
-
-function rate(itemId: ItemId): number {
-  return RATES.get(itemId) ?? 0
-}
+const [FLYER] = PRODUCERS
 
 describe('bulkCost', () => {
   it('matches summing single purchases', () => {
@@ -63,155 +57,78 @@ describe('purchaseQuote', () => {
   })
 })
 
-describe('milestoneLevel', () => {
-  const stock = ['potion', 'antidote'] as const
+describe('salesPerSecond', () => {
+  it('adds up every producer', () => {
+    expect(salesPerSecond({ ...emptyProducers(), flyer: 3 })).toBeCloseTo(0.3)
+  })
 
-  it.each([
-    [0, 50, 0],
-    [9, 50, 0],
-    [10, 10, 1],
-    [25, 49, 2],
-    [100, 100, 4],
-  ])('with %i and %i units → level %i', (potions, antidotes, expected) => {
-    const orders = { ...emptyOrders(), potion: potions, antidote: antidotes }
-
-    expect(milestoneLevel(orders, [...stock])).toBe(expected)
+  it('is zero with no producers', () => {
+    expect(salesPerSecond(emptyProducers())).toBe(0)
   })
 })
 
-describe('martSales', () => {
-  it('sums one mart', () => {
-    expect(martSales({ ...emptyOrders(), potion: 10, pokeBall: 2 })).toBeCloseTo(
-      10 * rate('potion') + 2 * rate('pokeBall'),
-    )
+describe('producerIncome', () => {
+  const franchise = initialState()
+
+  it('is a flyer’s sales times the sale value', () => {
+    expect(producerIncome(franchise, FLYER)).toBeCloseTo(0.1)
   })
 
-  it('is zero with no orders', () => {
-    expect(martSales(emptyOrders())).toBe(0)
-  })
-})
-
-describe('chainSalesPerSecond', () => {
-  const chain = initialState()
-  const ordered = {
-    ...chain,
-    marts: {
-      ...chain.marts,
-      pallet: { ...emptyOrders(), potion: 10 },
-      viridian: { ...emptyOrders(), potion: 5, pokeBall: 2 },
-    },
-  }
-
-  const base = 15 * rate('potion') + 2 * rate('pokeBall')
-
-  it('sums every mart', () => {
-    expect(chainSalesPerSecond(ordered)).toBeCloseTo(base * 1.05)
-  })
-
-  it('applies the mart bonus on top', () => {
-    expect(chainSalesPerSecond({ ...ordered, martsOwned: 3 })).toBeCloseTo(base * 1.15)
-  })
-
-  it('is zero with nothing ordered', () => {
-    expect(chainSalesPerSecond({ ...chain, martsOwned: 11 })).toBe(0)
+  it('includes the franchise bonus', () => {
+    expect(producerIncome({ ...franchise, martsOwned: 3 }, FLYER)).toBeCloseTo(0.11)
   })
 })
 
-describe('chainBonus', () => {
+describe('incomePerSecond', () => {
+  const franchise = initialState()
+
+  it('is sales per second times the sale value, with the franchise bonus', () => {
+    const grown = { ...franchise, martsOwned: 2, producers: { ...emptyProducers(), flyer: 10 } }
+
+    expect(incomePerSecond(grown)).toBeCloseTo(1.05)
+  })
+
+  it('is zero with no producers', () => {
+    expect(incomePerSecond({ ...franchise, martsOwned: 11 })).toBe(0)
+  })
+})
+
+describe('franchiseBonus', () => {
   it('splits the bonus by source', () => {
-    const chain = initialState()
-    const atMilestone = {
-      marts: { ...chain.marts, pallet: { ...emptyOrders(), potion: 25 } },
+    const franchise = initialState()
+    const grown = {
+      ...franchise,
       martsOwned: 3,
-      achievements: { ...chain.achievements, customersServed: 2, idleHands: 1 },
+      achievements: { ...franchise.achievements, customersServed: 2, idleHands: 1 },
     }
 
-    expect(chainBonus(atMilestone)).toEqual({
-      extraMarts: 2,
-      milestones: 2,
+    expect(franchiseBonus(grown)).toEqual({
+      extraTowns: 2,
       achievementTiers: 3,
-      fromMarts: 0.1,
-      fromMilestones: 0.1,
+      fromTowns: 0.1,
       fromAchievements: 0.03,
     })
   })
 })
 
-describe('chainMultiplier', () => {
-  const chain = initialState()
+describe('franchiseMultiplier', () => {
+  const franchise = initialState()
 
   it.each([
     [1, 1],
     [2, 1.05],
     [11, 1.5],
-  ])('with %i marts and no milestones is %d', (martsOwned, expected) => {
-    expect(chainMultiplier({ ...chain, martsOwned })).toBeCloseTo(expected)
-  })
-
-  it('adds +5% per order milestone', () => {
-    const atMilestone = {
-      ...chain,
-      marts: { ...chain.marts, pallet: { ...emptyOrders(), potion: 25 } },
-    }
-
-    expect(chainMultiplier(atMilestone)).toBeCloseTo(1.1)
+  ])('with %i towns is %d', (martsOwned, expected) => {
+    expect(franchiseMultiplier({ ...franchise, martsOwned })).toBeCloseTo(expected)
   })
 
   it('adds +1% per achievement tier', () => {
     const achieved = {
-      ...chain,
-      achievements: { ...chain.achievements, totalEarned: 3, martsOpened: 1 },
+      ...franchise,
+      achievements: { ...franchise.achievements, totalEarned: 3, idleHands: 1 },
     }
 
-    expect(chainMultiplier(achieved)).toBeCloseTo(1.04)
-  })
-})
-
-describe('openRequirements', () => {
-  const chain = initialState()
-  const palletOrdered = {
-    ...chain,
-    marts: { ...chain.marts, pallet: { ...emptyOrders(), potion: 15 } },
-  }
-
-  it('is ready with coins, sales and every item ordered in the newest mart', () => {
-    expect(openRequirements(palletOrdered, 180)).toMatchObject({
-      town: { id: 'viridian' },
-      hasCoins: true,
-      hasSales: true,
-      missing: [],
-      ready: true,
-    })
-  })
-
-  it.each([
-    ['coins', 15, 179],
-    ['sales', 14, 1e9],
-  ])('is not ready without enough %s', (_, potions, coins) => {
-    const pallet = {
-      ...chain,
-      marts: { ...chain.marts, pallet: { ...emptyOrders(), potion: potions } },
-    }
-
-    expect(openRequirements(pallet, coins)?.ready).toBe(false)
-  })
-
-  it('lists items the newest mart does not order yet', () => {
-    const viridianPartly = {
-      ...palletOrdered,
-      martsOwned: 2,
-      marts: { ...palletOrdered.marts, viridian: { ...emptyOrders(), potion: 1, antidote: 1 } },
-    }
-
-    expect(openRequirements(viridianPartly, 1e9)).toMatchObject({
-      town: { id: 'pewter' },
-      missing: ['pokeBall', 'paralyzeHeal'],
-      ready: false,
-    })
-  })
-
-  it('is undefined once every mart is open', () => {
-    expect(openRequirements({ ...chain, martsOwned: 11 }, 1e30)).toBeUndefined()
+    expect(franchiseMultiplier(achieved)).toBeCloseTo(1.04)
   })
 })
 
@@ -223,8 +140,8 @@ describe('clickValue', () => {
     [['barcodeScanner'], 1_000, 11],
     [['secondTill', 'barcodeScanner', 'loyaltyStamps'], 1_000, 22],
     [['barcodeScanner'], 0, 1],
-  ] as const)('with %j at ₽%d/s is ₽%d', (upgrades, salesPerSecond, expected) => {
-    expect(clickValue([...upgrades], salesPerSecond)).toBeCloseTo(expected)
+  ] as const)('with %j at ₽%d/s is ₽%d', (upgrades, income, expected) => {
+    expect(clickValue([...upgrades], income)).toBeCloseTo(expected)
   })
 })
 
@@ -276,16 +193,5 @@ describe('formatWholeMoney', () => {
     [45_600_000_000, '45,600,000,000'],
   ])('shows %d as %s', (value, expected) => {
     expect(formatWholeMoney(value)).toBe(expected)
-  })
-})
-
-describe('isStocked', () => {
-  it.each([
-    [{ potion: 25 }, ['potion'], true],
-    [{ potion: 24 }, ['potion'], false],
-    [{ potion: 100, antidote: 25 }, ['potion', 'antidote'], true],
-    [{ potion: 100, antidote: 0 }, ['potion', 'antidote'], false],
-  ] as const)('%j selling %j is %s', (orders, stock, expected) => {
-    expect(isStocked({ ...emptyOrders(), ...orders }, [...stock])).toBe(expected)
   })
 })

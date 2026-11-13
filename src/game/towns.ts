@@ -196,7 +196,6 @@ export const TOWNS: Town[] = [
 ]
 
 const ROUTE_ORDER = new Map(TOWNS.map((town, index) => [town.id, index]))
-const STOCK_BY_TOWN = new Map(TOWNS.map((town) => [town.id, new Set(town.stock)]))
 
 export function townById(townId: TownId): Town {
   return TOWNS[ROUTE_ORDER.get(townId) ?? 0]
@@ -204,26 +203,6 @@ export function townById(townId: TownId): Town {
 
 export function isTownOpen(townId: TownId, martsOwned: number): boolean {
   return (ROUTE_ORDER.get(townId) ?? TOWNS.length) < martsOwned
-}
-
-export function stocks(townId: TownId, itemId: ItemId): boolean {
-  return STOCK_BY_TOWN.get(townId)?.has(itemId) ?? false
-}
-
-/** The most recently opened mart. */
-export function currentTown(martsOwned: number): Town {
-  return TOWNS[martsOwned - 1]
-}
-
-export function nextTown(martsOwned: number): Town | undefined {
-  return TOWNS[martsOwned]
-}
-
-/** Items a town's mart is the first on the route to sell. */
-export function newStock(town: Town): ItemId[] {
-  const earlier = new Set(TOWNS.slice(0, ROUTE_ORDER.get(town.id)).flatMap((stop) => stop.stock))
-
-  return town.stock.filter((itemId) => !earlier.has(itemId))
 }
 
 export function storeName(town: Town): string {

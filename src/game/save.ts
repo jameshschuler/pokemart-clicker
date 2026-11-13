@@ -1,16 +1,14 @@
 import { emptyAchievements, type EarnedAchievements } from './achievements'
-import type { Marts } from './economy'
-import type { LifetimeStats } from './stats'
-import { ITEMS } from './items'
+import type { Producers } from './economy'
+import { PRODUCERS } from './producers'
 import { initialState, useGame, type GameState } from './store'
-import { isTownOpen, TOWNS, type TownId } from './towns'
+import { TOWNS } from './towns'
 import { REGISTER_UPGRADES } from './upgrades'
 
 const UPGRADE_IDS = new Set(REGISTER_UPGRADES.map((upgrade) => upgrade.id))
-const TOWN_IDS = new Set<TownId>(TOWNS.map((town) => town.id))
 
 const SAVE_KEY = 'mart-clicker:save'
-const SAVE_VERSION = 2
+const SAVE_VERSION = 4
 const AUTOSAVE_MS = 10_000
 
 interface SaveFile {
@@ -20,24 +18,15 @@ interface SaveFile {
 }
 
 export function saveGame() {
-  const {
-    coins,
-    marts,
-    martsOwned,
-    selectedMart,
-    registerUpgrades,
-    stats,
-    achievements,
-    paidUntil,
-  } = useGame.getState()
+  const { coins, producers, martsOwned, registerUpgrades, stats, achievements, paidUntil } =
+    useGame.getState()
   const file: SaveFile = {
     version: SAVE_VERSION,
     savedAt: Date.now(),
     state: {
       coins,
-      marts,
+      producers,
       martsOwned,
-      selectedMart,
       registerUpgrades,
       stats,
       achievements,
@@ -57,26 +46,11 @@ function clamp(value: unknown, min: number, max: number, fallback: number): numb
     : fallback
 }
 
-/** Fills in towns and items added since the save was written and drops items that no longer exist. */
-function mergeMarts(saved: Partial<Marts>): Marts {
+/** Fills in producers added since the save was written and drops ones that no longer exist. */
+function mergeProducers(saved: Partial<Producers> = {}): Producers {
   return Object.fromEntries(
-    TOWNS.map((town) => [
-      town.id,
-      Object.fromEntries(
-        ITEMS.map((item) => [item.id, clamp(saved[town.id]?.[item.id], 0, Infinity, 0)]),
-      ),
-    ]),
-  ) as Marts
-}
-
-/** Fills in new stats. Saves from before daily orders called units ordered "items stocked". */
-function mergeStats(
-  base: LifetimeStats,
-  saved: Partial<LifetimeStats> & { itemsStocked?: number } = {},
-): LifetimeStats {
-  const { itemsStocked, ...rest } = saved
-
-  return { ...base, unitsOrdered: itemsStocked ?? base.unitsOrdered, ...rest }
+    PRODUCERS.map((producer) => [producer.id, clamp(saved[producer.id], 0, Infinity, 0)]),
+  ) as Producers
 }
 
 /** Keeps earned tiers for achievements that still exist; new ones start unearned. */
@@ -105,10 +79,6 @@ export function loadGame() {
 
     const base = initialState()
     const martsOwned = Math.floor(clamp(file.state.martsOwned, 1, TOWNS.length, 1))
-    const selectedMart: TownId =
-      TOWN_IDS.has(file.state.selectedMart) && isTownOpen(file.state.selectedMart, martsOwned)
-        ? file.state.selectedMart
-        : base.selectedMart
     const now = Date.now()
     const savedAt = clamp(file.savedAt, 0, now, now)
 
@@ -117,12 +87,11 @@ export function loadGame() {
       ...file.state,
       coins: clamp(file.state.coins, 0, Infinity, 0),
       martsOwned,
-      selectedMart,
-      marts: mergeMarts(file.state.marts),
+      producers: mergeProducers(file.state.producers),
       registerUpgrades: (file.state.registerUpgrades ?? []).filter((upgradeId) =>
         UPGRADE_IDS.has(upgradeId),
       ),
-      stats: mergeStats(base.stats, file.state.stats),
+      stats: { ...base.stats, ...file.state.stats },
       achievements: mergeAchievements(file.state.achievements),
       paidUntil: clamp(file.state.paidUntil, 0, now, savedAt),
     })

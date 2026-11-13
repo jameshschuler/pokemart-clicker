@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { loadGame } from './save'
 import { initialState, useGame } from './store'
 
-function storeSave(state: object, savedAt: number | undefined = Date.now()) {
-  const storage = new Map([['mart-clicker:save', JSON.stringify({ version: 2, savedAt, state })]])
+function storeSave(state: object, savedAt: number | undefined = Date.now(), version = 4) {
+  const storage = new Map([['mart-clicker:save', JSON.stringify({ version, savedAt, state })]])
   vi.stubGlobal('localStorage', {
     getItem: (key: string) => storage.get(key) ?? null,
   })
@@ -15,6 +15,16 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers()
+})
+
+describe('loadGame versions', () => {
+  it('starts fresh from a save made before the franchise', () => {
+    storeSave({ ...initialState(), coins: 5_000 }, Date.now(), 3)
+
+    loadGame()
+
+    expect(useGame.getState().coins).toBe(0)
+  })
 })
 
 describe('loadGame achievements', () => {
@@ -50,12 +60,6 @@ describe('loadGame repairs bad values', () => {
   it.each([
     ['too few marts', { martsOwned: 0 }, { martsOwned: 1 }],
     ['too many marts', { martsOwned: 40 }, { martsOwned: 11 }],
-    ['a town that no longer exists', { selectedMart: 'route1' }, { selectedMart: 'pallet' }],
-    [
-      'a town not yet opened',
-      { martsOwned: 2, selectedMart: 'pewter' },
-      { selectedMart: 'pallet' },
-    ],
     ['negative coins', { coins: -50 }, { coins: 0 }],
     ['non-numeric coins', { coins: 'lots' }, { coins: 0 }],
   ])('fixes %s', (_, saved, expected) => {
@@ -66,27 +70,16 @@ describe('loadGame repairs bad values', () => {
     expect(useGame.getState()).toMatchObject(expected)
   })
 
-  it('keeps orders past 100 a day', () => {
-    const state = initialState()
-    storeSave({
-      ...state,
-      marts: { ...state.marts, pallet: { ...state.marts.pallet, potion: 120 } },
-    })
+  it.each([
+    ['a negative count', -3, 0],
+    ['a non-numeric count', 'many', 0],
+    ['a large count', 120, 120],
+  ])('loads %s of flyers as %s', (_, saved, expected) => {
+    storeSave({ ...initialState(), producers: { flyer: saved, clerk: 9 } })
 
     loadGame()
 
-    expect(useGame.getState().marts.pallet.potion).toBe(120)
-  })
-
-  it('carries items stocked over to units ordered', () => {
-    const state = initialState()
-    const { unitsOrdered: _, ...oldStats } = state.stats
-    storeSave({ ...state, stats: { ...oldStats, itemsStocked: 42 } })
-
-    loadGame()
-
-    expect(useGame.getState().stats.unitsOrdered).toBe(42)
-    expect(useGame.getState().stats).not.toHaveProperty('itemsStocked')
+    expect(useGame.getState().producers).toEqual({ flyer: expected })
   })
 })
 
@@ -99,7 +92,7 @@ describe('loadGame offline earnings', () => {
     return {
       ...state,
       paidUntil,
-      marts: { ...state.marts, pallet: { ...state.marts.pallet, potion: 9 } },
+      producers: { flyer: 10 },
     }
   }
 
@@ -109,7 +102,7 @@ describe('loadGame offline earnings', () => {
 
     loadGame()
 
-    expect(useGame.getState()).toMatchObject({ coins: 540, paidUntil: NOW })
+    expect(useGame.getState()).toMatchObject({ coins: 600, paidUntil: NOW })
   })
 
   it('falls back to the save time for saves from before paidUntil', () => {
@@ -118,7 +111,7 @@ describe('loadGame offline earnings', () => {
 
     loadGame()
 
-    expect(useGame.getState().coins).toBeCloseTo(540)
+    expect(useGame.getState().coins).toBeCloseTo(600)
   })
 
   it.each([

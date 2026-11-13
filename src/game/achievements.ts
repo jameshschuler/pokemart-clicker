@@ -1,31 +1,17 @@
-import { isStocked, milestoneLevel, STOCKED_ORDER } from './economy'
 import { totalEarned } from './stats'
 import type { GameState } from './store'
-import { TOWNS, type Town, type TownId } from './towns'
 import { REGISTER_UPGRADES } from './upgrades'
 
 export type AchievementId =
-  | 'customersServed'
-  | 'totalEarned'
-  | 'martsOpened'
-  | 'firstMilestone'
-  | 'allRegisterUpgrades'
-  | 'unitsOrdered'
-  | 'idleHands'
-  | 'premierCustomer'
-  | `${TownId}Stocked`
-  | 'kantoStocked'
+  'customersServed' | 'totalEarned' | 'allRegisterUpgrades' | 'flyersPosted' | 'idleHands'
 
-export type AchievementCategory =
-  'register' | 'earnings' | 'chain' | 'milestones' | 'upgrades' | 'orders' | 'hidden'
+export type AchievementCategory = 'register' | 'earnings' | 'upgrades' | 'producers' | 'hidden'
 
 export const CATEGORY_LABELS: Record<AchievementCategory, string> = {
   register: 'Register',
   earnings: 'Earnings',
-  chain: 'Chain',
-  milestones: 'Milestones',
   upgrades: 'Upgrades',
-  orders: 'Orders',
+  producers: 'Producers',
   hidden: 'Hidden',
 }
 
@@ -45,21 +31,6 @@ export interface Achievement {
 
 /** Tiers earned per achievement. */
 export type EarnedAchievements = Record<AchievementId, number>
-
-function townStocked(town: Town): Achievement {
-  return {
-    id: `${town.id}Stocked`,
-    category: 'milestones',
-    tiers: [
-      {
-        goal: 1,
-        name: `${town.name} Stocked`,
-        description: `Order ${STOCKED_ORDER} a day of every item in ${town.name}.`,
-      },
-    ],
-    progress: (state) => (isStocked(state.marts[town.id], town.stock) ? 1 : 0),
-  }
-}
 
 export const ACHIEVEMENTS: Achievement[] = [
   {
@@ -103,46 +74,6 @@ export const ACHIEVEMENTS: Achievement[] = [
     progress: (state) => totalEarned(state.stats),
   },
   {
-    id: 'martsOpened',
-    category: 'chain',
-    tiers: [
-      { goal: 3, name: 'Small Chain', description: 'Own 3 marts.' },
-      { goal: 6, name: 'Regional Chain', description: 'Own 6 marts.' },
-      {
-        goal: TOWNS.length,
-        name: 'Kanto Chain',
-        description: 'Own a mart in every Kanto town.',
-      },
-    ],
-    progress: (state) => state.martsOwned,
-  },
-  {
-    id: 'firstMilestone',
-    category: 'milestones',
-    tiers: [
-      {
-        goal: 1,
-        name: 'Steady Supply',
-        description: 'Reach an order milestone in any mart.',
-      },
-    ],
-    progress: (state) =>
-      Math.max(...TOWNS.map((town) => milestoneLevel(state.marts[town.id], town.stock))),
-  },
-  ...TOWNS.map(townStocked),
-  {
-    id: 'kantoStocked',
-    category: 'milestones',
-    tiers: [
-      {
-        goal: TOWNS.length,
-        name: 'Kanto Stocked',
-        description: `Order ${STOCKED_ORDER} a day of every item in all ${TOWNS.length} Kanto marts.`,
-      },
-    ],
-    progress: (state) => TOWNS.filter((town) => isStocked(state.marts[town.id], town.stock)).length,
-  },
-  {
     id: 'allRegisterUpgrades',
     category: 'upgrades',
     tiers: [
@@ -155,18 +86,14 @@ export const ACHIEVEMENTS: Achievement[] = [
     progress: (state) => state.registerUpgrades.length,
   },
   {
-    id: 'unitsOrdered',
-    category: 'orders',
+    id: 'flyersPosted',
+    category: 'producers',
     tiers: [
-      { goal: 100, name: 'Stock Boy', description: 'Order 100 units a day in total.' },
-      { goal: 1_000, name: 'Warehouse Run', description: 'Order 1,000 units a day in total.' },
-      {
-        goal: 10_000,
-        name: 'Supply Chain',
-        description: 'Order 10,000 units a day in total.',
-      },
+      { goal: 1, name: 'Grand Opening', description: 'Post a flyer.' },
+      { goal: 10, name: 'Papered the Town', description: 'Post 10 flyers.' },
+      { goal: 25, name: 'Every Lamppost', description: 'Post 25 flyers.' },
     ],
-    progress: (state) => state.stats.unitsOrdered,
+    progress: (state) => state.producers.flyer,
   },
   {
     id: 'idleHands',
@@ -179,18 +106,6 @@ export const ACHIEVEMENTS: Achievement[] = [
       },
     ],
     progress: (state) => state.stats.awayEarnings,
-  },
-  {
-    id: 'premierCustomer',
-    category: 'hidden',
-    tiers: [
-      {
-        goal: 1,
-        name: 'Premier Customer',
-        description: 'Buy 10 Poké Balls at once. The clerk throws in a Premier Ball.',
-      },
-    ],
-    progress: (state) => state.stats.premierBalls,
   },
 ]
 

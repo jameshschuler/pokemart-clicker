@@ -1,11 +1,10 @@
 import { useRef, useState, type MouseEvent } from 'react'
 import { Button } from '@/components/ui/button'
-import { chainSalesPerSecond, clickValue } from '@/game/economy'
+import { clickValue, incomePerSecond } from '@/game/economy'
 import { formatMoney } from '@/game/format'
 import { useGame } from '@/game/store'
-import { OpenNextTown } from '@/components/map/OpenNextTown'
 import { Balance } from './Balance'
-import { ChainBonus } from './ChainBonus'
+import { FranchiseBonus } from './FranchiseBonus'
 import { RegisterUpgrades } from './RegisterUpgrades'
 
 interface Popup {
@@ -18,9 +17,7 @@ interface Popup {
 const POPUP_MS = 800
 
 export function Counter() {
-  const perClick = useGame((state) =>
-    clickValue(state.registerUpgrades, chainSalesPerSecond(state)),
-  )
+  const perClick = useGame((state) => clickValue(state.registerUpgrades, incomePerSecond(state)))
   const serveCustomer = useGame((state) => state.serveCustomer)
   const [popups, setPopups] = useState<Popup[]>([])
   const nextId = useRef(0)
@@ -64,11 +61,9 @@ export function Counter() {
         ))}
       </Button>
 
-      <OpenNextTown />
-
       <RegisterUpgrades />
 
-      <ChainBonus />
+      <FranchiseBonus />
     </section>
   )
 }

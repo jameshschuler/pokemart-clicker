@@ -1,20 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { ITEMS, itemNames, itemSpriteUrl } from './items'
+import { ITEMS, itemSpriteUrl } from './items'
 
 describe('items', () => {
   it('have unique ids', () => {
     expect(new Set(ITEMS.map((item) => item.id)).size).toBe(ITEMS.length)
   })
 
-  it('are listed in cost order', () => {
-    for (let index = 1; index < ITEMS.length; index++) {
-      expect(ITEMS[index].baseCost).toBeGreaterThanOrEqual(ITEMS[index - 1].baseCost)
-    }
-  })
-
-  it('all earn something', () => {
+  it('all have a real shop price', () => {
     for (const item of ITEMS) {
-      expect(item.salesPerSecond).toBeGreaterThan(0)
+      expect(item.price).toBeGreaterThanOrEqual(100)
     }
   })
 })
@@ -32,15 +26,5 @@ describe('item sprites', () => {
     const nonTms = ITEMS.filter((item) => !item.name.startsWith('TM'))
 
     expect(new Set(nonTms.map(itemSpriteUrl)).size).toBe(nonTms.length)
-  })
-})
-
-describe('itemNames', () => {
-  it.each([
-    [[], ''],
-    [['potion'], 'Potion'],
-    [['potion', 'pokeBall'], 'Potion, Poké Ball'],
-  ] as const)('lists %j as "%s"', (itemIds, expected) => {
-    expect(itemNames([...itemIds])).toBe(expected)
   })
 })

@@ -15,7 +15,8 @@ Cookie Clicker–style idle game: you own the PokéMart in Pallet Town and expan
 - [x] Iteration 1 — register click, Potion + Poké Ball, passive sales, buy ×1/×10/Max, autosave
 - [x] Iteration 2 — towns: full Kanto item ladder gated by towns, route map, open next town
 - [ ] Iteration 3 — upgrades: register upgrades, lifetime stats and base achievements done; town perks, item doublings, tier synergies to go
-- [ ] Next: Iteration 6 — mart scene, pulled forward
+- [ ] Franchise rework (see "Rework: the PokéMart franchise" in DESIGN.md): step 1 built (Flyer, franchise-wide producers); next item upgrades, then register upgrades, towns
+- [ ] Iteration 6 — mart scene, pulled forward
 - [ ] 4 staff · 5 flash sales · 7 polish · 8 prestige · 9 Johto · 10 Hoenn
 
 Open design questions: retro handheld look vs. clean dashboard (currently default shadcn theme); pacing target (~2h to clear Kanto, unconfirmed).
@@ -33,7 +34,7 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 ## Code layout
 
 - `src/game/` — game logic, no React except `useGameLoop.ts`
-  - `items.ts` item data · `towns.ts` Kanto route, stock and open costs · `upgrades.ts` register upgrades · `stats.ts` lifetime stats · `achievements.ts` achievements · `economy.ts` pure math (costs, sales/s, click value) · `format.ts` number formatting
+  - `items.ts` item catalog and FRLG prices · `producers.ts` producers (Flyer) · `towns.ts` Kanto route, stock and open costs · `upgrades.ts` register upgrades · `stats.ts` lifetime stats · `achievements.ts` achievements · `economy.ts` pure math (costs, sales/s, click value) · `format.ts` number formatting
   - `store.ts` zustand store (state + actions) · `save.ts` localStorage save/load/autosave · `useGameLoop.ts` rAF loop
 - `src/components/` — UI, organized by feature folder; `components/ui/` are shadcn primitives (base-nova style, Base UI)
 - `src/hooks/` — React hooks other than the game loop

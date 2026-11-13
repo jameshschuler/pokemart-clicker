@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { chainSalesPerSecond } from '@/game/economy'
+import { incomePerSecond } from '@/game/economy'
 import { formatMoney, formatRate, formatWholeMoney } from '@/game/format'
 import { useGame } from '@/game/store'
 
 export function Balance() {
   const coins = useGame((state) => state.coins)
-  const perSecond = useGame((state) => chainSalesPerSecond(state))
+  const perSecond = useGame((state) => incomePerSecond(state))
   const [showWhole, setShowWhole] = useState(false)
 
   return (

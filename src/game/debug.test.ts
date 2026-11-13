@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { debugCommands } from './debug'
-import { emptyOrders, initialState, useGame } from './store'
+import { initialState, useGame } from './store'
 
 beforeEach(() => {
   useGame.setState(initialState())
@@ -28,12 +28,10 @@ describe('debug commands', () => {
   })
 
   it('away pays the time in full and opens the report', () => {
-    useGame.setState((state) => ({
-      marts: { ...state.marts, pallet: { ...emptyOrders(), potion: 5 } },
-    }))
+    useGame.setState({ producers: { flyer: 10 } })
 
     debugCommands.away(1200)
 
-    expect(useGame.getState()).toMatchObject({ coins: 600, awayReport: { seconds: 1200 } })
+    expect(useGame.getState()).toMatchObject({ coins: 1200, awayReport: { seconds: 1200 } })
   })
 })

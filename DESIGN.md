@@ -8,41 +8,80 @@ Personal project; not for distribution.
 
 Pokémon Dollars (₽). Start with ₽0.
 
-## Rework: producers (draft)
+## Rework: the PokéMart franchise (draft)
 
-**Status:** proposed, not built. It replaces "items as the thing you buy" in the sections below once it's built.
+**Status:** build step 1 done (the Flyer). See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
 
-**Why.** Today you buy items, and items earn money on their own. But an item is the product, not something that makes sales, so every label we tried (stock, displays, daily orders) felt wrong. In Cookie Clicker you never buy cookies. You buy grandmas and farms that bake them. Here you'll buy **producers**: things that serve customers. Items become what those customers buy.
+**The idea.** You're building a **PokéMart franchise** across Kanto. You're the owner growing the brand, not the clerk behind one counter.
 
-**One producer at a time.** Each one is built and playtested before the next is designed. The first is the Clerk.
+**Why.** Items used to be the thing you bought, and they earned money on their own. But an item is the product, not something that makes sales, so every label we tried (stock, displays, daily orders, clerks) felt wrong. In Cookie Clicker you never buy cookies; you buy grandmas and farms. Here you buy **producers**: the resources that run and grow the franchise. **Items** become upgrades that make every sale worth more.
 
-### How a sale works
+### How money works
 
-- A **customer** buys from the mart's **catalog** (its items) and spends the **basket**: the ₽ a customer spends on average.
-- Each mart's catalog and prices come from its FireRed/LeafGreen Poké Mart, as the town stock does today (Serebii's Gen III Pokéarth pages). Nothing is invented except Pallet: FRLG has no Pallet mart, so Pallet keeps its one-item catalog, Potions at ₽300, as the starting shop. A Pallet customer spends ₽300.
-- Income = customers served per second × basket × the chain bonus.
-- Clicking the register serves one customer yourself, so a click is worth one basket (₽300 at the start).
+- A **sale** starts at ₽1. Numbers start small, like any idle game; real FireRed/LeafGreen prices are flavor, not money math. (A ₽300 Potion per click felt like too much, and nothing on screen counts items anymore, so the old "big money from a handful of items" mismatch can't come back.)
+- **Producers** each add sales per second. Income = franchise sales per second × sale value × the franchise bonus.
+- **Clicking the register** makes one sale yourself.
+- Everything is **franchise-wide**: one producer list, one sale value. "180 Delivery Bikes" reads as a fleet across Kanto, not a crowded shop.
 
-### Clerk (producer 1)
+### Producers
+
+Bought repeatedly, +15% cost each, counted across the whole franchise. **One at a time:** each is built and playtested before the next is designed. Planned ladder, cheap to expensive:
+
+| # | Producer | How it adds sales |
+|---|---|---|
+| 1 | Flyer | Local marketing brings walk-ins |
+| 2 | Delivery Bike | Brings orders to trainers on the routes |
+| 3 | Vending Machine | Sells on its own, day and night |
+| 4 | Pokémon Center Counter | A PokéMart counter inside each Center |
+| 5 | Franchise Store | A new PokéMart run by a franchisee, paying you royalties |
+| 6 | Delivery Truck | A regional supply fleet |
+| 7 | Distribution Center | Keeps every store stocked |
+| 8 | Department Store | A flagship, like Celadon |
+
+**Flyer (producer 1):**
 
 | | |
 |---|---|
-| What it does | Serves 1 customer every 10 seconds (0.1 customers/s) |
-| Cost | ₽4,500 (15 customers' worth), +15% per hire |
-| Counted | Per mart, like item pricing today. A new mart starts hiring at base cost again |
-| In Pallet | ₽30/s each. The first clerk pays for itself in 150s |
+| What it does | 0.1 sales per second (one walk-in every 10 seconds) |
+| Cost | ₽15 (15 sales), +15% each |
+| At the start | ₽0.1/s each; the first flyer pays for itself in 150s |
 
-Clerks are hired per mart, so the counts stay believable: a busy mart might have 20–40 clerks by the time you leave it, not 200.
+### Items: franchise upgrades
 
-### First playable slice
+- Each town's FRLG Poké Mart items are **one-time upgrades**. Buying one ("Stock Antidotes") makes every sale worth more, as a multiplier ("+10% sale value"), like Cookie Clicker's flavors.
+- Pallet has no Poké Mart in FRLG; the franchise starts there selling Potions, the one invented catalog.
+- Real prices can set the order and rough size of the bonus (a Full Restore boosts more than an Antidote). Exact values come from the pacing sim.
 
-Pallet only: the register, the Clerk, and Potions at ₽300. Everything else (other towns, items, upgrades, achievements) stays hidden until it's moved onto the new model. Saves reset.
+### Towns: where the franchise expands
 
-### Open questions
+Opening a town unlocks its items to stock, may unlock the next producer, and adds the franchise bonus (+5% per town). The route map shows how far the franchise reaches. Open costs and requirements get redesigned for the new model.
 
-- What the second producer is (ideas: Vending Machine, Delivery Bike).
-- How new items grow the basket. One idea: each item adds its price × the share of customers who also pick one up (half of customers grab an Antidote → +₽50 per customer).
-- What happens to item milestones, "Stocked" achievements and per-item upgrades.
+### Register upgrades (to redesign)
+
+About checkout instead of abstract doublings:
+
+- **Sales per click:** Second Till serves two customers at once; a Machop bagger speeds you up.
+- **Upselling:** register customers spend more ("Want a Repel with that?").
+- **Working the queue:** the old "+% of ₽/s per click" returns as serving people from the line, so clicking stays useful late.
+
+### Build order
+
+1. Swap the Clerk for the **Flyer**, make producers franchise-wide, hide the catalog. Saves reset. (Done.)
+2. Item upgrades: stock items to raise the sale value; the catalog returns as the list of upgrades.
+3. Register upgrades on the new model.
+4. Towns: opening, requirements and the next producers.
+
+### What's in the code now (step 1)
+
+The base game: the register, the Flyer, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 4.
+
+- One franchise-wide producer list. The Flyer row has ×1 / ×10 / Max, how many you own and ₽/s each.
+- A sale is worth ₽1 until item upgrades exist.
+- New achievement: Grand Opening / Papered the Town / Every Lamppost for 1 / 10 / 25 flyers.
+- Not shown until their build step: the route map and opening towns, the catalog and items, Celadon's floors. Item and town data (FRLG prices, stock, floors) stay in the code for those steps.
+- Removed: per-mart producers, buying items, order milestones, Premier Customer, the order and Stocked achievements.
+- Register upgrades are shown numbered ("Register upgrade 1" to 17) with no names, at the table's costs, one at a time in order (no town gating while towns are hidden). They get redesigned in step 3.
+- Hidden with towns: the "1 of 11 towns" header count, the towns line in the franchise bonus, and the Small/Regional/Kanto Chain achievements (11 achievement tiers in the base game).
 
 ## Core loop
 

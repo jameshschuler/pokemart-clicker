@@ -8,11 +8,10 @@ export function LifetimeStats() {
     ['Time played', formatDuration(stats.playSeconds)],
     ['Customers served', stats.clicks.toLocaleString('en-US')],
     ['Earned at the register', `₽${formatMoney(stats.clickEarnings)}`],
-    ['Earned from sales', `₽${formatMoney(stats.salesEarnings)}`],
+    ['Earned from producers', `₽${formatMoney(stats.salesEarnings)}`],
     ['Earned while away', `₽${formatMoney(stats.awayEarnings)}`],
     ['Total earned', `₽${formatMoney(totalEarned(stats))}`],
     ['Total spent', `₽${formatMoney(stats.totalSpent)}`],
-    ['Units ordered a day', stats.unitsOrdered.toLocaleString('en-US')],
     ['Opened your first mart', new Date(stats.startedAt).toLocaleDateString()],
   ]
 

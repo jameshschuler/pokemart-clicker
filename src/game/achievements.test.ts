@@ -5,7 +5,7 @@ import {
   tiersReached,
   TOTAL_ACHIEVEMENT_TIERS,
 } from './achievements'
-import { emptyOrders, initialState } from './store'
+import { initialState } from './store'
 
 const CUSTOMERS = ACHIEVEMENTS.find((achievement) => achievement.id === 'customersServed')!
 
@@ -25,7 +25,7 @@ describe('achievement data', () => {
   })
 
   it('counts every tier in the total', () => {
-    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(28)
+    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(11)
   })
 })
 
@@ -53,15 +53,13 @@ describe('checkAchievements', () => {
     const base = initialState()
     const state = {
       ...base,
-      martsOwned: 3,
-      marts: { ...base.marts, pallet: { ...emptyOrders(), potion: 25 } },
+      producers: { flyer: 1 },
       stats: { ...base.stats, clicks: 1_500 },
     }
 
     expect(checkAchievements(state)).toMatchObject({
       customersServed: 2,
-      martsOpened: 1,
-      firstMilestone: 1,
+      flyersPosted: 1,
       totalEarned: 0,
     })
   })
@@ -70,49 +68,23 @@ describe('checkAchievements', () => {
     const base = initialState()
     const state = {
       ...base,
-      achievements: { ...base.achievements, martsOpened: 3 },
+      achievements: { ...base.achievements, customersServed: 3 },
     }
 
-    expect(checkAchievements(state).martsOpened).toBe(3)
+    expect(checkAchievements(state).customersServed).toBe(3)
   })
 })
 
-describe('stocked achievements', () => {
-  it('earns a town when every item it sells is ordered 25 a day, but not Kanto', () => {
+describe('flyers posted', () => {
+  it.each([
+    [0, 0],
+    [1, 1],
+    [10, 2],
+    [25, 3],
+  ])('with %i flyers is %i tiers', (flyer, expected) => {
     const base = initialState()
-    const state = { ...base, marts: { ...base.marts, pallet: { ...emptyOrders(), potion: 25 } } }
 
-    expect(checkAchievements(state)).toMatchObject({
-      palletStocked: 1,
-      viridianStocked: 0,
-      kantoStocked: 0,
-    })
-  })
-
-  it('does not earn a town with one order below 25', () => {
-    const base = initialState()
-    const viridian = {
-      ...emptyOrders(),
-      potion: 100,
-      antidote: 25,
-      pokeBall: 25,
-      paralyzeHeal: 24,
-    }
-    const state = { ...base, marts: { ...base.marts, viridian } }
-
-    expect(checkAchievements(state).viridianStocked).toBe(0)
-  })
-
-  it('earns Kanto when every mart is stocked', () => {
-    const base = initialState()
-    const full = Object.fromEntries(
-      Object.keys(base.marts).map((townId) => [
-        townId,
-        Object.fromEntries(Object.keys(emptyOrders()).map((itemId) => [itemId, 25])),
-      ]),
-    ) as typeof base.marts
-
-    expect(checkAchievements({ ...base, marts: full }).kantoStocked).toBe(1)
+    expect(checkAchievements({ ...base, producers: { flyer } }).flyersPosted).toBe(expected)
   })
 })
 
