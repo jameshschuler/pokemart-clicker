@@ -8,8 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { OFFLINE_CAP_SECONDS, OFFLINE_RATE } from '@/game/economy'
-import { formatDuration, formatMoney, formatPercent } from '@/game/format'
+import { OFFLINE_CAP_SECONDS } from '@/game/economy'
+import { formatDuration, formatMoney } from '@/game/format'
 import { useGame } from '@/game/store'
 
 export function WelcomeBackDialog() {
@@ -23,14 +23,14 @@ export function WelcomeBackDialog() {
         <DialogHeader>
           <DialogTitle>Welcome back</DialogTitle>
           <DialogDescription>
-            Your shelves kept selling while you were away, at {formatPercent(OFFLINE_RATE)} of the
-            usual rate for up to {formatDuration(OFFLINE_CAP_SECONDS)}.
+            Your marts kept selling while you were away, for up to{' '}
+            {formatDuration(OFFLINE_CAP_SECONDS)}.
           </DialogDescription>
         </DialogHeader>
         {report && (
           <dl className="flex flex-col gap-1.5 text-sm tabular-nums">
             <div className="flex justify-between gap-3">
-              <dt className="text-muted-foreground">Time counted</dt>
+              <dt className="text-muted-foreground">Time away</dt>
               <dd>{formatDuration(report.seconds)}</dd>
             </div>
             <div className="flex justify-between gap-3">

@@ -17,7 +17,7 @@ export function BuyButton({ item, owned, amount }: BuyButtonProps) {
     useShallow((state) => {
       const quote = purchaseQuote(item.baseCost, owned, state.coins, amount)
 
-      return { ...quote, affordable: quote.count > 0 && quote.cost <= state.coins }
+      return { ...quote, affordable: quote.cost <= state.coins }
     }),
   )
   const buyItem = useGame((state) => state.buyItem)
@@ -31,7 +31,7 @@ export function BuyButton({ item, owned, amount }: BuyButtonProps) {
       variant="outline"
       disabled={!affordable}
       onClick={() => buyItem(selectedMart, item.id, amount)}
-      aria-label={`Buy ${count} ${item.name} for ${price}`}
+      aria-label={`Order ${count} more ${item.name} a day for ${price}`}
       className="h-auto min-w-20 flex-col items-stretch gap-0.5 px-3 py-1.5 tabular-nums"
     >
       <span className="text-xs text-muted-foreground">{label}</span>

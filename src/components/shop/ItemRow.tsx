@@ -1,5 +1,5 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { chainMultiplier, SHELF_CAPACITY } from '@/game/economy'
+import { chainMultiplier } from '@/game/economy'
 import { formatRate } from '@/game/format'
 import { itemSpriteUrl, type Item } from '@/game/items'
 import { useGame } from '@/game/store'
@@ -36,20 +36,17 @@ export function ItemRow({ item }: ItemRowProps) {
       </div>
       <div className="flex min-w-12 shrink-0 flex-col items-end gap-0.5 tabular-nums">
         <span className="font-mono text-2xl leading-none font-semibold">{owned}</span>
-        <span className="text-xs text-muted-foreground">
-          /{SHELF_CAPACITY}
-          <span className="sr-only"> on the shelf</span>
-        </span>
+        <span className="text-xs text-muted-foreground">a day</span>
       </div>
-      {owned >= SHELF_CAPACITY ? (
-        <span className="ml-auto shrink-0 text-sm text-muted-foreground">Full</span>
-      ) : (
-        <div role="group" aria-label={`Buy ${item.name}`} className="ml-auto flex shrink-0 gap-1">
-          {BUY_AMOUNTS.map((amount) => (
-            <BuyButton key={amount} item={item} owned={owned} amount={amount} />
-          ))}
-        </div>
-      )}
+      <div
+        role="group"
+        aria-label={`Order more ${item.name}`}
+        className="ml-auto flex shrink-0 gap-1"
+      >
+        {BUY_AMOUNTS.map((amount) => (
+          <BuyButton key={amount} item={item} owned={owned} amount={amount} />
+        ))}
+      </div>
     </div>
   )
 }

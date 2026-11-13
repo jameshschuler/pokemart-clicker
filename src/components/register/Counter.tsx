@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { chainSalesPerSecond, clickValue } from '@/game/economy'
 import { formatMoney } from '@/game/format'
 import { useGame } from '@/game/store'
+import { OpenNextTown } from '@/components/map/OpenNextTown'
 import { Balance } from './Balance'
 import { ChainBonus } from './ChainBonus'
 import { RegisterUpgrades } from './RegisterUpgrades'
@@ -62,6 +63,8 @@ export function Counter() {
           </span>
         ))}
       </Button>
+
+      <OpenNextTown />
 
       <RegisterUpgrades />
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { lowestShelf, MILESTONE_BONUS, RESTOCK_MILESTONES, restockLevel } from '@/game/economy'
+import { MILESTONE_BONUS, milestoneLevel, ORDER_MILESTONES, smallestOrder } from '@/game/economy'
 import { formatPercent } from '@/game/format'
 import { useGame } from '@/game/store'
 import { townById } from '@/game/towns'
@@ -9,16 +9,16 @@ import { cn } from '@/lib/utils'
 
 const CELEBRATE_MS = 3_000
 
-export function RestockStatus() {
-  const { selectedMart, level, lowest } = useGame(
+export function OrderMilestones() {
+  const { selectedMart, level, smallest } = useGame(
     useShallow((state) => {
       const { stock } = townById(state.selectedMart)
-      const shelves = state.marts[state.selectedMart]
+      const orders = state.marts[state.selectedMart]
 
       return {
         selectedMart: state.selectedMart,
-        level: restockLevel(shelves, stock),
-        lowest: lowestShelf(shelves, stock),
+        level: milestoneLevel(orders, stock),
+        smallest: smallestOrder(orders, stock),
       }
     }),
   )
@@ -38,7 +38,7 @@ export function RestockStatus() {
     return () => clearTimeout(timeout)
   }, [selectedMart, level])
 
-  const next = RESTOCK_MILESTONES[level]
+  const next = ORDER_MILESTONES[level]
   const earned = formatPercent(MILESTONE_BONUS * level)
 
   return (
@@ -49,14 +49,19 @@ export function RestockStatus() {
       )}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="font-medium">Restock milestones</span>
+        <span className="font-medium">Order milestones</span>
         <span className={cn('text-muted-foreground', celebrating && 'font-medium text-foreground')}>
-          {celebrating ? `Milestone reached! +${formatPercent(MILESTONE_BONUS)} chain bonus` : `+${earned} earned`}
+          {celebrating
+            ? `Milestone reached! +${formatPercent(MILESTONE_BONUS)} chain bonus`
+            : `+${earned} earned`}
         </span>
       </div>
       <div className="flex items-center gap-3">
-        <div className="flex shrink-0" aria-label={`${level} of ${RESTOCK_MILESTONES.length} milestones`}>
-          {RESTOCK_MILESTONES.map((milestone, index) => {
+        <div
+          className="flex shrink-0"
+          aria-label={`${level} of ${ORDER_MILESTONES.length} milestones`}
+        >
+          {ORDER_MILESTONES.map((milestone, index) => {
             const isReached = index < level
 
             return (
@@ -70,8 +75,8 @@ export function RestockStatus() {
                   />
                 </TooltipTrigger>
                 <TooltipContent className="tabular-nums">
-                  {milestone} of each item · +{formatPercent(MILESTONE_BONUS)}
-                  {isReached ? ' · reached' : ` · lowest shelf ${lowest}/${milestone}`}
+                  {milestone} a day of each item · +{formatPercent(MILESTONE_BONUS)}
+                  {isReached ? ' · reached' : ` · smallest order ${smallest}/${milestone}`}
                 </TooltipContent>
               </Tooltip>
             )
@@ -79,8 +84,8 @@ export function RestockStatus() {
         </div>
         <p className="min-w-0 flex-1 truncate text-right text-muted-foreground">
           {next === undefined
-            ? 'Fully restocked'
-            : `Stock ${next} of each item for +${formatPercent(MILESTONE_BONUS)} · lowest shelf ${lowest}/${next}`}
+            ? 'Every milestone reached'
+            : `Order ${next} a day of each item for +${formatPercent(MILESTONE_BONUS)} · smallest ${smallest}/${next}`}
         </p>
       </div>
     </div>

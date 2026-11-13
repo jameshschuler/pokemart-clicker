@@ -9,15 +9,37 @@ export type ItemId =
   | 'escapeRope'
   | 'superPotion'
   | 'iceHeal'
+  | 'freshWater'
+  | 'sodaPop'
+  | 'lemonade'
+  | 'xSpeed'
+  | 'xSpecial'
   | 'superRepel'
+  | 'xAttack'
+  | 'xDefend'
+  | 'direHit'
   | 'greatBall'
-  | 'xItems'
+  | 'guardSpec'
+  | 'xAccuracy'
+  | 'tmRoar'
+  | 'tmDig'
+  | 'fireStone'
+  | 'thunderStone'
+  | 'waterStone'
+  | 'leafStone'
   | 'revive'
-  | 'evolutionStones'
+  | 'tmBrickBreak'
+  | 'tmSecretPower'
+  | 'tmAttract'
+  | 'hpUp'
+  | 'protein'
+  | 'iron'
+  | 'calcium'
+  | 'zinc'
+  | 'carbos'
   | 'fullHeal'
-  | 'tms'
+  | 'tmHyperBeam'
   | 'maxRepel'
-  | 'vitamins'
   | 'hyperPotion'
   | 'ultraBall'
   | 'maxPotion'
@@ -29,7 +51,7 @@ export interface Item {
   description: string
   baseCost: number
   salesPerSecond: number
-  /** PokeAPI sprite name; grouped items use one member (X Attack, Protein, a Normal TM, Fire Stone). */
+  /** PokeAPI sprite name. TMs share their move type's sprite. */
   sprite: string
 }
 
@@ -121,12 +143,76 @@ export const ITEMS: Item[] = [
     sprite: 'ice-heal',
   },
   {
+    id: 'freshWater',
+    name: 'Fresh Water',
+    description: 'Restores 50 HP. The rooftop vending machine sells out on hot days.',
+    baseCost: 46_000,
+    salesPerSecond: 78,
+    sprite: 'fresh-water',
+  },
+  {
+    id: 'sodaPop',
+    name: 'Soda Pop',
+    description: 'Restores 60 HP. Fizzy, and the machine sometimes drops a second can.',
+    baseCost: 68_000,
+    salesPerSecond: 120,
+    sprite: 'soda-pop',
+  },
+  {
+    id: 'lemonade',
+    name: 'Lemonade',
+    description: 'Restores 80 HP. The priciest drink on the roof, and the one to trade a guard.',
+    baseCost: 80_000,
+    salesPerSecond: 140,
+    sprite: 'lemonade',
+  },
+  {
+    id: 'xSpeed',
+    name: 'X Speed',
+    description: 'Raises Speed for one battle. Outrun anything for a few turns.',
+    baseCost: 80_000,
+    salesPerSecond: 140,
+    sprite: 'x-speed',
+  },
+  {
+    id: 'xSpecial',
+    name: 'X Special',
+    description: 'Raises Special for one battle. Psychic types love it.',
+    baseCost: 80_000,
+    salesPerSecond: 140,
+    sprite: 'x-sp-atk',
+  },
+  {
     id: 'superRepel',
     name: 'Super Repel',
     description: 'Lasts longer. Rock Tunnel is dark and very long.',
     baseCost: 89_000,
     salesPerSecond: 190,
     sprite: 'super-repel',
+  },
+  {
+    id: 'xAttack',
+    name: 'X Attack',
+    description: 'Raises Attack for one battle. Trainers buy them by the handful before a Gym.',
+    baseCost: 110_000,
+    salesPerSecond: 200,
+    sprite: 'x-attack',
+  },
+  {
+    id: 'xDefend',
+    name: 'X Defend',
+    description: 'Raises Defense for one battle. Popular before Brock and his Onix.',
+    baseCost: 130_000,
+    salesPerSecond: 220,
+    sprite: 'x-defense',
+  },
+  {
+    id: 'direHit',
+    name: 'Dire Hit',
+    description: 'Raises the critical-hit ratio for one battle.',
+    baseCost: 150_000,
+    salesPerSecond: 250,
+    sprite: 'dire-hit',
   },
   {
     id: 'greatBall',
@@ -137,12 +223,68 @@ export const ITEMS: Item[] = [
     sprite: 'great-ball',
   },
   {
-    id: 'xItems',
-    name: 'X Items',
-    description: 'X Attack, X Speed, Dire Hit and friends. One battle, big boost.',
-    baseCost: 350_000,
-    salesPerSecond: 600,
-    sprite: 'x-attack',
+    id: 'guardSpec',
+    name: 'Guard Spec.',
+    description: 'Stops stat drops for five turns. Mist in a bottle.',
+    baseCost: 160_000,
+    salesPerSecond: 270,
+    sprite: 'guard-spec',
+  },
+  {
+    id: 'xAccuracy',
+    name: 'X Accuracy',
+    description: 'Raises accuracy for one battle. Pair it with a one-hit move and pray.',
+    baseCost: 220_000,
+    salesPerSecond: 370,
+    sprite: 'x-accuracy',
+  },
+  {
+    id: 'tmRoar',
+    name: 'TM05 Roar',
+    description: 'Scares off wild Pokémon. Cheapest TM on the counter.',
+    baseCost: 250_000,
+    salesPerSecond: 210,
+    sprite: 'tm-normal',
+  },
+  {
+    id: 'tmDig',
+    name: 'TM28 Dig',
+    description: 'Burrow underground, then strike. Also gets you out of caves.',
+    baseCost: 500_000,
+    salesPerSecond: 430,
+    sprite: 'tm-ground',
+  },
+  {
+    id: 'fireStone',
+    name: 'Fire Stone',
+    description: 'Evolves Vulpix, Growlithe and Eevee. Warm to the touch.',
+    baseCost: 550_000,
+    salesPerSecond: 650,
+    sprite: 'fire-stone',
+  },
+  {
+    id: 'thunderStone',
+    name: 'Thunder Stone',
+    description: 'Evolves Pikachu and Eevee. Crackles on the shelf.',
+    baseCost: 550_000,
+    salesPerSecond: 650,
+    sprite: 'thunder-stone',
+  },
+  {
+    id: 'waterStone',
+    name: 'Water Stone',
+    description: 'Evolves Shellder, Staryu, Poliwhirl and Eevee.',
+    baseCost: 550_000,
+    salesPerSecond: 650,
+    sprite: 'water-stone',
+  },
+  {
+    id: 'leafStone',
+    name: 'Leaf Stone',
+    description: 'Evolves Gloom, Weepinbell and Exeggcute.',
+    baseCost: 550_000,
+    salesPerSecond: 650,
+    sprite: 'leaf-stone',
   },
   {
     id: 'revive',
@@ -153,12 +295,76 @@ export const ITEMS: Item[] = [
     sprite: 'revive',
   },
   {
-    id: 'evolutionStones',
-    name: 'Evolution Stones',
-    description: 'Fire, Water, Thunder and Leaf. Collectors want the full set.',
-    baseCost: 1.1e6,
-    salesPerSecond: 1_300,
-    sprite: 'fire-stone',
+    id: 'tmBrickBreak',
+    name: 'TM31 Brick Break',
+    description: 'Smashes through Reflect and Light Screen.',
+    baseCost: 750_000,
+    salesPerSecond: 640,
+    sprite: 'tm-fighting',
+  },
+  {
+    id: 'tmSecretPower',
+    name: 'TM43 Secret Power',
+    description: 'Its side effect changes with where you battle.',
+    baseCost: 750_000,
+    salesPerSecond: 640,
+    sprite: 'tm-normal',
+  },
+  {
+    id: 'tmAttract',
+    name: 'TM45 Attract',
+    description: 'Infatuates foes of the opposite gender.',
+    baseCost: 750_000,
+    salesPerSecond: 640,
+    sprite: 'tm-normal',
+  },
+  {
+    id: 'hpUp',
+    name: 'HP Up',
+    description: 'Raises base HP. Pricey, and serious trainers buy them by the box.',
+    baseCost: 1.5e6,
+    salesPerSecond: 1_000,
+    sprite: 'hp-up',
+  },
+  {
+    id: 'protein',
+    name: 'Protein',
+    description: 'Raises base Attack.',
+    baseCost: 1.5e6,
+    salesPerSecond: 1_000,
+    sprite: 'protein',
+  },
+  {
+    id: 'iron',
+    name: 'Iron',
+    description: 'Raises base Defense.',
+    baseCost: 1.5e6,
+    salesPerSecond: 1_000,
+    sprite: 'iron',
+  },
+  {
+    id: 'calcium',
+    name: 'Calcium',
+    description: 'Raises base Special Attack.',
+    baseCost: 1.5e6,
+    salesPerSecond: 1_000,
+    sprite: 'calcium',
+  },
+  {
+    id: 'zinc',
+    name: 'Zinc',
+    description: 'Raises base Special Defense.',
+    baseCost: 1.5e6,
+    salesPerSecond: 1_000,
+    sprite: 'zinc',
+  },
+  {
+    id: 'carbos',
+    name: 'Carbos',
+    description: 'Raises base Speed.',
+    baseCost: 1.5e6,
+    salesPerSecond: 1_000,
+    sprite: 'carbos',
   },
   {
     id: 'fullHeal',
@@ -169,11 +375,11 @@ export const ITEMS: Item[] = [
     sprite: 'full-heal',
   },
   {
-    id: 'tms',
-    name: 'TMs',
-    description: 'Teach a move in seconds. The department store can barely keep up.',
-    baseCost: 2e6,
-    salesPerSecond: 1_700,
+    id: 'tmHyperBeam',
+    name: 'TM15 Hyper Beam',
+    description: 'The most powerful move money can buy. Needs a turn to recharge.',
+    baseCost: 1.9e6,
+    salesPerSecond: 1_600,
     sprite: 'tm-normal',
   },
   {
@@ -183,14 +389,6 @@ export const ITEMS: Item[] = [
     baseCost: 2.8e6,
     salesPerSecond: 3_000,
     sprite: 'max-repel',
-  },
-  {
-    id: 'vitamins',
-    name: 'Vitamins',
-    description: 'HP Up, Protein, Iron, Carbos and Calcium. Pricey, and they fly off the shelf.',
-    baseCost: 3.6e6,
-    salesPerSecond: 2_500,
-    sprite: 'protein',
   },
   {
     id: 'hyperPotion',

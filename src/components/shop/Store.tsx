@@ -1,39 +1,31 @@
-import { chainMultiplier, shelfSales } from '@/game/economy'
+import { chainMultiplier, martSales } from '@/game/economy'
 import { formatRate } from '@/game/format'
-import { ITEMS } from '@/game/items'
 import { useGame } from '@/game/store'
-import { stocks, townById } from '@/game/towns'
-import { ItemRow } from './ItemRow'
-import { OpenNextTown } from './OpenNextTown'
-import { RestockStatus } from './RestockStatus'
+import { storeFloors, storeItems, storeName, townById } from '@/game/towns'
+import { OrderMilestones } from './OrderMilestones'
+import { FloorTabs } from './FloorTabs'
+import { ItemList } from './ItemList'
 
 export function Store() {
   const selectedMart = useGame((state) => state.selectedMart)
-  const martSales = useGame(
-    (state) => shelfSales(state.marts[state.selectedMart]) * chainMultiplier(state),
+  const salesPerSecond = useGame(
+    (state) => martSales(state.marts[state.selectedMart]) * chainMultiplier(state),
   )
-  const stock = ITEMS.filter((item) => stocks(selectedMart, item.id))
+  const town = townById(selectedMart)
+  const floors = storeFloors(town)
 
   return (
     <section className="flex flex-col gap-4">
       <div className="min-w-0">
-        <h2 className="truncate text-base font-medium">{townById(selectedMart).name} Mart</h2>
+        <h2 className="truncate text-base font-medium">{storeName(town)}</h2>
         <p className="truncate text-sm text-muted-foreground tabular-nums">
-          ₽{formatRate(martSales)} per second
+          ₽{formatRate(salesPerSecond)} per second
         </p>
       </div>
 
-      <RestockStatus />
+      <OrderMilestones />
 
-      <ul className="flex flex-col gap-2">
-        {stock.map((item) => (
-          <li key={item.id}>
-            <ItemRow item={item} />
-          </li>
-        ))}
-      </ul>
-
-      <OpenNextTown />
+      {floors ? <FloorTabs key={town.id} floors={floors} /> : <ItemList items={storeItems(town)} />}
     </section>
   )
 }

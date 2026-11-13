@@ -1,4 +1,6 @@
+import { CheckIcon } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
+import { isStocked } from '@/game/economy'
 import { useGame } from '@/game/store'
 import { TOWNS } from '@/game/towns'
 import { cn } from '@/lib/utils'
@@ -12,6 +14,9 @@ export function RouteMap() {
       selectedMart: state.selectedMart,
       selectMart: state.selectMart,
     })),
+  )
+  const stocked = useGame(
+    useShallow((state) => TOWNS.map((town) => isStocked(state.marts[town.id], town.stock))),
   )
   const progress = (martsOwned - 1) / (TOWNS.length - 1)
 
@@ -36,25 +41,33 @@ export function RouteMap() {
             const isOpen = index < martsOwned
             const isNext = index === martsOwned
             const isSelected = town.id === selectedMart
+            const townStocked = stocked[index]
 
             return (
               <li key={town.id} className="min-w-0">
                 <button
                   type="button"
-                  title={town.name}
+                  title={townStocked ? `${town.name} · stocked` : town.name}
                   disabled={!isOpen}
                   aria-current={isSelected ? 'page' : undefined}
                   onClick={() => selectMart(town.id)}
                   className="flex w-full min-w-0 flex-col items-center gap-1.5 rounded-md py-1 outline-none focus-visible:ring-1 focus-visible:ring-ring enabled:hover:bg-muted/50"
                 >
-                  <span
-                    className={cn(
-                      'size-3 rounded-full border-2 bg-background',
-                      isOpen ? 'border-foreground bg-foreground' : 'border-border',
-                      isNext && 'border-primary',
-                      isSelected && 'ring-2 ring-ring/50',
-                    )}
-                  />
+                  <span className="flex h-3 items-center justify-center">
+                    <span
+                      className={cn(
+                        'flex shrink-0 items-center justify-center rounded-full border-2 bg-background',
+                        townStocked ? 'size-4.5' : 'size-3',
+                        isOpen ? 'border-foreground bg-foreground' : 'border-border',
+                        isNext && 'border-primary',
+                        isSelected && 'ring-2 ring-ring/50',
+                      )}
+                    >
+                      {townStocked && (
+                        <CheckIcon className="size-3 text-background" strokeWidth={3} aria-hidden />
+                      )}
+                    </span>
+                  </span>
                   <span
                     className={cn(
                       'w-full truncate px-0.5 text-center text-[11px]',

@@ -6,20 +6,21 @@ import { REGISTER_UPGRADES, type RegisterUpgradeId } from './upgrades'
 export const COST_GROWTH = 1.15
 export const BASE_CLICK_VALUE = 1
 export const MART_BONUS = 0.05
-export const SHELF_CAPACITY = 100
-export const RESTOCK_MILESTONES = [10, 25, 50, 100]
+export const ORDER_MILESTONES = [10, 25, 50, 100]
+/** A town counts as stocked once every item's daily order reaches this. */
+export const STOCKED_ORDER = 25
 export const MILESTONE_BONUS = 0.05
 export const ACHIEVEMENT_BONUS = 0.01
-export const OFFLINE_RATE = 0.5
 export const OFFLINE_CAP_SECONDS = 2 * 3600
-/** The first minute of any gap pays full rate; only time past it counts as away. */
-export const FULL_RATE_SECONDS = 60
+/** Gaps this long count as time away: paid in full up to the cap, with a welcome back report. */
+export const AWAY_SECONDS = 15 * 60
 
 export type BuyAmount = 1 | 10 | 'max'
 
-export type Shelves = Record<ItemId, number>
+/** Units a day ordered of each item, for one mart. */
+export type Orders = Record<ItemId, number>
 
-export type Marts = Record<TownId, Shelves>
+export type Marts = Record<TownId, Orders>
 
 /** Everything that sets chain-wide sales. */
 export interface Chain {
@@ -50,31 +51,31 @@ export function maxAffordable(baseCost: number, owned: number, coins: number): n
   return bulkCost(baseCost, owned, count) > coins ? count - 1 : count
 }
 
-/**
- * Units and price for a purchase, never past shelf capacity. For 'max', buys at least one so the
- * price shown is the next unit. A full shelf quotes zero units.
- */
+/** Units and price for a purchase. For 'max', buys at least one so the price shown is the next unit. */
 export function purchaseQuote(
   baseCost: number,
   owned: number,
   coins: number,
   amount: BuyAmount,
 ): { count: number; cost: number } {
-  const wanted = amount === 'max' ? Math.max(1, maxAffordable(baseCost, owned, coins)) : amount
-  const count = Math.min(wanted, SHELF_CAPACITY - owned)
+  const count = amount === 'max' ? Math.max(1, maxAffordable(baseCost, owned, coins)) : amount
 
   return { count, cost: bulkCost(baseCost, owned, count) }
 }
 
-export function lowestShelf(shelves: Shelves, stock: ItemId[]): number {
-  return Math.min(...stock.map((itemId) => shelves[itemId]))
+export function smallestOrder(orders: Orders, stock: ItemId[]): number {
+  return Math.min(...stock.map((itemId) => orders[itemId]))
 }
 
-/** How many restock milestones a mart has hit: every item it sells at 10, 25, 50, then 100 units. */
-export function restockLevel(shelves: Shelves, stock: ItemId[]): number {
-  const lowest = lowestShelf(shelves, stock)
+export function isStocked(orders: Orders, stock: ItemId[]): boolean {
+  return smallestOrder(orders, stock) >= STOCKED_ORDER
+}
 
-  return RESTOCK_MILESTONES.filter((milestone) => lowest >= milestone).length
+/** How many order milestones a mart has hit: every item it sells at 10, 25, 50, then 100 a day. */
+export function milestoneLevel(orders: Orders, stock: ItemId[]): number {
+  const smallest = smallestOrder(orders, stock)
+
+  return ORDER_MILESTONES.filter((milestone) => smallest >= milestone).length
 }
 
 export interface ChainBonus {
@@ -82,7 +83,7 @@ export interface ChainBonus {
   milestones: number
   achievementTiers: number
   fromMarts: number
-  fromRestocks: number
+  fromMilestones: number
   fromAchievements: number
 }
 
@@ -90,10 +91,13 @@ export function achievementTiers(earned: EarnedAchievements): number {
   return Object.values(earned).reduce((sum, tiers) => sum + tiers, 0)
 }
 
-/** +5% per mart after Pallet, +5% per restock milestone and +1% per achievement tier. */
+/** +5% per mart after Pallet, +5% per order milestone and +1% per achievement tier. */
 export function chainBonus({ marts, martsOwned, achievements }: Chain): ChainBonus {
   const extraMarts = martsOwned - 1
-  const milestones = TOWNS.reduce((sum, town) => sum + restockLevel(marts[town.id], town.stock), 0)
+  const milestones = TOWNS.reduce(
+    (sum, town) => sum + milestoneLevel(marts[town.id], town.stock),
+    0,
+  )
   const tiers = achievementTiers(achievements)
 
   return {
@@ -101,24 +105,24 @@ export function chainBonus({ marts, martsOwned, achievements }: Chain): ChainBon
     milestones,
     achievementTiers: tiers,
     fromMarts: MART_BONUS * extraMarts,
-    fromRestocks: MILESTONE_BONUS * milestones,
+    fromMilestones: MILESTONE_BONUS * milestones,
     fromAchievements: ACHIEVEMENT_BONUS * tiers,
   }
 }
 
 export function chainMultiplier(chain: Chain): number {
-  const { fromMarts, fromRestocks, fromAchievements } = chainBonus(chain)
+  const { fromMarts, fromMilestones, fromAchievements } = chainBonus(chain)
 
-  return 1 + fromMarts + fromRestocks + fromAchievements
+  return 1 + fromMarts + fromMilestones + fromAchievements
 }
 
-/** One mart's shelves, before the chain bonus. */
-export function shelfSales(shelves: Shelves): number {
-  return ITEMS.reduce((sum, item) => sum + item.salesPerSecond * shelves[item.id], 0)
+/** One mart's daily orders, before the chain bonus. */
+export function martSales(orders: Orders): number {
+  return ITEMS.reduce((sum, item) => sum + item.salesPerSecond * orders[item.id], 0)
 }
 
 export function chainSalesPerSecond(chain: Chain): number {
-  const base = Object.values(chain.marts).reduce((sum, shelves) => sum + shelfSales(shelves), 0)
+  const base = Object.values(chain.marts).reduce((sum, orders) => sum + martSales(orders), 0)
 
   return base * chainMultiplier(chain)
 }
@@ -127,7 +131,7 @@ export interface OpenRequirements {
   town: Town
   hasCoins: boolean
   hasSales: boolean
-  /** Items the newest mart has none of; every shelf needs at least one before moving on. */
+  /** Items the newest mart doesn't order yet; every item needs at least one a day before moving on. */
   missing: ItemId[]
   ready: boolean
 }
@@ -172,11 +176,4 @@ export function clickValue(registerUpgrades: RegisterUpgradeId[], salesPerSecond
 export interface AwayReport {
   seconds: number
   earned: number
-}
-
-/** Shelf sales while the game wasn't running: half rate, at most 2 hours. */
-export function offlineEarnings(salesPerSecond: number, secondsAway: number): AwayReport {
-  const seconds = Math.min(Math.max(secondsAway, 0), OFFLINE_CAP_SECONDS)
-
-  return { seconds, earned: salesPerSecond * OFFLINE_RATE * seconds }
 }

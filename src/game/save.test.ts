@@ -66,7 +66,7 @@ describe('loadGame repairs bad values', () => {
     expect(useGame.getState()).toMatchObject(expected)
   })
 
-  it('caps shelves stocked past the shelf limit', () => {
+  it('keeps orders past 100 a day', () => {
     const state = initialState()
     storeSave({
       ...state,
@@ -75,14 +75,25 @@ describe('loadGame repairs bad values', () => {
 
     loadGame()
 
-    expect(useGame.getState().marts.pallet.potion).toBe(100)
+    expect(useGame.getState().marts.pallet.potion).toBe(120)
+  })
+
+  it('carries items stocked over to units ordered', () => {
+    const state = initialState()
+    const { unitsOrdered: _, ...oldStats } = state.stats
+    storeSave({ ...state, stats: { ...oldStats, itemsStocked: 42 } })
+
+    loadGame()
+
+    expect(useGame.getState().stats.unitsOrdered).toBe(42)
+    expect(useGame.getState().stats).not.toHaveProperty('itemsStocked')
   })
 })
 
 describe('loadGame offline earnings', () => {
   const NOW = 1_000_000
 
-  function stockedPallet(paidUntil?: number) {
+  function sellingPallet(paidUntil?: number) {
     const state = initialState()
 
     return {
@@ -94,20 +105,20 @@ describe('loadGame offline earnings', () => {
 
   it('pays for the time since sales were last paid', () => {
     vi.useFakeTimers({ now: NOW })
-    storeSave(stockedPallet(NOW - 600_000), NOW)
+    storeSave(sellingPallet(NOW - 600_000), NOW)
 
     loadGame()
 
-    expect(useGame.getState()).toMatchObject({ coins: 297, paidUntil: NOW })
+    expect(useGame.getState()).toMatchObject({ coins: 540, paidUntil: NOW })
   })
 
   it('falls back to the save time for saves from before paidUntil', () => {
     vi.useFakeTimers({ now: NOW })
-    storeSave(stockedPallet(), NOW - 600_000)
+    storeSave(sellingPallet(), NOW - 600_000)
 
     loadGame()
 
-    expect(useGame.getState().coins).toBeCloseTo(297)
+    expect(useGame.getState().coins).toBeCloseTo(540)
   })
 
   it.each([
@@ -115,7 +126,7 @@ describe('loadGame offline earnings', () => {
     ['a save with no timestamp', undefined],
   ])('pays nothing for %s', (_, savedAt) => {
     vi.useFakeTimers({ now: NOW })
-    storeSave(stockedPallet(), savedAt)
+    storeSave(sellingPallet(), savedAt)
 
     loadGame()
 

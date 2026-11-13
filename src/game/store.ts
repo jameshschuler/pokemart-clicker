@@ -3,14 +3,14 @@ import { checkAchievements, emptyAchievements, type EarnedAchievements } from '.
 import {
   chainSalesPerSecond,
   clickValue,
-  FULL_RATE_SECONDS,
-  offlineEarnings,
+  AWAY_SECONDS,
+  OFFLINE_CAP_SECONDS,
   openRequirements,
   type AwayReport,
   purchaseQuote,
   type BuyAmount,
   type Marts,
-  type Shelves,
+  type Orders,
 } from './economy'
 import { ITEMS, type ItemId } from './items'
 import { emptyStats, type LifetimeStats } from './stats'
@@ -25,7 +25,7 @@ export interface GameState {
   registerUpgrades: RegisterUpgradeId[]
   stats: LifetimeStats
   achievements: EarnedAchievements
-  /** Wall-clock ms that shelf sales have been paid up to. */
+  /** Wall-clock ms that sales have been paid up to. */
   paidUntil: number
   /** Shown once after returning; never saved. */
   awayReport?: AwayReport
@@ -47,14 +47,14 @@ const PREMIER_BALL_BULK = 10
 const ITEM_BY_ID = new Map(ITEMS.map((item) => [item.id, item]))
 const UPGRADE_BY_ID = new Map(REGISTER_UPGRADES.map((upgrade) => [upgrade.id, upgrade]))
 
-export function emptyShelves(): Shelves {
-  return Object.fromEntries(ITEMS.map((item) => [item.id, 0])) as Shelves
+export function emptyOrders(): Orders {
+  return Object.fromEntries(ITEMS.map((item) => [item.id, 0])) as Orders
 }
 
 export function initialState(): GameState {
   return {
     coins: 0,
-    marts: Object.fromEntries(TOWNS.map((town) => [town.id, emptyShelves()])) as Marts,
+    marts: Object.fromEntries(TOWNS.map((town) => [town.id, emptyOrders()])) as Marts,
     martsOwned: 1,
     selectedMart: 'pallet',
     registerUpgrades: [],
@@ -101,19 +101,19 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
       return
     }
 
-    const shelves = marts[townId]
-    const { count, cost } = purchaseQuote(item.baseCost, shelves[itemId], coins, amount)
-    if (count === 0 || cost > coins) {
+    const orders = marts[townId]
+    const { count, cost } = purchaseQuote(item.baseCost, orders[itemId], coins, amount)
+    if (cost > coins) {
       return
     }
 
     const spent = spend(state, cost)
     set({
       ...spent,
-      marts: { ...marts, [townId]: { ...shelves, [itemId]: shelves[itemId] + count } },
+      marts: { ...marts, [townId]: { ...orders, [itemId]: orders[itemId] + count } },
       stats: {
         ...spent.stats,
-        itemsStocked: spent.stats.itemsStocked + count,
+        unitsOrdered: spent.stats.unitsOrdered + count,
         premierBalls: spent.stats.premierBalls + (earnsPremierBall(itemId, count) ? 1 : 0),
       },
     })
@@ -157,22 +157,22 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
 
   tick: (seconds) => {
     const state = get()
-    const salesPerSecond = chainSalesPerSecond(state)
-    const activeSeconds = Math.min(seconds, FULL_RATE_SECONDS)
-    const earned = salesPerSecond * activeSeconds
-    const away = offlineEarnings(salesPerSecond, seconds - activeSeconds)
-    const stats = {
-      ...state.stats,
-      playSeconds: state.stats.playSeconds + activeSeconds,
-      salesEarnings: state.stats.salesEarnings + earned,
-      awayEarnings: state.stats.awayEarnings + away.earned,
-    }
+    const isAway = seconds >= AWAY_SECONDS
+    const paidSeconds = Math.min(Math.max(seconds, 0), OFFLINE_CAP_SECONDS)
+    const earned = chainSalesPerSecond(state) * paidSeconds
+    const stats = isAway
+      ? { ...state.stats, awayEarnings: state.stats.awayEarnings + earned }
+      : {
+          ...state.stats,
+          playSeconds: state.stats.playSeconds + paidSeconds,
+          salesEarnings: state.stats.salesEarnings + earned,
+        }
 
     set({
-      coins: state.coins + earned + away.earned,
+      coins: state.coins + earned,
       stats,
       achievements: checkAchievements({ ...state, stats }),
-      awayReport: away.earned > 0 ? away : state.awayReport,
+      awayReport: isAway && earned > 0 ? { seconds: paidSeconds, earned } : state.awayReport,
     })
   },
 

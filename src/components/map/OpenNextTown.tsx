@@ -9,7 +9,7 @@ import { currentTown, newStock } from '@/game/towns'
 import { RequirementLine } from './RequirementLine'
 
 export function OpenNextTown() {
-  const { town, hasCoins, hasSales, ready, newestMart, shelfCount, missingCount } = useGame(
+  const { town, hasCoins, hasSales, ready, newestMart, itemCount, missingCount } = useGame(
     useShallow((state) => {
       const requirements = openRequirements(state, state.coins)
 
@@ -19,7 +19,7 @@ export function OpenNextTown() {
         hasSales: requirements?.hasSales ?? false,
         ready: requirements?.ready ?? false,
         newestMart: currentTown(state.martsOwned).name,
-        shelfCount: currentTown(state.martsOwned).stock.length,
+        itemCount: currentTown(state.martsOwned).stock.length,
         missingCount: requirements?.missing.length ?? 0,
       }
     }),
@@ -31,7 +31,7 @@ export function OpenNextTown() {
   }
 
   const fresh = newStock(town)
-  const unlocks = fresh.length > 0 ? `New: ${itemNames(fresh)}` : 'No new items, fresh shelves'
+  const unlocks = fresh.length > 0 ? `New: ${itemNames(fresh)}` : 'No new items, fresh prices'
 
   return (
     <Card size="sm" className="bg-muted/30 shadow-none">
@@ -46,7 +46,7 @@ export function OpenNextTown() {
         <div className="flex items-end justify-between gap-3">
           <ul className="flex min-w-0 flex-1 flex-col gap-1 text-xs tabular-nums">
             <RequirementLine met={missingCount === 0}>
-              Stock every shelf in {newestMart} · {shelfCount - missingCount}/{shelfCount}
+              Order every item in {newestMart} · {itemCount - missingCount}/{itemCount}
             </RequirementLine>
             <RequirementLine met={hasSales}>
               Chain sales ₽{formatRate(town.requiredSalesPerSecond)}/s

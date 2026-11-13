@@ -1,19 +1,19 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { ITEMS } from './items'
-import { emptyShelves, initialState, useGame } from './store'
+import { emptyOrders, initialState, useGame } from './store'
 
 beforeEach(() => {
   useGame.setState(initialState())
 })
 
-function stockPallet(potions: number) {
+function orderPotions(potions: number) {
   const state = useGame.getState()
-  useGame.setState({ marts: { ...state.marts, pallet: { ...emptyShelves(), potion: potions } } })
+  useGame.setState({ marts: { ...state.marts, pallet: { ...emptyOrders(), potion: potions } } })
 }
 
 describe('openNextTown', () => {
   it('opens Viridian, charges its cost and switches to it', () => {
-    stockPallet(15)
+    orderPotions(15)
     useGame.setState({ coins: 200 })
 
     useGame.getState().openNextTown()
@@ -22,7 +22,7 @@ describe('openNextTown', () => {
   })
 
   it('needs enough chain sales, not just coins', () => {
-    stockPallet(14)
+    orderPotions(14)
     useGame.setState({ coins: 10_000 })
 
     useGame.getState().openNextTown()
@@ -31,7 +31,7 @@ describe('openNextTown', () => {
   })
 
   it('needs enough coins, not just sales', () => {
-    stockPallet(15)
+    orderPotions(15)
     useGame.setState({ coins: 179 })
 
     useGame.getState().openNextTown()
@@ -39,8 +39,8 @@ describe('openNextTown', () => {
     expect(useGame.getState().martsOwned).toBe(1)
   })
 
-  it('needs every shelf in the newest mart stocked', () => {
-    stockPallet(100)
+  it('needs every item in the newest mart ordered', () => {
+    orderPotions(100)
     useGame.setState({ coins: 1e9, martsOwned: 2 })
 
     useGame.getState().openNextTown()
@@ -58,7 +58,7 @@ describe('openNextTown', () => {
 })
 
 describe('buyItem', () => {
-  it('stocks only the chosen mart', () => {
+  it('orders only for the chosen mart', () => {
     useGame.setState({ coins: 1_000, martsOwned: 2 })
 
     useGame.getState().buyItem('viridian', 'potion', 1)
@@ -70,7 +70,7 @@ describe('buyItem', () => {
   })
 
   it('prices each mart separately', () => {
-    stockPallet(20)
+    orderPotions(20)
     useGame.setState({ coins: 1_000, martsOwned: 2 })
 
     useGame.getState().buyItem('viridian', 'potion', 1)
@@ -86,13 +86,13 @@ describe('buyItem', () => {
     expect(useGame.getState().coins).toBe(1_000)
   })
 
-  it('refuses a full shelf', () => {
-    stockPallet(100)
+  it('grows an order past 100 a day', () => {
+    orderPotions(100)
     useGame.setState({ coins: 1e30 })
 
     useGame.getState().buyItem('pallet', 'potion', 1)
 
-    expect(useGame.getState()).toMatchObject({ coins: 1e30, marts: { pallet: { potion: 100 } } })
+    expect(useGame.getState().marts.pallet.potion).toBe(101)
   })
 
   it('refuses items the mart does not sell', () => {
@@ -148,25 +148,25 @@ describe('lifetime stats', () => {
     expect(useGame.getState().stats).toMatchObject({ clicks: 2, clickEarnings: 2 })
   })
 
-  it('counts items stocked and money spent', () => {
+  it('counts units ordered and money spent', () => {
     useGame.setState({ coins: 1_000 })
 
     useGame.getState().buyItem('pallet', 'potion', 10)
     useGame.getState().buyRegisterUpgrade('secondTill')
 
     const { stats, coins } = useGame.getState()
-    expect(stats.itemsStocked).toBe(10)
+    expect(stats.unitsOrdered).toBe(10)
     expect(stats.totalSpent).toBeCloseTo(1_000 - coins)
   })
 
   it('ignores refused purchases', () => {
     useGame.getState().buyItem('pallet', 'potion', 1)
 
-    expect(useGame.getState().stats).toMatchObject({ itemsStocked: 0, totalSpent: 0 })
+    expect(useGame.getState().stats).toMatchObject({ unitsOrdered: 0, totalSpent: 0 })
   })
 
-  it('counts play time and shelf earnings', () => {
-    stockPallet(10)
+  it('counts play time and sales earnings', () => {
+    orderPotions(10)
 
     useGame.getState().tick(3)
 
@@ -184,14 +184,14 @@ describe('selectMart', () => {
 })
 
 describe('tick', () => {
-  it('pays every mart with mart and restock bonuses', () => {
+  it('pays every mart with mart and milestone bonuses', () => {
     const { marts } = useGame.getState()
     useGame.setState({
       martsOwned: 3,
       marts: {
         ...marts,
-        pallet: { ...emptyShelves(), potion: 10 },
-        viridian: { ...emptyShelves(), pokeBall: 10 },
+        pallet: { ...emptyOrders(), potion: 10 },
+        viridian: { ...emptyOrders(), pokeBall: 10 },
       },
     })
 
@@ -206,7 +206,7 @@ describe('tick', () => {
 
 describe('achievements', () => {
   it('are earned on the next tick and boost sales', () => {
-    stockPallet(9)
+    orderPotions(9)
     const before = useGame.getState().coins
     useGame.setState((state) => ({ stats: { ...state.stats, clicks: 100 } }))
 
@@ -251,22 +251,6 @@ describe('Premier Balls', () => {
     expect(useGame.getState().stats.premierBalls).toBe(1)
   })
 
-  it('do not come when the shelf cap cuts ×10 below 10', () => {
-    const state = useGame.getState()
-    useGame.setState({
-      martsOwned: 2,
-      coins: 1e12,
-      marts: { ...state.marts, viridian: { ...emptyShelves(), pokeBall: 95 } },
-    })
-
-    useGame.getState().buyItem('viridian', 'pokeBall', 10)
-
-    expect(useGame.getState()).toMatchObject({
-      marts: { viridian: { pokeBall: 100 } },
-      stats: { premierBalls: 0 },
-    })
-  })
-
   it('do not come with 10 of another item', () => {
     useGame.setState({ coins: 1e9 })
     useGame.getState().buyItem('pallet', 'potion', 10)
@@ -276,43 +260,49 @@ describe('Premier Balls', () => {
 })
 
 describe('tick across a gap', () => {
-  it('pays the first minute at full rate and the rest at half rate', () => {
-    stockPallet(9)
+  it('pays time away in full and reports it', () => {
+    orderPotions(9)
 
-    useGame.getState().tick(600)
+    useGame.getState().tick(1200)
 
     expect(useGame.getState()).toMatchObject({
-      coins: 297,
-      stats: { salesEarnings: 54, awayEarnings: 243, playSeconds: 60 },
-      awayReport: { seconds: 540, earned: 243 },
+      coins: 1080,
+      stats: { salesEarnings: 0, awayEarnings: 1080, playSeconds: 0 },
+      awayReport: { seconds: 1200, earned: 1080 },
     })
   })
 
-  it('never pays less for a longer gap', () => {
-    stockPallet(9)
-    useGame.getState().tick(59)
-    const shorter = useGame.getState().coins
-    useGame.setState({ coins: 0 })
+  it('stops paying at the offline cap', () => {
+    orderPotions(9)
 
-    useGame.getState().tick(61)
+    useGame.getState().tick(5 * 3600)
 
-    expect(useGame.getState().coins).toBeGreaterThan(shorter)
+    expect(useGame.getState()).toMatchObject({
+      coins: 0.9 * 2 * 3600,
+      awayReport: { seconds: 2 * 3600 },
+    })
   })
 
-  it.each([
-    ['a gap under a minute', 9, 60],
-    ['empty shelves', 0, 3600],
-  ])('shows no welcome back report for %s', (_, potions, seconds) => {
-    stockPallet(potions)
+  it('counts a gap under 15 minutes as play, with no report', () => {
+    orderPotions(9)
 
-    useGame.getState().tick(seconds)
+    useGame.getState().tick(899)
+
+    expect(useGame.getState()).toMatchObject({
+      stats: { awayEarnings: 0, playSeconds: 899 },
+      awayReport: undefined,
+    })
+  })
+
+  it('shows no report when nothing was ordered', () => {
+    useGame.getState().tick(3600)
 
     expect(useGame.getState().awayReport).toBeUndefined()
   })
 
   it('clears the report when dismissed', () => {
-    stockPallet(9)
-    useGame.getState().tick(600)
+    orderPotions(9)
+    useGame.getState().tick(1200)
 
     useGame.getState().dismissAwayReport()
 
@@ -322,16 +312,16 @@ describe('tick across a gap', () => {
 
 describe('advanceTo', () => {
   it('pays for the wall-clock time since sales were last paid', () => {
-    stockPallet(9)
+    orderPotions(9)
     useGame.setState({ paidUntil: 1_000 })
 
     useGame.getState().advanceTo(601_000)
 
-    expect(useGame.getState()).toMatchObject({ coins: 297, paidUntil: 601_000 })
+    expect(useGame.getState()).toMatchObject({ coins: 540, paidUntil: 601_000 })
   })
 
   it('pays nothing when the clock goes backwards', () => {
-    stockPallet(9)
+    orderPotions(9)
     useGame.setState({ paidUntil: 1_000 })
 
     useGame.getState().advanceTo(500)

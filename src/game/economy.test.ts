@@ -5,16 +5,16 @@ import {
   chainMultiplier,
   chainSalesPerSecond,
   clickValue,
+  isStocked,
   maxAffordable,
-  offlineEarnings,
   openRequirements,
   purchaseQuote,
-  restockLevel,
-  shelfSales,
+  milestoneLevel,
+  martSales,
 } from './economy'
 import { formatDuration, formatMoney, formatPercent, formatRate, formatWholeMoney } from './format'
 import { ITEMS, type ItemId } from './items'
-import { emptyShelves, initialState } from './store'
+import { emptyOrders, initialState } from './store'
 
 const RATES = new Map(ITEMS.map((item) => [item.id, item.salesPerSecond]))
 
@@ -58,17 +58,12 @@ describe('purchaseQuote', () => {
     expect(purchaseQuote(100, 0, 0, 'max')).toEqual({ count: 1, cost: 100 })
   })
 
-  it('stops at shelf capacity', () => {
-    expect(purchaseQuote(15, 95, 1e30, 10).count).toBe(5)
-    expect(purchaseQuote(15, 95, 1e30, 'max').count).toBe(5)
-  })
-
-  it('quotes nothing for a full shelf', () => {
-    expect(purchaseQuote(15, 100, 1e30, 1)).toEqual({ count: 0, cost: 0 })
+  it.each([1, 10] as const)('quotes ×%s past 100 owned', (amount) => {
+    expect(purchaseQuote(15, 100, 1e30, amount).count).toBe(amount)
   })
 })
 
-describe('restockLevel', () => {
+describe('milestoneLevel', () => {
   const stock = ['potion', 'antidote'] as const
 
   it.each([
@@ -78,46 +73,46 @@ describe('restockLevel', () => {
     [25, 49, 2],
     [100, 100, 4],
   ])('with %i and %i units → level %i', (potions, antidotes, expected) => {
-    const shelves = { ...emptyShelves(), potion: potions, antidote: antidotes }
+    const orders = { ...emptyOrders(), potion: potions, antidote: antidotes }
 
-    expect(restockLevel(shelves, [...stock])).toBe(expected)
+    expect(milestoneLevel(orders, [...stock])).toBe(expected)
   })
 })
 
-describe('shelfSales', () => {
+describe('martSales', () => {
   it('sums one mart', () => {
-    expect(shelfSales({ ...emptyShelves(), potion: 10, pokeBall: 2 })).toBeCloseTo(
+    expect(martSales({ ...emptyOrders(), potion: 10, pokeBall: 2 })).toBeCloseTo(
       10 * rate('potion') + 2 * rate('pokeBall'),
     )
   })
 
-  it('is zero for empty shelves', () => {
-    expect(shelfSales(emptyShelves())).toBe(0)
+  it('is zero with no orders', () => {
+    expect(martSales(emptyOrders())).toBe(0)
   })
 })
 
 describe('chainSalesPerSecond', () => {
   const chain = initialState()
-  const stocked = {
+  const ordered = {
     ...chain,
     marts: {
       ...chain.marts,
-      pallet: { ...emptyShelves(), potion: 10 },
-      viridian: { ...emptyShelves(), potion: 5, pokeBall: 2 },
+      pallet: { ...emptyOrders(), potion: 10 },
+      viridian: { ...emptyOrders(), potion: 5, pokeBall: 2 },
     },
   }
 
   const base = 15 * rate('potion') + 2 * rate('pokeBall')
 
   it('sums every mart', () => {
-    expect(chainSalesPerSecond(stocked)).toBeCloseTo(base * 1.05)
+    expect(chainSalesPerSecond(ordered)).toBeCloseTo(base * 1.05)
   })
 
   it('applies the mart bonus on top', () => {
-    expect(chainSalesPerSecond({ ...stocked, martsOwned: 3 })).toBeCloseTo(base * 1.15)
+    expect(chainSalesPerSecond({ ...ordered, martsOwned: 3 })).toBeCloseTo(base * 1.15)
   })
 
-  it('is zero with nothing stocked', () => {
+  it('is zero with nothing ordered', () => {
     expect(chainSalesPerSecond({ ...chain, martsOwned: 11 })).toBe(0)
   })
 })
@@ -125,18 +120,18 @@ describe('chainSalesPerSecond', () => {
 describe('chainBonus', () => {
   it('splits the bonus by source', () => {
     const chain = initialState()
-    const restocked = {
-      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 25 } },
+    const atMilestone = {
+      marts: { ...chain.marts, pallet: { ...emptyOrders(), potion: 25 } },
       martsOwned: 3,
-      achievements: { ...chain.achievements, customersServed: 2, potionHoarder: 1 },
+      achievements: { ...chain.achievements, customersServed: 2, idleHands: 1 },
     }
 
-    expect(chainBonus(restocked)).toEqual({
+    expect(chainBonus(atMilestone)).toEqual({
       extraMarts: 2,
       milestones: 2,
       achievementTiers: 3,
       fromMarts: 0.1,
-      fromRestocks: 0.1,
+      fromMilestones: 0.1,
       fromAchievements: 0.03,
     })
   })
@@ -153,13 +148,13 @@ describe('chainMultiplier', () => {
     expect(chainMultiplier({ ...chain, martsOwned })).toBeCloseTo(expected)
   })
 
-  it('adds +5% per restock milestone', () => {
-    const restocked = {
+  it('adds +5% per order milestone', () => {
+    const atMilestone = {
       ...chain,
-      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 25 } },
+      marts: { ...chain.marts, pallet: { ...emptyOrders(), potion: 25 } },
     }
 
-    expect(chainMultiplier(restocked)).toBeCloseTo(1.1)
+    expect(chainMultiplier(atMilestone)).toBeCloseTo(1.1)
   })
 
   it('adds +1% per achievement tier', () => {
@@ -174,13 +169,13 @@ describe('chainMultiplier', () => {
 
 describe('openRequirements', () => {
   const chain = initialState()
-  const palletStocked = {
+  const palletOrdered = {
     ...chain,
-    marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: 15 } },
+    marts: { ...chain.marts, pallet: { ...emptyOrders(), potion: 15 } },
   }
 
-  it('is ready with coins, sales and a stocked newest mart', () => {
-    expect(openRequirements(palletStocked, 180)).toMatchObject({
+  it('is ready with coins, sales and every item ordered in the newest mart', () => {
+    expect(openRequirements(palletOrdered, 180)).toMatchObject({
       town: { id: 'viridian' },
       hasCoins: true,
       hasSales: true,
@@ -195,17 +190,17 @@ describe('openRequirements', () => {
   ])('is not ready without enough %s', (_, potions, coins) => {
     const pallet = {
       ...chain,
-      marts: { ...chain.marts, pallet: { ...emptyShelves(), potion: potions } },
+      marts: { ...chain.marts, pallet: { ...emptyOrders(), potion: potions } },
     }
 
     expect(openRequirements(pallet, coins)?.ready).toBe(false)
   })
 
-  it('lists empty shelves in the newest mart', () => {
+  it('lists items the newest mart does not order yet', () => {
     const viridianPartly = {
-      ...palletStocked,
+      ...palletOrdered,
       martsOwned: 2,
-      marts: { ...palletStocked.marts, viridian: { ...emptyShelves(), potion: 1, antidote: 1 } },
+      marts: { ...palletOrdered.marts, viridian: { ...emptyOrders(), potion: 1, antidote: 1 } },
     }
 
     expect(openRequirements(viridianPartly, 1e9)).toMatchObject({
@@ -284,14 +279,13 @@ describe('formatWholeMoney', () => {
   })
 })
 
-describe('offlineEarnings', () => {
+describe('isStocked', () => {
   it.each([
-    [10, 600, 600, 3_000],
-    [10, 2 * 3600, 2 * 3600, 36_000],
-    [10, 8 * 3600, 2 * 3600, 36_000],
-    [10, -30, 0, 0],
-    [0, 3600, 3600, 0],
-  ])('at ₽%d/s for %ds counts %ds and earns ₽%d', (salesPerSecond, away, seconds, earned) => {
-    expect(offlineEarnings(salesPerSecond, away)).toEqual({ seconds, earned })
+    [{ potion: 25 }, ['potion'], true],
+    [{ potion: 24 }, ['potion'], false],
+    [{ potion: 100, antidote: 25 }, ['potion', 'antidote'], true],
+    [{ potion: 100, antidote: 0 }, ['potion', 'antidote'], false],
+  ] as const)('%j selling %j is %s', (orders, stock, expected) => {
+    expect(isStocked({ ...emptyOrders(), ...orders }, [...stock])).toBe(expected)
   })
 })

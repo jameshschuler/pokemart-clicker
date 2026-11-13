@@ -1,29 +1,31 @@
-import { restockLevel } from './economy'
+import { isStocked, milestoneLevel, STOCKED_ORDER } from './economy'
 import { totalEarned } from './stats'
 import type { GameState } from './store'
-import { TOWNS } from './towns'
+import { TOWNS, type Town, type TownId } from './towns'
 import { REGISTER_UPGRADES } from './upgrades'
 
 export type AchievementId =
   | 'customersServed'
   | 'totalEarned'
   | 'martsOpened'
-  | 'firstRestock'
+  | 'firstMilestone'
   | 'allRegisterUpgrades'
-  | 'itemsStocked'
-  | 'potionHoarder'
+  | 'unitsOrdered'
+  | 'idleHands'
   | 'premierCustomer'
+  | `${TownId}Stocked`
+  | 'kantoStocked'
 
 export type AchievementCategory =
-  'register' | 'earnings' | 'chain' | 'shelves' | 'upgrades' | 'stocking' | 'hidden'
+  'register' | 'earnings' | 'chain' | 'milestones' | 'upgrades' | 'orders' | 'hidden'
 
 export const CATEGORY_LABELS: Record<AchievementCategory, string> = {
   register: 'Register',
   earnings: 'Earnings',
   chain: 'Chain',
-  shelves: 'Shelves',
+  milestones: 'Milestones',
   upgrades: 'Upgrades',
-  stocking: 'Stocking',
+  orders: 'Orders',
   hidden: 'Hidden',
 }
 
@@ -43,6 +45,21 @@ export interface Achievement {
 
 /** Tiers earned per achievement. */
 export type EarnedAchievements = Record<AchievementId, number>
+
+function townStocked(town: Town): Achievement {
+  return {
+    id: `${town.id}Stocked`,
+    category: 'milestones',
+    tiers: [
+      {
+        goal: 1,
+        name: `${town.name} Stocked`,
+        description: `Order ${STOCKED_ORDER} a day of every item in ${town.name}.`,
+      },
+    ],
+    progress: (state) => (isStocked(state.marts[town.id], town.stock) ? 1 : 0),
+  }
+}
 
 export const ACHIEVEMENTS: Achievement[] = [
   {
@@ -100,17 +117,30 @@ export const ACHIEVEMENTS: Achievement[] = [
     progress: (state) => state.martsOwned,
   },
   {
-    id: 'firstRestock',
-    category: 'shelves',
+    id: 'firstMilestone',
+    category: 'milestones',
     tiers: [
       {
         goal: 1,
-        name: 'Restocked',
-        description: 'Reach a restock milestone in any mart.',
+        name: 'Steady Supply',
+        description: 'Reach an order milestone in any mart.',
       },
     ],
     progress: (state) =>
-      Math.max(...TOWNS.map((town) => restockLevel(state.marts[town.id], town.stock))),
+      Math.max(...TOWNS.map((town) => milestoneLevel(state.marts[town.id], town.stock))),
+  },
+  ...TOWNS.map(townStocked),
+  {
+    id: 'kantoStocked',
+    category: 'milestones',
+    tiers: [
+      {
+        goal: TOWNS.length,
+        name: 'Kanto Stocked',
+        description: `Order ${STOCKED_ORDER} a day of every item in all ${TOWNS.length} Kanto marts.`,
+      },
+    ],
+    progress: (state) => TOWNS.filter((town) => isStocked(state.marts[town.id], town.stock)).length,
   },
   {
     id: 'allRegisterUpgrades',
@@ -125,30 +155,30 @@ export const ACHIEVEMENTS: Achievement[] = [
     progress: (state) => state.registerUpgrades.length,
   },
   {
-    id: 'itemsStocked',
-    category: 'stocking',
+    id: 'unitsOrdered',
+    category: 'orders',
     tiers: [
-      { goal: 100, name: 'Stock Boy', description: 'Stock 100 items.' },
-      { goal: 1_000, name: 'Warehouse Run', description: 'Stock 1,000 items.' },
+      { goal: 100, name: 'Stock Boy', description: 'Order 100 units a day in total.' },
+      { goal: 1_000, name: 'Warehouse Run', description: 'Order 1,000 units a day in total.' },
       {
         goal: 10_000,
         name: 'Supply Chain',
-        description: 'Stock 10,000 items.',
+        description: 'Order 10,000 units a day in total.',
       },
     ],
-    progress: (state) => state.stats.itemsStocked,
+    progress: (state) => state.stats.unitsOrdered,
   },
   {
-    id: 'potionHoarder',
+    id: 'idleHands',
     category: 'hidden',
     tiers: [
       {
-        goal: 100,
-        name: 'Potion Hoarder',
-        description: 'Fill Pallet Town with 100 Potions.',
+        goal: 1e6,
+        name: 'Idle Hands',
+        description: 'Earn ₽1M while you were away.',
       },
     ],
-    progress: (state) => state.marts.pallet.potion,
+    progress: (state) => state.stats.awayEarnings,
   },
   {
     id: 'premierCustomer',
