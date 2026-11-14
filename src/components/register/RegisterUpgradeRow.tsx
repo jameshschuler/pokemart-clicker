@@ -22,7 +22,7 @@ export function RegisterUpgradeRow({ upgrade }: RegisterUpgradeRowProps) {
       <span className="flex min-w-0 flex-col">
         <span className="truncate font-medium">{upgradeLabel(upgrade.id)}</span>
         <span className="truncate text-xs font-normal text-muted-foreground">
-          {describeEffect(upgrade.effect)}
+          {describeEffect(upgrade)}
         </span>
       </span>
       <span

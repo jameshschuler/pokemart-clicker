@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nextRegisterUpgrade, REGISTER_UPGRADES, upgradeLabel } from './upgrades'
+import { describeEffect, nextRegisterUpgrade, REGISTER_UPGRADES, upgradeLabel } from './upgrades'
 
 describe('register upgrades', () => {
   it('costs more each step', () => {
@@ -13,6 +13,17 @@ describe('register upgrades', () => {
     ['selfCheckout', 'Register upgrade 17'],
   ] as const)('labels %s as %s', (upgradeId, expected) => {
     expect(upgradeLabel(upgradeId)).toBe(expected)
+  })
+})
+
+describe('describeEffect', () => {
+  it.each([
+    ['secondTill', '+2% of income per click'],
+    ['selfCheckout', '+1% of income per click'],
+  ] as const)('describes %s as "%s"', (upgradeId, expected) => {
+    const upgrade = REGISTER_UPGRADES.find((candidate) => candidate.id === upgradeId)!
+
+    expect(describeEffect(upgrade)).toBe(expected)
   })
 })
 

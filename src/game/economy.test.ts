@@ -146,17 +146,17 @@ describe('franchiseMultiplier', () => {
 describe('clickValue', () => {
   it.each([
     [[], 1_000, 1],
-    [['secondTill'], 1_000, 2],
-    [['secondTill', 'meowthCoinCounter', 'machopBagger', 'electricTill'], 1_000, 16],
+    [['secondTill'], 1_000, 21],
+    [['secondTill', 'meowthCoinCounter', 'machopBagger', 'electricTill'], 1_000, 81],
     [['barcodeScanner'], 1_000, 11],
-    [['secondTill', 'barcodeScanner', 'loyaltyStamps'], 1_000, 22],
-    [['barcodeScanner'], 0, 1],
+    [['secondTill', 'barcodeScanner', 'loyaltyStamps'], 1_000, 41],
+    [['secondTill'], 0, 1],
   ] as const)('with %j at ₽%d/s is ₽%d', (upgrades, income, expected) => {
     expect(clickValue([...upgrades], 1, income)).toBeCloseTo(expected)
   })
 
-  it('doubles the sale value, not just ₽1', () => {
-    expect(clickValue(['secondTill'], 1.5, 0)).toBeCloseTo(3)
+  it('starts from the stocked sale value', () => {
+    expect(clickValue(['secondTill'], 1.5, 100)).toBeCloseTo(3.5)
   })
 })
 

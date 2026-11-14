@@ -65,9 +65,9 @@ export function Counter() {
         ))}
       </Button>
 
-      <OpenNextTown />
-
       <RegisterUpgrades />
+
+      <OpenNextTown />
 
       <FranchiseBonus />
     </section>
