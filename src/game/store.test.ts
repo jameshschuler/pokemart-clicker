@@ -220,7 +220,7 @@ describe('achievements', () => {
     const before = useGame.getState().coins
     useGame.getState().tick(1)
 
-    expect(useGame.getState().achievements).toMatchObject({ customersServed: 1, flyersPosted: 1 })
+    expect(useGame.getState().achievements).toMatchObject({ customersServed: 1, flyerOwned: 1 })
     expect(useGame.getState().coins - before).toBeCloseTo(0.1 * 1.02)
   })
 })
