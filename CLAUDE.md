@@ -30,6 +30,8 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 - `npm run build` — typecheck + build
 - Dev console: `mart.addMoney(1e6)`, `mart.openMarts(5)`, `mart.away(3600)`, `mart.help()` (dev builds only)
 - `npm run lint` — oxlint (the two `only-export-components` warnings in `components/ui/` are expected)
+- `npm run format` / `npm run format:check` — Prettier (single quotes, no semicolons, 100 columns; skips `components/ui/` and Markdown)
+- `npm run typecheck` — `tsc -b`
 
 ## Code layout
 
@@ -46,14 +48,14 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 - Select narrowly from the store (`useShallow` for objects) — the loop updates `coins` every frame.
 - Shared game state and actions live in the zustand store, not React context or props passed down several levels.
 - Bump `SAVE_VERSION` in `save.ts` only for breaking save changes; new fields should merge in with defaults instead.
-- The shadcn CLI once rewrote `cn` imports to an npm package named `cn`. After `shadcn add`, check imports use `@/lib/utils`.
+- The shadcn CLI once rewrote `cn` imports to an npm package named `cn`. After `shadcn add`, check imports use `@/lib/utils`, then run `npm run format` (the CLI writes `src/index.css` in its own style).
 
 ## Coding style
 
 - Write concise, production-ready TypeScript and React.
 - **Zero comments** unless logic is genuinely non-obvious or complex.
 - Keep components and functions modular and minimal.
-- Always use braces for `if` statements, even single-line bodies. Write `if (existing) { return existing; }` on separate lines, never `if (existing) return existing;`.
+- Always use braces for `if` statements, even single-line bodies. Write `if (existing) { return existing }` on separate lines, never `if (existing) return existing`.
 - **Blank line before `return`**, unless it's the first statement in its block.
 - **Group logic with blank lines.** Inside a function, leave a blank line after a run of declarations and after each block (`if`, `for`, `switch`, …), so each step reads as its own paragraph. Consecutive `const`s that belong together stay together.
 - **Avoid nested loops.** Don't search a list inside a loop (`.includes`, `.indexOf`, `.find`, `.some` on an array): build a `Set` or `Map` once and look up in it. When loops nest more than two deep, pull the inner work into a named function. Walking nested data and comparing items in pairs are fine.
@@ -115,6 +117,14 @@ Remote: `github.com/jameshschuler/pokemart-clicker`.
 - **Never push to `main`.** All changes land via pull request.
 - **Never create a repo, fork, or push outside `jameshschuler`** without confirming with me first. Ask before any `gh repo create`.
 - **Branches:** `feature/short-description`, `bugfix/short-description`, `hotfix/short-description`.
-- **Checks before committing:** `npm run lint`, `npm test` and `npm run build` (which also typechecks). Fix anything that fails, then run `/code-review` on the pending changes. Fix confirmed findings (or tell me about the ones you're leaving), and rerun the checks if anything changed.
+- **Checks before committing:** `npm run format:check`, `npm run lint`, `npm test` and `npm run build` (which also typechecks). Fix anything that fails, then run `/code-review` on the pending changes. Fix confirmed findings (or tell me about the ones you're leaving), and rerun the checks if anything changed.
 - **Commit messages:** prefix with `feat:`, `fix:`, `improvement:`, `docs:`, `refactor:`, `ci:`, `chore:` or `revert:`, then a short description. Keep each commit focused.
 - **Pull requests:** a short `## Summary` (what changed and why) and `## Testing` (what you ran and how you checked it). Keep the Claude Code attribution trailers.
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pushes to `main`.
+
+- One job per check: format, lint, typecheck, test, build. Node comes from `.nvmrc`.
+- A final **CI passed** job succeeds only when every job in its `needs` list does. Add every new job to that list.
+- Pin actions to a version tag, never `@main`.
