@@ -111,29 +111,19 @@ export function incomePerSecond(franchise: Franchise): number {
   return salesPerSecond(producers) * saleValue(stockedItems) * franchiseMultiplier(franchise)
 }
 
-/** One click makes one sale: its value doubled per ×2 upgrade, plus a share of income per second. */
+/** One click makes one sale, plus each owned register upgrade's share of income per second. */
 export function clickValue(
   registerUpgrades: RegisterUpgradeId[],
   sale: number,
   income: number,
 ): number {
   const owned = new Set(registerUpgrades)
-  let doublings = 0
-  let incomeShare = 0
+  const incomeShare = REGISTER_UPGRADES.filter((upgrade) => owned.has(upgrade.id)).reduce(
+    (sum, upgrade) => sum + upgrade.incomeShare,
+    0,
+  )
 
-  for (const upgrade of REGISTER_UPGRADES) {
-    if (!owned.has(upgrade.id)) {
-      continue
-    }
-
-    if (upgrade.effect.kind === 'double') {
-      doublings++
-    } else {
-      incomeShare += upgrade.effect.share
-    }
-  }
-
-  return sale * 2 ** doublings + incomeShare * income
+  return sale + incomeShare * income
 }
 
 export interface OpenRequirements {

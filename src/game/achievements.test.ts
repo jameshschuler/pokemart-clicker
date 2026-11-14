@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest'
 import {
   ACHIEVEMENTS,
   checkAchievements,
+  PRODUCER_GOALS,
   tiersReached,
   TOTAL_ACHIEVEMENT_TIERS,
 } from './achievements'
+import { PRODUCERS } from './producers'
 import { emptyProducers, initialState } from './store'
 
 const CUSTOMERS = ACHIEVEMENTS.find((achievement) => achievement.id === 'customersServed')!
@@ -25,7 +27,7 @@ describe('achievement data', () => {
   })
 
   it('counts every tier in the total', () => {
-    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(11)
+    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(32)
   })
 })
 
@@ -59,7 +61,7 @@ describe('checkAchievements', () => {
 
     expect(checkAchievements(state)).toMatchObject({
       customersServed: 2,
-      flyersPosted: 1,
+      flyerOwned: 1,
       totalEarned: 0,
     })
   })
@@ -75,18 +77,38 @@ describe('checkAchievements', () => {
   })
 })
 
-describe('flyers posted', () => {
+describe('producer achievements', () => {
   it.each([
     [0, 0],
     [1, 1],
-    [10, 2],
-    [25, 3],
-  ])('with %i flyers is %i tiers', (flyer, expected) => {
+    [24, 1],
+    [25, 2],
+    [100, 4],
+    [999, 5],
+    [1_000, 6],
+  ])('with %i owned is %i tiers', (owned, expected) => {
     const base = initialState()
+    const producers = { ...emptyProducers(), deliveryBike: owned }
 
-    expect(
-      checkAchievements({ ...base, producers: { ...emptyProducers(), flyer } }).flyersPosted,
-    ).toBe(expected)
+    expect(checkAchievements({ ...base, producers }).deliveryBikeOwned).toBe(expected)
+  })
+
+  it('has one for every producer, with a name for every goal', () => {
+    for (const producer of PRODUCERS) {
+      const achievement = ACHIEVEMENTS.find((candidate) => candidate.id === `${producer.id}Owned`)
+
+      expect(achievement?.tiers.map((tier) => tier.goal)).toEqual(PRODUCER_GOALS)
+      expect(achievement?.tiers.every((tier) => tier.name.length > 0)).toBe(true)
+    }
+  })
+
+  it.each([
+    [0, 'Buy your first Stock Clerk.'],
+    [5, 'Own 1,000 Stock Clerks.'],
+  ])('describes tier %i as "%s"', (tier, expected) => {
+    const clerk = ACHIEVEMENTS.find((achievement) => achievement.id === 'stockClerkOwned')
+
+    expect(clerk?.tiers[tier].description).toBe(expected)
   })
 })
 

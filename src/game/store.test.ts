@@ -134,13 +134,14 @@ describe('stockItem', () => {
 
 describe('buyRegisterUpgrade', () => {
   it('buys an unlocked upgrade and raises the click value', () => {
-    useGame.setState({ coins: 150 })
+    useGame.setState({ coins: 150, producers: { ...emptyProducers(), deliveryBike: 10 } })
 
     useGame.getState().buyRegisterUpgrade('secondTill')
     const earned = useGame.getState().serveCustomer()
 
-    expect(useGame.getState()).toMatchObject({ coins: 52, registerUpgrades: ['secondTill'] })
-    expect(earned).toBe(2)
+    expect(useGame.getState().registerUpgrades).toEqual(['secondTill'])
+    expect(earned).toBeCloseTo(1 + 0.02 * 10)
+    expect(useGame.getState().coins).toBeCloseTo(50 + earned)
   })
 
   it('refuses an upgrade out of order', () => {
@@ -220,7 +221,7 @@ describe('achievements', () => {
     const before = useGame.getState().coins
     useGame.getState().tick(1)
 
-    expect(useGame.getState().achievements).toMatchObject({ customersServed: 1, flyersPosted: 1 })
+    expect(useGame.getState().achievements).toMatchObject({ customersServed: 1, flyerOwned: 1 })
     expect(useGame.getState().coins - before).toBeCloseTo(0.1 * 1.02)
   })
 })

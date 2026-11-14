@@ -35,7 +35,7 @@ export function OpenNextTown() {
     <Card size="sm" className="bg-muted/30 shadow-none">
       <CardContent className="flex flex-col gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">Next town: {town.name}</p>
+          <p className="truncate text-sm font-medium">Next location: {town.name}</p>
           <p className="truncate text-xs text-muted-foreground">
             New items to stock · +{formatPercent(TOWN_BONUS)} franchise bonus
           </p>
