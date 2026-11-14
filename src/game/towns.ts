@@ -22,7 +22,7 @@ export interface Town {
   id: TownId
   name: string
   openCost: number
-  requiredSalesPerSecond: number
+  requiredIncome: number
   stock: ItemId[]
   /** Defaults to "<town> Mart". */
   storeName?: string
@@ -82,21 +82,21 @@ export const TOWNS: Town[] = [
     id: 'pallet',
     name: 'Pallet Town',
     openCost: 0,
-    requiredSalesPerSecond: 0,
+    requiredIncome: 0,
     stock: ['potion'],
   },
   {
     id: 'viridian',
     name: 'Viridian City',
-    openCost: 180,
-    requiredSalesPerSecond: 1.5,
+    openCost: 1_000,
+    requiredIncome: 5,
     stock: ['potion', 'antidote', 'pokeBall', 'paralyzeHeal'],
   },
   {
     id: 'pewter',
     name: 'Pewter City',
     openCost: 1_900,
-    requiredSalesPerSecond: 16,
+    requiredIncome: 16,
     stock: [
       'potion',
       'pokeBall',
@@ -112,7 +112,7 @@ export const TOWNS: Town[] = [
     id: 'cerulean',
     name: 'Cerulean City',
     openCost: 13_000,
-    requiredSalesPerSecond: 110,
+    requiredIncome: 110,
     stock: [
       'potion',
       'pokeBall',
@@ -129,14 +129,14 @@ export const TOWNS: Town[] = [
     id: 'vermilion',
     name: 'Vermilion City',
     openCost: 70_000,
-    requiredSalesPerSecond: 600,
+    requiredIncome: 600,
     stock: ['pokeBall', 'antidote', 'paralyzeHeal', 'awakening', 'repel', 'superPotion', 'iceHeal'],
   },
   {
     id: 'lavender',
     name: 'Lavender Town',
     openCost: 240_000,
-    requiredSalesPerSecond: 2_000,
+    requiredIncome: 2_000,
     stock: [
       'antidote',
       'paralyzeHeal',
@@ -152,7 +152,7 @@ export const TOWNS: Town[] = [
     id: 'celadon',
     name: 'Celadon City',
     openCost: 920_000,
-    requiredSalesPerSecond: 7_700,
+    requiredIncome: 7_700,
     storeName: 'Celadon City Department Store',
     floors: CELADON_FLOORS,
     stock: CELADON_FLOORS.flatMap((floor) => floor.stock),
@@ -161,21 +161,21 @@ export const TOWNS: Town[] = [
     id: 'fuchsia',
     name: 'Fuchsia City',
     openCost: 4.1e6,
-    requiredSalesPerSecond: 34_000,
+    requiredIncome: 34_000,
     stock: ['superPotion', 'greatBall', 'revive', 'fullHeal', 'maxRepel', 'ultraBall'],
   },
   {
     id: 'saffron',
     name: 'Saffron City',
     openCost: 13e6,
-    requiredSalesPerSecond: 110_000,
+    requiredIncome: 110_000,
     stock: ['escapeRope', 'greatBall', 'revive', 'fullHeal', 'maxRepel', 'hyperPotion'],
   },
   {
     id: 'cinnabar',
     name: 'Cinnabar Island',
     openCost: 32e6,
-    requiredSalesPerSecond: 270_000,
+    requiredIncome: 270_000,
     stock: [
       'escapeRope',
       'greatBall',
@@ -190,10 +190,13 @@ export const TOWNS: Town[] = [
     id: 'indigoPlateau',
     name: 'Indigo Plateau',
     openCost: 71e6,
-    requiredSalesPerSecond: 590_000,
+    requiredIncome: 590_000,
     stock: ['greatBall', 'revive', 'fullHeal', 'ultraBall', 'maxRepel', 'maxPotion', 'fullRestore'],
   },
 ]
+
+/** Towns built on the franchise model so far; the rest open in later build steps. */
+export const PLAYABLE_TOWNS = 2
 
 const ROUTE_ORDER = new Map(TOWNS.map((town, index) => [town.id, index]))
 
@@ -203,6 +206,23 @@ export function townById(townId: TownId): Town {
 
 export function isTownOpen(townId: TownId, martsOwned: number): boolean {
   return (ROUTE_ORDER.get(townId) ?? TOWNS.length) < martsOwned
+}
+
+/** The next town the franchise can open, if any. */
+export function nextTown(martsOwned: number): Town | undefined {
+  return martsOwned < PLAYABLE_TOWNS ? TOWNS[martsOwned] : undefined
+}
+
+/** Items a town is the first on the route to sell. */
+export function newStock(town: Town): ItemId[] {
+  const earlier = new Set(TOWNS.slice(0, ROUTE_ORDER.get(town.id)).flatMap((stop) => stop.stock))
+
+  return town.stock.filter((itemId) => !earlier.has(itemId))
+}
+
+/** "Viridian City" → "Viridian", for tight spaces. */
+export function shortTownName(town: Town): string {
+  return town.name.replace(/ (Town|City|Island)$/, '')
 }
 
 export function storeName(town: Town): string {

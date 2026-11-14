@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { loadGame } from './save'
-import { initialState, useGame } from './store'
+import { emptyProducers, initialState, useGame } from './store'
 
 function storeSave(state: object, savedAt: number | undefined = Date.now(), version = 4) {
   const storage = new Map([['mart-clicker:save', JSON.stringify({ version, savedAt, state })]])
@@ -59,7 +59,7 @@ describe('loadGame achievements', () => {
 describe('loadGame repairs bad values', () => {
   it.each([
     ['too few marts', { martsOwned: 0 }, { martsOwned: 1 }],
-    ['too many marts', { martsOwned: 40 }, { martsOwned: 11 }],
+    ['too many marts', { martsOwned: 40 }, { martsOwned: 2 }],
     ['negative coins', { coins: -50 }, { coins: 0 }],
     ['non-numeric coins', { coins: 'lots' }, { coins: 0 }],
   ])('fixes %s', (_, saved, expected) => {
@@ -79,7 +79,29 @@ describe('loadGame repairs bad values', () => {
 
     loadGame()
 
-    expect(useGame.getState().producers).toEqual({ flyer: expected })
+    expect(useGame.getState().producers).toEqual({ ...emptyProducers(), flyer: expected })
+  })
+
+  it.each([
+    ['items that no longer exist', 2, ['antidote', 'rareCandy'], ['antidote']],
+    ['items from a town not open yet', 1, ['antidote', 'hpUp'], []],
+    ['the same item twice', 2, ['antidote', 'antidote'], ['antidote']],
+    ['a list that is not a list', 2, 'antidote', []],
+  ])('drops %s from stocked items', (_, martsOwned, stockedItems, expected) => {
+    storeSave({ ...initialState(), martsOwned, stockedItems })
+
+    loadGame()
+
+    expect(useGame.getState().stockedItems).toEqual(expected)
+  })
+
+  it('starts with nothing stocked for a save from before stocking', () => {
+    const { stockedItems: _, ...older } = initialState()
+    storeSave(older)
+
+    loadGame()
+
+    expect(useGame.getState().stockedItems).toEqual([])
   })
 })
 
@@ -92,7 +114,7 @@ describe('loadGame offline earnings', () => {
     return {
       ...state,
       paidUntil,
-      producers: { flyer: 10 },
+      producers: { ...emptyProducers(), flyer: 10 },
     }
   }
 

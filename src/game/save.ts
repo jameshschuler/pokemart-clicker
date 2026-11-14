@@ -1,8 +1,10 @@
 import { emptyAchievements, type EarnedAchievements } from './achievements'
 import type { Producers } from './economy'
+import type { ItemId } from './items'
 import { PRODUCERS } from './producers'
+import { stockOffers } from './stocking'
 import { initialState, useGame, type GameState } from './store'
-import { TOWNS } from './towns'
+import { PLAYABLE_TOWNS } from './towns'
 import { REGISTER_UPGRADES } from './upgrades'
 
 const UPGRADE_IDS = new Set(REGISTER_UPGRADES.map((upgrade) => upgrade.id))
@@ -18,14 +20,23 @@ interface SaveFile {
 }
 
 export function saveGame() {
-  const { coins, producers, martsOwned, registerUpgrades, stats, achievements, paidUntil } =
-    useGame.getState()
+  const {
+    coins,
+    producers,
+    stockedItems,
+    martsOwned,
+    registerUpgrades,
+    stats,
+    achievements,
+    paidUntil,
+  } = useGame.getState()
   const file: SaveFile = {
     version: SAVE_VERSION,
     savedAt: Date.now(),
     state: {
       coins,
       producers,
+      stockedItems,
       martsOwned,
       registerUpgrades,
       stats,
@@ -53,6 +64,17 @@ function mergeProducers(saved: Partial<Producers> = {}): Producers {
   ) as Producers
 }
 
+/** Keeps stocked items the loaded franchise could have stocked, once each. */
+function mergeStockedItems(saved: unknown, martsOwned: number): ItemId[] {
+  if (!Array.isArray(saved)) {
+    return []
+  }
+
+  const stockable = new Set<unknown>(stockOffers(martsOwned).map((offer) => offer.item.id))
+
+  return [...new Set(saved)].filter((itemId): itemId is ItemId => stockable.has(itemId))
+}
+
 /** Keeps earned tiers for achievements that still exist; new ones start unearned. */
 function mergeAchievements(saved: Partial<EarnedAchievements> = {}): EarnedAchievements {
   const base = emptyAchievements()
@@ -78,7 +100,7 @@ export function loadGame() {
     }
 
     const base = initialState()
-    const martsOwned = Math.floor(clamp(file.state.martsOwned, 1, TOWNS.length, 1))
+    const martsOwned = Math.floor(clamp(file.state.martsOwned, 1, PLAYABLE_TOWNS, 1))
     const now = Date.now()
     const savedAt = clamp(file.savedAt, 0, now, now)
 
@@ -88,6 +110,7 @@ export function loadGame() {
       coins: clamp(file.state.coins, 0, Infinity, 0),
       martsOwned,
       producers: mergeProducers(file.state.producers),
+      stockedItems: mergeStockedItems(file.state.stockedItems, martsOwned),
       registerUpgrades: (file.state.registerUpgrades ?? []).filter((upgradeId) =>
         UPGRADE_IDS.has(upgradeId),
       ),

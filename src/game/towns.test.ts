@@ -1,14 +1,23 @@
 import { describe, expect, it } from 'vitest'
 import { ITEMS } from './items'
-import { isTownOpen, storeFloors, storeItems, storeName, TOWNS, townById } from './towns'
+import {
+  isTownOpen,
+  newStock,
+  nextTown,
+  PLAYABLE_TOWNS,
+  shortTownName,
+  storeFloors,
+  storeItems,
+  storeName,
+  TOWNS,
+  townById,
+} from './towns'
 
 describe('route data', () => {
   it('costs more to open each town than the last', () => {
     for (let index = 1; index < TOWNS.length; index++) {
       expect(TOWNS[index].openCost).toBeGreaterThan(TOWNS[index - 1].openCost)
-      expect(TOWNS[index].requiredSalesPerSecond).toBeGreaterThan(
-        TOWNS[index - 1].requiredSalesPerSecond,
-      )
+      expect(TOWNS[index].requiredIncome).toBeGreaterThan(TOWNS[index - 1].requiredIncome)
     }
   })
 
@@ -93,5 +102,36 @@ describe('storeFloors', () => {
 
     expect([...shown].sort()).toEqual([...celadon.stock].sort())
     expect(new Set(shown).size).toBe(shown.length)
+  })
+})
+
+describe('nextTown', () => {
+  it('is Viridian from Pallet', () => {
+    expect(nextTown(1)?.id).toBe('viridian')
+  })
+
+  it('stops at the last playable town', () => {
+    expect(nextTown(PLAYABLE_TOWNS)).toBeUndefined()
+  })
+})
+
+describe('newStock', () => {
+  it.each([
+    ['pallet', ['potion']],
+    ['viridian', ['antidote', 'pokeBall', 'paralyzeHeal']],
+    ['cinnabar', []],
+  ] as const)('%s introduces %j', (townId, expected) => {
+    expect(newStock(townById(townId))).toEqual(expected)
+  })
+})
+
+describe('shortTownName', () => {
+  it.each([
+    ['pallet', 'Pallet'],
+    ['viridian', 'Viridian'],
+    ['cinnabar', 'Cinnabar'],
+    ['indigoPlateau', 'Indigo Plateau'],
+  ] as const)('shortens %s to %s', (townId, expected) => {
+    expect(shortTownName(townById(townId))).toBe(expected)
   })
 })
