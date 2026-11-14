@@ -32,7 +32,7 @@ Bought repeatedly, +15% cost each, counted across the whole franchise. **One at 
 | 1 | Flyer | Local marketing brings walk-ins |
 | 2 | Delivery Bike | Brings orders to trainers on the routes |
 | 3 | Vending Machine | Sells on its own, day and night |
-| 4 | Pokémon Center Counter | A PokéMart counter inside each Center |
+| 4 | Stock Clerk | Keeps shelves full so nothing sells out (first employee) |
 | 5 | Franchise Store | A new PokéMart run by a franchisee, paying you royalties |
 | 6 | Delivery Truck | A regional supply fleet |
 | 7 | Distribution Center | Keeps every store stocked |
@@ -67,21 +67,59 @@ About checkout instead of abstract doublings:
 ### Build order
 
 1. Swap the Clerk for the **Flyer**, make producers franchise-wide, hide the catalog. Saves reset. (Done.)
-2. Item upgrades: stock items to raise the sale value; the catalog returns as the list of upgrades.
+2. Viridian: opening the next town plus item upgrades (stock items to raise the sale value); the route map and catalog return.
 3. Register upgrades on the new model.
-4. Towns: opening, requirements and the next producers.
+4. The remaining towns, their items and the next producers.
 
-### What's in the code now (step 1)
+### Step 2: Viridian (built)
 
-The base game: the register, the Flyer, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 4.
+The smallest slice that has both a new town and item upgrades. Later towns repeat the pattern.
 
-- One franchise-wide producer list. The Flyer row has ×1 / ×10 / Max, how many you own and ₽/s each.
-- A sale is worth ₽1 until item upgrades exist.
-- New achievement: Grand Opening / Papered the Town / Every Lamppost for 1 / 10 / 25 flyers.
-- Not shown until their build step: the route map and opening towns, the catalog and items, Celadon's floors. Item and town data (FRLG prices, stock, floors) stay in the code for those steps.
-- Removed: per-mart producers, buying items, order milestones, Premier Customer, the order and Stocked achievements.
-- Register upgrades are shown numbered ("Register upgrade 1" to 17) with no names, at the table's costs, one at a time in order (no town gating while towns are hidden). They get redesigned in step 3.
-- Hidden with towns: the "1 of 11 towns" header count, the towns line in the franchise bonus, and the Small/Regional/Kanto Chain achievements (11 achievement tiers in the base game).
+**New items by town.** Every town but Cinnabar introduces items, unevenly: Pallet 1 (Potion, the starting item), Viridian 3, Pewter 4, Cerulean 1, Vermilion 1, Lavender 2, Celadon 27, Fuchsia 3, Saffron 1, Cinnabar 0, Indigo Plateau 2. Cinnabar gets a town perk instead. Celadon's 27 keep the floor tabs (2F, 4F, 5F, Roof) as the catalog.
+
+**Opening Viridian**
+
+| | |
+|---|---|
+| Cost | ₽1,000 |
+| Needs | ₽5/s of income (about 5 Delivery Bikes) |
+| Gives | +5% franchise bonus; Viridian's items to stock |
+
+The route map comes back showing the franchise's reach (Pallet → Viridian, the rest locked), with an "Open Viridian" card under the register.
+
+**Item upgrades.** Each new item is a one-time "Stock <item>" purchase that makes every sale worth more. The bonus scales with the item's FRLG price, +1% per ₽10, and adds up: sale value = ₽1 × (1 + total item bonus).
+
+| Item | FRLG price | Bonus | Cost (placeholder) |
+|---|---|---|---|
+| Antidote | ₽100 | +10% | ₽1,500 |
+| Poké Ball | ₽200 | +20% | ₽3,000 |
+| Paralyze Heal | ₽200 | +20% | ₽4,500 |
+
+The **Stock** list under the producers shows every open town's new items: stocked ones as "Stocked", the rest with their cost, plus the current ₽ per sale. Costs and the bonus formula get tuned with the pacing sim; +1% per ₽10 would make Celadon's vitamins +980% each, so the formula likely flattens for expensive items.
+
+**Producers 2–4** (Cookie Clicker's early ladder shape, about ×7–12 cost per step):
+
+| Producer | Cost | Sales/s | Unlocks |
+|---|---|---|---|
+| Flyer | ₽15 | 0.1 | Pallet |
+| Delivery Bike | ₽100 | 1 | Pallet |
+| Vending Machine | ₽1,100 | 8 | Pallet |
+| Stock Clerk | ₽12,000 | 47 | Viridian |
+
+**Later producers alternate employees and logistics, each tied to its town's real FRLG landmark.** Ideas: Cashier, Store Manager, Regional Manager, Machop Mover (Vermilion's ground-stomping Machop); Crossroads Warehouse (Viridian, where Routes 1, 2 and 22 meet), Underground Path Runner (Cerulean–Vermilion, Lavender–Celadon), S.S. Anne Freight (Vermilion), Cycling Road Courier (Celadon–Fuchsia), Silph Co. Supply Line (Saffron). The Pokémon Center Counter waits until every town has a Center to put one in.
+
+A producer shows once its town is open. Only Pallet and Viridian can open for now; the route map shows the rest locked.
+
+### What's in the code now (steps 1–2)
+
+The register, four producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk), opening Viridian, stocking Viridian's items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 4; stocked items merge into older version 4 saves as none.
+
+- One franchise-wide producer list; each row has ×1 / ×10 / Max, how many you own and ₽/s each.
+- The route map shows the franchise's reach; an "Open Viridian" card sits under the register.
+- Achievements: Grand Opening / Papered the Town / Every Lamppost for 1 / 10 / 25 flyers, plus customers served, total earned, every register upgrade and Idle Hands. Town and other producer achievements come later.
+- Register upgrades are shown numbered ("Register upgrade 1" to 17) with no names, at the table's costs, one at a time in order. They get redesigned in step 3.
+- Only Pallet and Viridian can open (`PLAYABLE_TOWNS`). Item and town data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
+- Removed: per-mart producers, buying items as producers, order milestones, Premier Customer, the order, Stocked and Chain achievements.
 
 ## Core loop
 

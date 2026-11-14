@@ -1,10 +1,11 @@
 import type { EarnedAchievements } from './achievements'
+import type { ItemId } from './items'
 import { PRODUCERS, type Producer, type ProducerId } from './producers'
+import { saleValue } from './stocking'
+import { nextTown, type Town } from './towns'
 import { REGISTER_UPGRADES, type RegisterUpgradeId } from './upgrades'
 
 export const COST_GROWTH = 1.15
-/** What one sale is worth, before item upgrades. */
-export const SALE_VALUE = 1
 export const TOWN_BONUS = 0.05
 export const ACHIEVEMENT_BONUS = 0.01
 export const OFFLINE_CAP_SECONDS = 2 * 3600
@@ -19,6 +20,7 @@ export type Producers = Record<ProducerId, number>
 /** Everything that sets franchise income. */
 export interface Franchise {
   producers: Producers
+  stockedItems: ItemId[]
   martsOwned: number
   achievements: EarnedAchievements
 }
@@ -97,16 +99,24 @@ export function salesPerSecond(producers: Producers): number {
 
 /** ₽ per second one of a producer earns, franchise bonus included. */
 export function producerIncome(franchise: Franchise, producer: Producer): number {
-  return producer.salesPerSecond * SALE_VALUE * franchiseMultiplier(franchise)
+  return (
+    producer.salesPerSecond * saleValue(franchise.stockedItems) * franchiseMultiplier(franchise)
+  )
 }
 
 /** ₽ per second for the whole franchise. */
 export function incomePerSecond(franchise: Franchise): number {
-  return salesPerSecond(franchise.producers) * SALE_VALUE * franchiseMultiplier(franchise)
+  const { producers, stockedItems } = franchise
+
+  return salesPerSecond(producers) * saleValue(stockedItems) * franchiseMultiplier(franchise)
 }
 
 /** One click makes one sale: its value doubled per ×2 upgrade, plus a share of income per second. */
-export function clickValue(registerUpgrades: RegisterUpgradeId[], income: number): number {
+export function clickValue(
+  registerUpgrades: RegisterUpgradeId[],
+  sale: number,
+  income: number,
+): number {
   const owned = new Set(registerUpgrades)
   let doublings = 0
   let incomeShare = 0
@@ -123,7 +133,30 @@ export function clickValue(registerUpgrades: RegisterUpgradeId[], income: number
     }
   }
 
-  return SALE_VALUE * 2 ** doublings + incomeShare * income
+  return sale * 2 ** doublings + incomeShare * income
+}
+
+export interface OpenRequirements {
+  town: Town
+  hasCoins: boolean
+  hasIncome: boolean
+  ready: boolean
+}
+
+/** What's needed to open the next town, or undefined when no town can open yet. */
+export function openRequirements(
+  franchise: Franchise,
+  coins: number,
+): OpenRequirements | undefined {
+  const town = nextTown(franchise.martsOwned)
+  if (!town) {
+    return undefined
+  }
+
+  const hasCoins = coins >= town.openCost
+  const hasIncome = incomePerSecond(franchise) >= town.requiredIncome
+
+  return { town, hasCoins, hasIncome, ready: hasCoins && hasIncome }
 }
 
 export interface AwayReport {

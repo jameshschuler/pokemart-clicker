@@ -51,6 +51,8 @@ export interface Item {
   description: string
   /** FireRed/LeafGreen shop price. */
   price: number
+  /** One-time cost to stock it franchise-wide. Set as each town is built on the franchise model. */
+  stockCost?: number
   /** PokeAPI sprite name. TMs share their move type's sprite. */
   sprite: string
 }
@@ -74,6 +76,7 @@ export const ITEMS: Item[] = [
     name: 'Antidote',
     description: 'Cures poison. Viridian Forest is crawling with Weedle.',
     price: 100,
+    stockCost: 1_500,
     sprite: 'antidote',
   },
   {
@@ -81,6 +84,7 @@ export const ITEMS: Item[] = [
     name: 'Poké Ball',
     description: 'The classic. Rookies buy them by the dozen.',
     price: 200,
+    stockCost: 3_000,
     sprite: 'poke-ball',
   },
   {
@@ -88,6 +92,7 @@ export const ITEMS: Item[] = [
     name: 'Paralyze Heal',
     description: 'Cures paralysis. Pikachu fans buy these in bulk.',
     price: 200,
+    stockCost: 4_500,
     sprite: 'paralyze-heal',
   },
   {

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { debugCommands } from './debug'
-import { initialState, useGame } from './store'
+import { emptyProducers, initialState, useGame } from './store'
 
 beforeEach(() => {
   useGame.setState(initialState())
@@ -17,10 +17,10 @@ describe('debug commands', () => {
   })
 
   it.each([
-    [undefined, 11],
-    [4, 4],
+    [undefined, 2],
+    [2, 2],
     [0, 1],
-    [99, 11],
+    [99, 2],
   ])('openMarts(%s) owns %i marts', (count, expected) => {
     debugCommands.openMarts(count)
 
@@ -28,7 +28,7 @@ describe('debug commands', () => {
   })
 
   it('away pays the time in full and opens the report', () => {
-    useGame.setState({ producers: { flyer: 10 } })
+    useGame.setState({ producers: { ...emptyProducers(), flyer: 10 } })
 
     debugCommands.away(1200)
 

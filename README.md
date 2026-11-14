@@ -28,7 +28,7 @@ The dev server adds a `mart` object to the browser console for playtesting. Prod
 
 ```js
 mart.addMoney(1e6)   // add ₽ without counting it as earned
-mart.openMarts(5)    // own the first 5 marts for free (no number: all 11)
+mart.openMarts(2)    // open the first 2 towns for free (no number: every playable town)
 mart.away(3600)      // pretend you were away an hour (welcome back dialog)
 mart.help()          // list the commands
 ```

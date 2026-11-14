@@ -5,18 +5,23 @@ import {
   clickValue,
   incomePerSecond,
   OFFLINE_CAP_SECONDS,
+  openRequirements,
   type AwayReport,
   purchaseQuote,
   type BuyAmount,
   type Producers,
 } from './economy'
+import type { ItemId } from './items'
 import { PRODUCERS, type ProducerId } from './producers'
 import { emptyStats, type LifetimeStats } from './stats'
+import { saleValue, stockOffers } from './stocking'
+import { isTownOpen } from './towns'
 import { nextRegisterUpgrade, type RegisterUpgradeId } from './upgrades'
 
 export interface GameState {
   coins: number
   producers: Producers
+  stockedItems: ItemId[]
   martsOwned: number
   registerUpgrades: RegisterUpgradeId[]
   stats: LifetimeStats
@@ -30,6 +35,8 @@ export interface GameState {
 interface GameActions {
   serveCustomer: () => number
   buyProducer: (producerId: ProducerId, amount: BuyAmount) => void
+  stockItem: (itemId: ItemId) => void
+  openNextTown: () => void
   buyRegisterUpgrade: (upgradeId: RegisterUpgradeId) => void
   tick: (seconds: number) => void
   advanceTo: (now: number) => void
@@ -47,6 +54,7 @@ export function initialState(): GameState {
   return {
     coins: 0,
     producers: emptyProducers(),
+    stockedItems: [],
     martsOwned: 1,
     registerUpgrades: [],
     stats: emptyStats(Date.now()),
@@ -68,7 +76,11 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
 
   serveCustomer: () => {
     const state = get()
-    const earned = clickValue(state.registerUpgrades, incomePerSecond(state))
+    const earned = clickValue(
+      state.registerUpgrades,
+      saleValue(state.stockedItems),
+      incomePerSecond(state),
+    )
     set({
       coins: state.coins + earned,
       stats: {
@@ -83,9 +95,9 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
 
   buyProducer: (producerId, amount) => {
     const state = get()
-    const { coins, producers } = state
+    const { coins, producers, martsOwned } = state
     const producer = PRODUCER_BY_ID.get(producerId)
-    if (!producer) {
+    if (!producer || !isTownOpen(producer.town, martsOwned)) {
       return
     }
 
@@ -98,6 +110,27 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
       ...spend(state, cost),
       producers: { ...producers, [producerId]: producers[producerId] + count },
     })
+  },
+
+  stockItem: (itemId) => {
+    const state = get()
+    const { coins, stockedItems, martsOwned } = state
+    const offer = stockOffers(martsOwned).find((candidate) => candidate.item.id === itemId)
+    if (!offer || stockedItems.includes(itemId) || offer.cost > coins) {
+      return
+    }
+
+    set({ ...spend(state, offer.cost), stockedItems: [...stockedItems, itemId] })
+  },
+
+  openNextTown: () => {
+    const state = get()
+    const requirements = openRequirements(state, state.coins)
+    if (!requirements?.ready) {
+      return
+    }
+
+    set({ ...spend(state, requirements.town.openCost), martsOwned: state.martsOwned + 1 })
   },
 
   buyRegisterUpgrade: (upgradeId) => {

@@ -5,7 +5,7 @@ import {
   tiersReached,
   TOTAL_ACHIEVEMENT_TIERS,
 } from './achievements'
-import { initialState } from './store'
+import { emptyProducers, initialState } from './store'
 
 const CUSTOMERS = ACHIEVEMENTS.find((achievement) => achievement.id === 'customersServed')!
 
@@ -53,7 +53,7 @@ describe('checkAchievements', () => {
     const base = initialState()
     const state = {
       ...base,
-      producers: { flyer: 1 },
+      producers: { ...emptyProducers(), flyer: 1 },
       stats: { ...base.stats, clicks: 1_500 },
     }
 
@@ -84,7 +84,9 @@ describe('flyers posted', () => {
   ])('with %i flyers is %i tiers', (flyer, expected) => {
     const base = initialState()
 
-    expect(checkAchievements({ ...base, producers: { flyer } }).flyersPosted).toBe(expected)
+    expect(
+      checkAchievements({ ...base, producers: { ...emptyProducers(), flyer } }).flyersPosted,
+    ).toBe(expected)
   })
 })
 

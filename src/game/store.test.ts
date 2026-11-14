@@ -15,6 +15,12 @@ describe('serveCustomer', () => {
     expect(useGame.getState().serveCustomer()).toBe(1)
     expect(useGame.getState().coins).toBe(1)
   })
+
+  it('earns the stocked sale value', () => {
+    useGame.setState({ stockedItems: ['antidote', 'pokeBall'] })
+
+    expect(useGame.getState().serveCustomer()).toBeCloseTo(1.3)
+  })
 })
 
 describe('buyProducer', () => {
@@ -40,6 +46,89 @@ describe('buyProducer', () => {
     useGame.getState().buyProducer('flyer', 1)
 
     expect(useGame.getState()).toMatchObject({ coins: 14, producers: { flyer: 0 } })
+  })
+})
+
+describe('buyProducer town', () => {
+  it('refuses a producer whose town is not open', () => {
+    useGame.setState({ coins: 1e9 })
+
+    useGame.getState().buyProducer('stockClerk', 1)
+
+    expect(useGame.getState()).toMatchObject({
+      coins: 1e9,
+      producers: { stockClerk: 0 },
+    })
+  })
+
+  it('sells it once the town opens', () => {
+    useGame.setState({ coins: 1e9, martsOwned: 2 })
+
+    useGame.getState().buyProducer('stockClerk', 1)
+
+    expect(useGame.getState().producers.stockClerk).toBe(1)
+  })
+})
+
+describe('openNextTown', () => {
+  function readyForViridian(coins: number) {
+    useGame.setState({ coins, producers: { ...emptyProducers(), deliveryBike: 5 } })
+  }
+
+  it('opens Viridian and charges its cost', () => {
+    readyForViridian(1_200)
+
+    useGame.getState().openNextTown()
+
+    expect(useGame.getState()).toMatchObject({ martsOwned: 2, coins: 200 })
+  })
+
+  it('refuses without enough income', () => {
+    useGame.setState({ coins: 1e9 })
+
+    useGame.getState().openNextTown()
+
+    expect(useGame.getState()).toMatchObject({ martsOwned: 1, coins: 1e9 })
+  })
+
+  it('refuses without enough coins', () => {
+    readyForViridian(999)
+
+    useGame.getState().openNextTown()
+
+    expect(useGame.getState().martsOwned).toBe(1)
+  })
+
+  it('stops at the last playable town', () => {
+    readyForViridian(1e9)
+    useGame.setState({ martsOwned: 2 })
+
+    useGame.getState().openNextTown()
+
+    expect(useGame.getState().martsOwned).toBe(2)
+  })
+})
+
+describe('stockItem', () => {
+  it('stocks an item from an open town and raises the sale value', () => {
+    useGame.setState({ coins: 2_000, martsOwned: 2 })
+
+    useGame.getState().stockItem('antidote')
+
+    expect(useGame.getState()).toMatchObject({ coins: 500, stockedItems: ['antidote'] })
+  })
+
+  it.each([
+    ['from a town not yet open', 1e9, 1, [], 'antidote'],
+    ['already stocked', 1e9, 2, ['antidote'], 'antidote'],
+    ['without enough coins', 1_499, 2, [], 'antidote'],
+    ['that is the starting item', 1e9, 2, [], 'potion'],
+  ] as const)('refuses an item %s', (_, coins, martsOwned, stockedItems, itemId) => {
+    useGame.setState({ coins, martsOwned, stockedItems: [...stockedItems] })
+
+    useGame.getState().stockItem(itemId)
+
+    expect(useGame.getState().coins).toBe(coins)
   })
 })
 
@@ -114,7 +203,7 @@ describe('lifetime stats', () => {
 
 describe('tick', () => {
   it('pays sales with the franchise bonus', () => {
-    useGame.setState({ martsOwned: 3, producers: { flyer: 10 } })
+    useGame.setState({ martsOwned: 3, producers: { ...emptyProducers(), flyer: 10 } })
 
     useGame.getState().tick(2)
 

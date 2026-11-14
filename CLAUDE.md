@@ -15,7 +15,7 @@ Cookie Clicker–style idle game: you own the PokéMart in Pallet Town and expan
 - [x] Iteration 1 — register click, Potion + Poké Ball, passive sales, buy ×1/×10/Max, autosave
 - [x] Iteration 2 — towns: full Kanto item ladder gated by towns, route map, open next town
 - [ ] Iteration 3 — upgrades: register upgrades, lifetime stats and base achievements done; town perks, item doublings, tier synergies to go
-- [ ] Franchise rework (see "Rework: the PokéMart franchise" in DESIGN.md): step 1 built (Flyer, franchise-wide producers); next item upgrades, then register upgrades, towns
+- [ ] Franchise rework (see "Rework: the PokéMart franchise" in DESIGN.md): steps 1–2 built (four producers, Viridian, item upgrades); next register upgrades, then the remaining towns
 - [ ] Iteration 6 — mart scene, pulled forward
 - [ ] 4 staff · 5 flash sales · 7 polish · 8 prestige · 9 Johto · 10 Hoenn
 
@@ -28,7 +28,7 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 - `npm run dev` — Vite dev server
 - `npm test` — Vitest (economy math)
 - `npm run build` — typecheck + build
-- Dev console: `mart.addMoney(1e6)`, `mart.openMarts(5)`, `mart.away(3600)`, `mart.help()` (dev builds only)
+- Dev console: `mart.addMoney(1e6)`, `mart.openMarts(2)`, `mart.away(3600)`, `mart.help()` (dev builds only)
 - `npm run lint` — oxlint (the two `only-export-components` warnings in `components/ui/` are expected)
 - `npm run format` / `npm run format:check` — Prettier (single quotes, no semicolons, 100 columns; skips `components/ui/` and Markdown)
 - `npm run typecheck` — `tsc -b`
@@ -36,7 +36,7 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 ## Code layout
 
 - `src/game/` — game logic, no React except `useGameLoop.ts`
-  - `items.ts` item catalog and FRLG prices · `producers.ts` producers (Flyer) · `towns.ts` Kanto route, stock and open costs · `upgrades.ts` register upgrades · `stats.ts` lifetime stats · `achievements.ts` achievements · `economy.ts` pure math (costs, sales/s, click value) · `format.ts` number formatting
+  - `items.ts` item catalog and FRLG prices · `producers.ts` producers · `stocking.ts` item upgrades and sale value · `towns.ts` Kanto route, stock and open costs · `upgrades.ts` register upgrades · `stats.ts` lifetime stats · `achievements.ts` achievements · `economy.ts` pure math (costs, sales/s, click value) · `format.ts` number formatting
   - `store.ts` zustand store (state + actions) · `save.ts` localStorage save/load/autosave · `useGameLoop.ts` rAF loop
 - `src/components/` — UI, organized by feature folder; `components/ui/` are shadcn primitives (base-nova style, Base UI)
 - `src/hooks/` — React hooks other than the game loop

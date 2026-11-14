@@ -6,6 +6,7 @@ import {
   franchiseMultiplier,
   incomePerSecond,
   maxAffordable,
+  openRequirements,
   producerIncome,
   purchaseQuote,
   salesPerSecond,
@@ -88,6 +89,16 @@ describe('incomePerSecond', () => {
     expect(incomePerSecond(grown)).toBeCloseTo(1.05)
   })
 
+  it('grows with stocked items', () => {
+    const stocked = {
+      ...franchise,
+      producers: { ...emptyProducers(), flyer: 10 },
+      stockedItems: ['antidote' as const],
+    }
+
+    expect(incomePerSecond(stocked)).toBeCloseTo(1.1)
+  })
+
   it('is zero with no producers', () => {
     expect(incomePerSecond({ ...franchise, martsOwned: 11 })).toBe(0)
   })
@@ -141,7 +152,36 @@ describe('clickValue', () => {
     [['secondTill', 'barcodeScanner', 'loyaltyStamps'], 1_000, 22],
     [['barcodeScanner'], 0, 1],
   ] as const)('with %j at ₽%d/s is ₽%d', (upgrades, income, expected) => {
-    expect(clickValue([...upgrades], income)).toBeCloseTo(expected)
+    expect(clickValue([...upgrades], 1, income)).toBeCloseTo(expected)
+  })
+
+  it('doubles the sale value, not just ₽1', () => {
+    expect(clickValue(['secondTill'], 1.5, 0)).toBeCloseTo(3)
+  })
+})
+
+describe('openRequirements', () => {
+  const franchise = initialState()
+  const busy = { ...franchise, producers: { ...emptyProducers(), deliveryBike: 5 } }
+
+  it('is ready for Viridian with ₽5/s and ₽1,000', () => {
+    expect(openRequirements(busy, 1_000)).toMatchObject({
+      town: { id: 'viridian' },
+      hasCoins: true,
+      hasIncome: true,
+      ready: true,
+    })
+  })
+
+  it.each([
+    ['coins', busy, 999],
+    ['income', franchise, 1e9],
+  ])('is not ready without enough %s', (_, state, coins) => {
+    expect(openRequirements(state, coins)?.ready).toBe(false)
+  })
+
+  it('is undefined once every playable town is open', () => {
+    expect(openRequirements({ ...franchise, martsOwned: 2 }, 1e9)).toBeUndefined()
   })
 })
 
