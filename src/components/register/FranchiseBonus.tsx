@@ -17,7 +17,7 @@ export function FranchiseBonus() {
       {extraTowns > 0 && (
         <div className="flex justify-between gap-3 text-muted-foreground">
           <dt className="min-w-0 truncate">
-            Towns after Pallet · {extraTowns} × {formatPercent(TOWN_BONUS)}
+            Locations after Pallet · {extraTowns} × {formatPercent(TOWN_BONUS)}
           </dt>
           <dd>+{formatPercent(fromTowns)}</dd>
         </div>

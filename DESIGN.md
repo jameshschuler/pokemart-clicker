@@ -116,8 +116,15 @@ The register, four producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk
 
 - One franchise-wide producer list; each row has ×1 / ×10 / Max, how many you own and ₽/s each.
 - The route map shows the franchise's reach; an "Open Viridian" card sits under the register.
-- Achievements: Grand Opening / Papered the Town / Every Lamppost for 1 / 10 / 25 flyers, plus customers served, total earned, every register upgrade and Idle Hands. Town and other producer achievements come later.
-- Register upgrades are shown numbered ("Register upgrade 1" to 17) with no names, at the table's costs, one at a time in order. They get redesigned in step 3.
+- Achievements (32 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade and Idle Hands. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Town achievements come later.
+
+  | Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
+  |---|---|---|---|---|---|---|
+  | Flyer | Grand Opening | Papered the Town | Every Lamppost | Pallet Wallpaper | Paper Trail | Flyer Blizzard |
+  | Delivery Bike | First Delivery | Bike Shop Regular | Pedal Pushers | Route 1 Rush Hour | Cycling Road Club | Fleet of a Thousand |
+  | Vending Machine | Coin Slot | Vending Row | Rooftop Envy | Thirst Quenched | Machine Kingdom | Every Corner Covered |
+  | Stock Clerk | First Hire | Full Shift | Night Crew | Shelf Command | Stockroom Army | Silph-Sized Staff |
+- Register upgrades are shown numbered ("Register upgrade 1" to 17) with no names, at the table's costs, one at a time in order, above the next-town card. Every one is **% based**: it adds a share of income per second to each click. Upgrades 1–4 (the old ×2 ones) give +2% each, 5–17 give +1%, 21% in all; at 3 clicks/s with every upgrade, clicking adds about 63% on top of income. Click value = sale value + total share × income. Names and the rest of the redesign come in step 3.
 - Only Pallet and Viridian can open (`PLAYABLE_TOWNS`). Item and town data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
 - Removed: per-mart producers, buying items as producers, order milestones, Premier Customer, the order, Stocked and Chain achievements.
 
@@ -274,10 +281,10 @@ One-time purchases.
 
   | Upgrade | Town | Cost | Effect |
   |---|---|---|---|
-  | Second Till | Pallet Town | 100 | ×2 per click |
-  | Meowth Coin Counter | Viridian City | 400 | ×2 per click |
-  | Machop Bagger | Viridian City | 1K | ×2 per click |
-  | Electric Till | Pewter City | 6K | ×2 per click |
+  | Second Till | Pallet Town | 100 | +2% (was ×2) |
+  | Meowth Coin Counter | Viridian City | 400 | +2% (was ×2) |
+  | Machop Bagger | Viridian City | 1K | +2% (was ×2) |
+  | Electric Till | Pewter City | 6K | +2% (was ×2) |
   | Receipt Printer | Pewter City | 12K | +1% of chain ₽/s per click |
   | Barcode Scanner | Cerulean City | 30K | +1% |
   | Credit Card Machine | Vermilion City | 150K | +1% |

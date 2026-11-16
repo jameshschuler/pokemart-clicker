@@ -19,102 +19,102 @@ export type RegisterUpgradeId =
   | 'porygonTablet'
   | 'selfCheckout'
 
-export type RegisterEffect = { kind: 'double' } | { kind: 'incomeShare'; share: number }
-
 export interface RegisterUpgrade {
   id: RegisterUpgradeId
   cost: number
-  effect: RegisterEffect
+  /** Share of income per second each click adds. */
+  incomeShare: number
 }
 
-const DOUBLE: RegisterEffect = { kind: 'double' }
-const INCOME_SHARE: RegisterEffect = { kind: 'incomeShare', share: 0.01 }
+/** Early upgrades give more, since early income is small. */
+const EARLY_SHARE = 0.02
+const LATE_SHARE = 0.01
 
 export const REGISTER_UPGRADES: RegisterUpgrade[] = [
   {
     id: 'secondTill',
     cost: 100,
-    effect: DOUBLE,
+    incomeShare: EARLY_SHARE,
   },
   {
     id: 'meowthCoinCounter',
     cost: 400,
-    effect: DOUBLE,
+    incomeShare: EARLY_SHARE,
   },
   {
     id: 'machopBagger',
     cost: 1_000,
-    effect: DOUBLE,
+    incomeShare: EARLY_SHARE,
   },
   {
     id: 'electricTill',
     cost: 6_000,
-    effect: DOUBLE,
+    incomeShare: EARLY_SHARE,
   },
   {
     id: 'receiptPrinter',
     cost: 12_000,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'barcodeScanner',
     cost: 30_000,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'creditCardMachine',
     cost: 150_000,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'expressLane',
     cost: 250_000,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'loyaltyStamps',
     cost: 400_000,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'conveyorBelt',
     cost: 1.2e6,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'departmentCounter',
     cost: 2e6,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'chanseyCashier',
     cost: 8e6,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'silphCardReader',
     cost: 15e6,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'alakazamPriceCheck',
     cost: 20e6,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'machampBagger',
     cost: 30e6,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'porygonTablet',
     cost: 45e6,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
   {
     id: 'selfCheckout',
     cost: 100e6,
-    effect: INCOME_SHARE,
+    incomeShare: LATE_SHARE,
   },
 ]
 
@@ -132,8 +132,6 @@ export function upgradeLabel(upgradeId: RegisterUpgradeId): string {
   return `Register upgrade ${(UPGRADE_NUMBER.get(upgradeId) ?? 0) + 1}`
 }
 
-export function describeEffect(effect: RegisterEffect): string {
-  return effect.kind === 'double'
-    ? '×2 per click'
-    : `+${formatPercent(effect.share)} of income per click`
+export function describeEffect(upgrade: RegisterUpgrade): string {
+  return `+${formatPercent(upgrade.incomeShare)} of income per click`
 }

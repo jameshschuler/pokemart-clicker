@@ -1,9 +1,10 @@
+import { PRODUCERS, type Producer, type ProducerId } from './producers'
 import { totalEarned } from './stats'
 import type { GameState } from './store'
 import { REGISTER_UPGRADES } from './upgrades'
 
 export type AchievementId =
-  'customersServed' | 'totalEarned' | 'allRegisterUpgrades' | 'flyersPosted' | 'idleHands'
+  'customersServed' | 'totalEarned' | 'allRegisterUpgrades' | `${ProducerId}Owned` | 'idleHands'
 
 export type AchievementCategory = 'register' | 'earnings' | 'upgrades' | 'producers' | 'hidden'
 
@@ -31,6 +32,66 @@ export interface Achievement {
 
 /** Tiers earned per achievement. */
 export type EarnedAchievements = Record<AchievementId, number>
+
+/** How many of a producer each of its achievement tiers needs. */
+export const PRODUCER_GOALS = [1, 25, 50, 100, 500, 1_000]
+
+/** One name per goal in PRODUCER_GOALS. */
+type TierNames = [string, string, string, string, string, string]
+
+/** Tier names for owning each producer. */
+const PRODUCER_TIER_NAMES: Record<ProducerId, TierNames> = {
+  flyer: [
+    'Grand Opening',
+    'Papered the Town',
+    'Every Lamppost',
+    'Pallet Wallpaper',
+    'Paper Trail',
+    'Flyer Blizzard',
+  ],
+  deliveryBike: [
+    'First Delivery',
+    'Bike Shop Regular',
+    'Pedal Pushers',
+    'Route 1 Rush Hour',
+    'Cycling Road Club',
+    'Fleet of a Thousand',
+  ],
+  vendingMachine: [
+    'Coin Slot',
+    'Vending Row',
+    'Rooftop Envy',
+    'Thirst Quenched',
+    'Machine Kingdom',
+    'Every Corner Covered',
+  ],
+  stockClerk: [
+    'First Hire',
+    'Full Shift',
+    'Night Crew',
+    'Shelf Command',
+    'Stockroom Army',
+    'Silph-Sized Staff',
+  ],
+}
+
+function producerOwned(producer: Producer): Achievement {
+  const names = PRODUCER_TIER_NAMES[producer.id]
+
+  return {
+    id: `${producer.id}Owned`,
+    category: 'producers',
+    tiers: PRODUCER_GOALS.map((goal, index) => ({
+      goal,
+      name: names[index],
+      description:
+        goal === 1
+          ? `Buy your first ${producer.name}.`
+          : `Own ${goal.toLocaleString('en-US')} ${producer.plural}.`,
+    })),
+    progress: (state) => state.producers[producer.id],
+  }
+}
 
 export const ACHIEVEMENTS: Achievement[] = [
   {
@@ -85,16 +146,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     ],
     progress: (state) => state.registerUpgrades.length,
   },
-  {
-    id: 'flyersPosted',
-    category: 'producers',
-    tiers: [
-      { goal: 1, name: 'Grand Opening', description: 'Post a flyer.' },
-      { goal: 10, name: 'Papered the Town', description: 'Post 10 flyers.' },
-      { goal: 25, name: 'Every Lamppost', description: 'Post 25 flyers.' },
-    ],
-    progress: (state) => state.producers.flyer,
-  },
+  ...PRODUCERS.map(producerOwned),
   {
     id: 'idleHands',
     category: 'hidden',

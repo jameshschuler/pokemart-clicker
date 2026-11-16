@@ -21,7 +21,7 @@ export default function App() {
         <div className="min-w-0">
           <h1 className="truncate text-base font-semibold">PokéMart Clicker</h1>
           <p className="truncate text-sm text-muted-foreground tabular-nums">
-            Kanto franchise · {martsOwned} of {TOWNS.length} towns
+            Kanto franchise · {martsOwned} of {TOWNS.length} locations
           </p>
         </div>
         <div className="flex shrink-0 gap-1">
