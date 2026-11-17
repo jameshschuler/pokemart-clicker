@@ -5,7 +5,7 @@ import { PLAYABLE_LOCATIONS } from './locations'
 import { PRODUCERS } from './producers'
 import { stockOffers } from './stocking'
 import { type GameState, initialState, useGame } from './store'
-import { REGISTER_UPGRADES, type RegisterUpgradeId, unlockedRegisterUpgrades } from './upgrades'
+import { type RegisterUpgradeId, unlockedRegisterUpgrades } from './upgrades'
 
 const SAVE_KEY = 'mart-clicker:save'
 const SAVE_VERSION = 4
@@ -73,31 +73,17 @@ function mergeStockedItems(saved: unknown, martsOwned: number): ItemId[] {
   return [...new Set(saved)].filter((itemId): itemId is ItemId => stockable.has(itemId))
 }
 
-/**
- * Keeps register upgrades the loaded franchise could have bought, once each, and refunds the rest.
- * Before upgrades were tied to locations, they were sold in one ladder regardless of location.
- */
-function mergeRegisterUpgrades(
-  saved: unknown,
-  martsOwned: number,
-): { registerUpgrades: RegisterUpgradeId[]; refund: number } {
+/** Keeps register upgrades the loaded franchise could have bought, once each. */
+function mergeRegisterUpgrades(saved: unknown, martsOwned: number): RegisterUpgradeId[] {
   if (!Array.isArray(saved)) {
-    return { registerUpgrades: [], refund: 0 }
+    return []
   }
 
   const savedIds = new Set(saved)
-  const unlockedIds = new Set(unlockedRegisterUpgrades(martsOwned).map((upgrade) => upgrade.id))
-  const owned = REGISTER_UPGRADES.filter((upgrade) => savedIds.has(upgrade.id))
-  const refund = owned
-    .filter((upgrade) => !unlockedIds.has(upgrade.id))
-    .reduce((sum, upgrade) => sum + upgrade.cost, 0)
 
-  return {
-    registerUpgrades: owned
-      .filter((upgrade) => unlockedIds.has(upgrade.id))
-      .map((upgrade) => upgrade.id),
-    refund,
-  }
+  return unlockedRegisterUpgrades(martsOwned)
+    .filter((upgrade) => savedIds.has(upgrade.id))
+    .map((upgrade) => upgrade.id)
 }
 
 /** Keeps earned tiers for achievements that still exist; new ones start unearned. */
@@ -126,21 +112,17 @@ export function loadGame() {
 
     const base = initialState()
     const martsOwned = Math.floor(clamp(file.state.martsOwned, 1, PLAYABLE_LOCATIONS, 1))
-    const { registerUpgrades, refund } = mergeRegisterUpgrades(
-      file.state.registerUpgrades,
-      martsOwned,
-    )
     const now = Date.now()
     const savedAt = clamp(file.savedAt, 0, now, now)
 
     useGame.setState({
       ...base,
       ...file.state,
-      coins: clamp(file.state.coins, 0, Infinity, 0) + refund,
+      coins: clamp(file.state.coins, 0, Infinity, 0),
       martsOwned,
       producers: mergeProducers(file.state.producers),
       stockedItems: mergeStockedItems(file.state.stockedItems, martsOwned),
-      registerUpgrades,
+      registerUpgrades: mergeRegisterUpgrades(file.state.registerUpgrades, martsOwned),
       stats: { ...base.stats, ...file.state.stats },
       achievements: mergeAchievements(file.state.achievements),
       paidUntil: clamp(file.state.paidUntil, 0, now, savedAt),

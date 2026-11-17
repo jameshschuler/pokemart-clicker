@@ -47,7 +47,7 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 - Keep economy math pure and covered in `economy.test.ts`; components read derived values via selectors.
 - Select narrowly from the store (`useShallow` for objects) — the loop updates `coins` every frame.
 - Shared game state and actions live in the zustand store, not React context or props passed down several levels.
-- Bump `SAVE_VERSION` in `save.ts` only for breaking save changes; new fields should merge in with defaults instead.
+- Bump `SAVE_VERSION` in `save.ts` only for breaking save changes; new fields should merge in with defaults instead. The game is unreleased: no migrations, refunds or renamed-field carry-overs for old saves. Loading still validates and clamps what it reads.
 - The shadcn CLI once rewrote `cn` imports to an npm package named `cn`. After `shadcn add`, check imports use `@/lib/utils`, then run `npm run format` (the CLI writes `src/index.css` in its own style).
 
 ## Coding style
