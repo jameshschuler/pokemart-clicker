@@ -1,21 +1,21 @@
 import { create } from 'zustand'
-import { checkAchievements, emptyAchievements, type EarnedAchievements } from './achievements'
+import { checkAchievements, type EarnedAchievements, emptyAchievements } from './achievements'
 import {
   AWAY_SECONDS,
+  type AwayReport,
+  type BuyAmount,
   clickValue,
   incomePerSecond,
   OFFLINE_CAP_SECONDS,
   openRequirements,
-  type AwayReport,
-  purchaseQuote,
-  type BuyAmount,
   type Producers,
+  purchaseQuote,
 } from './economy'
 import type { ItemId } from './items'
-import { PRODUCERS, type ProducerId } from './producers'
+import { isLocationOpen } from './locations'
+import { type ProducerId, PRODUCERS } from './producers'
 import { emptyStats, type LifetimeStats } from './stats'
 import { saleValue, stockOffers } from './stocking'
-import { isTownOpen } from './towns'
 import { nextRegisterUpgrade, type RegisterUpgradeId } from './upgrades'
 
 export interface GameState {
@@ -36,7 +36,7 @@ interface GameActions {
   serveCustomer: () => number
   buyProducer: (producerId: ProducerId, amount: BuyAmount) => void
   stockItem: (itemId: ItemId) => void
-  openNextTown: () => void
+  openNextLocation: () => void
   buyRegisterUpgrade: (upgradeId: RegisterUpgradeId) => void
   tick: (seconds: number) => void
   advanceTo: (now: number) => void
@@ -97,7 +97,7 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
     const state = get()
     const { coins, producers, martsOwned } = state
     const producer = PRODUCER_BY_ID.get(producerId)
-    if (!producer || !isTownOpen(producer.town, martsOwned)) {
+    if (!producer || !isLocationOpen(producer.location, martsOwned)) {
       return
     }
 
@@ -123,14 +123,14 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
     set({ ...spend(state, offer.cost), stockedItems: [...stockedItems, itemId] })
   },
 
-  openNextTown: () => {
+  openNextLocation: () => {
     const state = get()
     const requirements = openRequirements(state, state.coins)
     if (!requirements?.ready) {
       return
     }
 
-    set({ ...spend(state, requirements.town.openCost), martsOwned: state.martsOwned + 1 })
+    set({ ...spend(state, requirements.location.openCost), martsOwned: state.martsOwned + 1 })
   },
 
   buyRegisterUpgrade: (upgradeId) => {

@@ -1,5 +1,5 @@
+import { PLAYABLE_LOCATIONS } from './locations'
 import { useGame } from './store'
-import { PLAYABLE_TOWNS } from './towns'
 
 /** Console helpers for playtesting. Installed as `window.mart` in dev builds only. */
 export const debugCommands = {
@@ -8,8 +8,8 @@ export const debugCommands = {
   },
 
   /** Opens marts in route order without paying or meeting requirements. */
-  openMarts(count: number = PLAYABLE_TOWNS) {
-    useGame.setState({ martsOwned: Math.min(Math.max(count, 1), PLAYABLE_TOWNS) })
+  openMarts(count: number = PLAYABLE_LOCATIONS) {
+    useGame.setState({ martsOwned: Math.min(Math.max(count, 1), PLAYABLE_LOCATIONS) })
   },
 
   /** Pretends the game was closed for `seconds`, up to the offline cap. Under 15 minutes counts as play time, with no report. */

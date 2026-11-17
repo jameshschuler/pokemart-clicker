@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ITEMS } from './items'
-import { saleValue, stockBonus, stockOffers, STARTING_ITEM } from './stocking'
-import { newStock, PLAYABLE_TOWNS, TOWNS } from './towns'
+import { LOCATIONS, newStock, PLAYABLE_LOCATIONS } from './locations'
+import { saleValue, STARTING_ITEM, stockBonus, stockOffers } from './stocking'
 
 describe('stockBonus', () => {
   it.each([
@@ -48,9 +48,9 @@ describe('stockOffers', () => {
     expect(offeredIds(3)).toEqual(offeredIds(2))
   })
 
-  it('prices every new item in a playable town', () => {
-    const newItems = TOWNS.slice(1, PLAYABLE_TOWNS).flatMap(newStock)
+  it('prices every new item in a playable location', () => {
+    const newItems = LOCATIONS.slice(1, PLAYABLE_LOCATIONS).flatMap(newStock)
 
-    expect(offeredIds(PLAYABLE_TOWNS)).toEqual(newItems)
+    expect(offeredIds(PLAYABLE_LOCATIONS)).toEqual(newItems)
   })
 })

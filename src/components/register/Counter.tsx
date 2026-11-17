@@ -4,7 +4,7 @@ import { clickValue, incomePerSecond } from '@/game/economy'
 import { formatMoney } from '@/game/format'
 import { saleValue } from '@/game/stocking'
 import { useGame } from '@/game/store'
-import { OpenNextTown } from '@/components/map/OpenNextTown'
+import { OpenNextLocation } from '@/components/map/OpenNextLocation'
 import { Balance } from './Balance'
 import { FranchiseBonus } from './FranchiseBonus'
 import { RegisterUpgrades } from './RegisterUpgrades'
@@ -67,7 +67,7 @@ export function Counter() {
 
       <RegisterUpgrades />
 
-      <OpenNextTown />
+      <OpenNextLocation />
 
       <FranchiseBonus />
     </section>

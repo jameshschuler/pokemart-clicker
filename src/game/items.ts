@@ -51,7 +51,7 @@ export interface Item {
   description: string
   /** FireRed/LeafGreen shop price. */
   price: number
-  /** One-time cost to stock it franchise-wide. Set as each town is built on the franchise model. */
+  /** One-time cost to stock it franchise-wide. Set as each location is built on the franchise model. */
   stockCost?: number
   /** PokeAPI sprite name. TMs share their move type's sprite. */
   sprite: string

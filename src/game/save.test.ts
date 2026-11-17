@@ -84,7 +84,7 @@ describe('loadGame repairs bad values', () => {
 
   it.each([
     ['items that no longer exist', 2, ['antidote', 'rareCandy'], ['antidote']],
-    ['items from a town not open yet', 1, ['antidote', 'hpUp'], []],
+    ['items from a location not open yet', 1, ['antidote', 'hpUp'], []],
     ['the same item twice', 2, ['antidote', 'antidote'], ['antidote']],
     ['a list that is not a list', 2, 'antidote', []],
   ])('drops %s from stocked items', (_, martsOwned, stockedItems, expected) => {

@@ -1,28 +1,28 @@
 import { describe, expect, it } from 'vitest'
 import { ITEMS } from './items'
 import {
-  isTownOpen,
+  isLocationOpen,
+  locationById,
+  LOCATIONS,
   newStock,
-  nextTown,
-  PLAYABLE_TOWNS,
-  shortTownName,
+  nextLocation,
+  PLAYABLE_LOCATIONS,
+  shortLocationName,
   storeFloors,
   storeItems,
   storeName,
-  TOWNS,
-  townById,
-} from './towns'
+} from './locations'
 
 describe('route data', () => {
-  it('costs more to open each town than the last', () => {
-    for (let index = 1; index < TOWNS.length; index++) {
-      expect(TOWNS[index].openCost).toBeGreaterThan(TOWNS[index - 1].openCost)
-      expect(TOWNS[index].requiredIncome).toBeGreaterThan(TOWNS[index - 1].requiredIncome)
+  it('costs more to open each location than the last', () => {
+    for (let index = 1; index < LOCATIONS.length; index++) {
+      expect(LOCATIONS[index].openCost).toBeGreaterThan(LOCATIONS[index - 1].openCost)
+      expect(LOCATIONS[index].requiredIncome).toBeGreaterThan(LOCATIONS[index - 1].requiredIncome)
     }
   })
 
   it('sells every item in at least one mart', () => {
-    const sold = new Set(TOWNS.flatMap((town) => town.stock))
+    const sold = new Set(LOCATIONS.flatMap((location) => location.stock))
 
     for (const item of ITEMS) {
       expect(sold).toContain(item.id)
@@ -30,29 +30,29 @@ describe('route data', () => {
   })
 })
 
-describe('isTownOpen', () => {
+describe('isLocationOpen', () => {
   it.each([
     ['pallet', 1, true],
     ['viridian', 1, false],
     ['viridian', 2, true],
     ['indigoPlateau', 10, false],
     ['indigoPlateau', 11, true],
-  ] as const)('%s with %i marts → %s', (townId, martsOwned, expected) => {
-    expect(isTownOpen(townId, martsOwned)).toBe(expected)
+  ] as const)('%s with %i marts → %s', (locationId, martsOwned, expected) => {
+    expect(isLocationOpen(locationId, martsOwned)).toBe(expected)
   })
 })
 
 describe('Celadon Department Store', () => {
   it('sells every item an earlier mart sells', () => {
-    const celadon = new Set(townById('celadon').stock)
-    const earlier = TOWNS.slice(
+    const celadon = new Set(locationById('celadon').stock)
+    const earlier = LOCATIONS.slice(
       0,
-      TOWNS.findIndex((town) => town.id === 'celadon'),
+      LOCATIONS.findIndex((location) => location.id === 'celadon'),
     )
 
-    for (const town of earlier) {
-      for (const itemId of town.stock) {
-        expect(celadon.has(itemId), `${itemId} from ${town.name}`).toBe(true)
+    for (const location of earlier) {
+      for (const itemId of location.stock) {
+        expect(celadon.has(itemId), `${itemId} from ${location.name}`).toBe(true)
       }
     }
   })
@@ -62,14 +62,14 @@ describe('storeName', () => {
   it.each([
     ['pallet', 'Pallet Town Mart'],
     ['celadon', 'Celadon City Department Store'],
-  ] as const)('names %s %s', (townId, expected) => {
-    expect(storeName(townById(townId))).toBe(expected)
+  ] as const)('names %s %s', (locationId, expected) => {
+    expect(storeName(locationById(locationId))).toBe(expected)
   })
 })
 
 describe('storeItems', () => {
   it('lists a mart in ladder order', () => {
-    expect(storeItems(townById('viridian')).map((item) => item.id)).toEqual([
+    expect(storeItems(locationById('viridian')).map((item) => item.id)).toEqual([
       'potion',
       'antidote',
       'pokeBall',
@@ -80,11 +80,11 @@ describe('storeItems', () => {
 
 describe('storeFloors', () => {
   it('is undefined for a single-floor mart', () => {
-    expect(storeFloors(townById('pewter'))).toBeUndefined()
+    expect(storeFloors(locationById('pewter'))).toBeUndefined()
   })
 
   it('groups the Department Store by floor', () => {
-    const floors = storeFloors(townById('celadon')) ?? []
+    const floors = storeFloors(locationById('celadon')) ?? []
 
     expect(floors.map((floor) => [floor.name, floor.items.length])).toEqual([
       ["2F · Trainer's Market", 19],
@@ -95,7 +95,7 @@ describe('storeFloors', () => {
   })
 
   it('shows every Department Store item exactly once', () => {
-    const celadon = townById('celadon')
+    const celadon = locationById('celadon')
     const shown = (storeFloors(celadon) ?? []).flatMap((floor) =>
       floor.items.map((item) => item.id),
     )
@@ -105,13 +105,13 @@ describe('storeFloors', () => {
   })
 })
 
-describe('nextTown', () => {
+describe('nextLocation', () => {
   it('is Viridian from Pallet', () => {
-    expect(nextTown(1)?.id).toBe('viridian')
+    expect(nextLocation(1)?.id).toBe('viridian')
   })
 
-  it('stops at the last playable town', () => {
-    expect(nextTown(PLAYABLE_TOWNS)).toBeUndefined()
+  it('stops at the last playable location', () => {
+    expect(nextLocation(PLAYABLE_LOCATIONS)).toBeUndefined()
   })
 })
 
@@ -120,18 +120,18 @@ describe('newStock', () => {
     ['pallet', ['potion']],
     ['viridian', ['antidote', 'pokeBall', 'paralyzeHeal']],
     ['cinnabar', []],
-  ] as const)('%s introduces %j', (townId, expected) => {
-    expect(newStock(townById(townId))).toEqual(expected)
+  ] as const)('%s introduces %j', (locationId, expected) => {
+    expect(newStock(locationById(locationId))).toEqual(expected)
   })
 })
 
-describe('shortTownName', () => {
+describe('shortLocationName', () => {
   it.each([
     ['pallet', 'Pallet'],
     ['viridian', 'Viridian'],
     ['cinnabar', 'Cinnabar'],
     ['indigoPlateau', 'Indigo Plateau'],
-  ] as const)('shortens %s to %s', (townId, expected) => {
-    expect(shortTownName(townById(townId))).toBe(expected)
+  ] as const)('shortens %s to %s', (locationId, expected) => {
+    expect(shortLocationName(locationById(locationId))).toBe(expected)
   })
 })

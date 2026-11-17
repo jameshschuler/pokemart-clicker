@@ -1,5 +1,5 @@
-import { ITEMS, type Item, type ItemId } from './items'
-import { newStock, TOWNS } from './towns'
+import { type Item, type ItemId, ITEMS } from './items'
+import { LOCATIONS, newStock } from './locations'
 
 /** Pallet's Potions: stocked from the start and worth the base ₽1 sale. */
 export const STARTING_ITEM: ItemId = 'potion'
@@ -24,9 +24,9 @@ export interface StockOffer {
   cost: number
 }
 
-/** Items the franchise can stock: every open town's new items that have a price. */
+/** Items the franchise can stock: every open location's new items that have a price. */
 export function stockOffers(martsOwned: number): StockOffer[] {
-  const offered = new Set(TOWNS.slice(0, martsOwned).flatMap(newStock))
+  const offered = new Set(LOCATIONS.slice(0, martsOwned).flatMap(newStock))
   offered.delete(STARTING_ITEM)
 
   return ITEMS.flatMap((item) =>

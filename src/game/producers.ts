@@ -1,4 +1,4 @@
-import type { TownId } from './towns'
+import type { LocationId } from './locations'
 
 export type ProducerId = 'flyer' | 'deliveryBike' | 'vendingMachine' | 'stockClerk'
 
@@ -7,8 +7,8 @@ export interface Producer {
   name: string
   plural: string
   description: string
-  /** The town whose opening makes it available. */
-  town: TownId
+  /** The location whose opening makes it available. */
+  location: LocationId
   baseCost: number
   /** Sales a second, each worth the sale value. */
   salesPerSecond: number
@@ -20,7 +20,7 @@ export const PRODUCERS: Producer[] = [
     name: 'Flyer',
     plural: 'Flyers',
     description: 'Pinned up around Pallet Town. Brings in a walk-in every 10 seconds.',
-    town: 'pallet',
+    location: 'pallet',
     baseCost: 15,
     salesPerSecond: 0.1,
   },
@@ -29,7 +29,7 @@ export const PRODUCERS: Producer[] = [
     name: 'Delivery Bike',
     plural: 'Delivery Bikes',
     description: 'Rides orders out to trainers on Route 1.',
-    town: 'pallet',
+    location: 'pallet',
     baseCost: 100,
     salesPerSecond: 1,
   },
@@ -38,7 +38,7 @@ export const PRODUCERS: Producer[] = [
     name: 'Vending Machine',
     plural: 'Vending Machines',
     description: 'Sells outside the door, day and night.',
-    town: 'pallet',
+    location: 'pallet',
     baseCost: 1_100,
     salesPerSecond: 8,
   },
@@ -48,7 +48,7 @@ export const PRODUCERS: Producer[] = [
     plural: 'Stock Clerks',
     description:
       'Keeps the shelves full so trainers heading for Viridian Forest never find them empty.',
-    town: 'viridian',
+    location: 'viridian',
     baseCost: 12_000,
     salesPerSecond: 47,
   },

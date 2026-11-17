@@ -1,27 +1,27 @@
 # PokéMart Clicker
 
-Cookie Clicker–style idle game: you own the PokéMart in Pallet Town and expand town by town, then region by region (Kanto → Johto → Hoenn). Personal project, not for distribution.
+Cookie Clicker–style idle game: you own the PokéMart in Pallet Town and expand location by location, then region by region (Kanto → Johto → Hoenn). Personal project, not for distribution.
 
-**[DESIGN.md](DESIGN.md) is the source of truth for game design** — items, towns, staff, upgrades, flash sales, prestige, and the iteration plan. Update it when a design decision changes.
+**[DESIGN.md](DESIGN.md) is the source of truth for game design** — items, locations, staff, upgrades, flash sales, prestige, and the iteration plan. Update it when a design decision changes.
 
 ## How we work
 
 - **Small, playable iterations.** Build one iteration from DESIGN.md at a time, then stop so the user can playtest before starting the next. Don't bundle iterations.
 - After each iteration: run tests, build and lint, start the dev server, and list what to try and what feedback would be useful.
-- Real Pokémon region, town and item names are used. Item icons are PokeAPI sprites for now, hotlinked, with a disclaimer in the footer. This is fine only because the game is personal and never distributed. Other art is original inline SVG/CSS.
+- Real Pokémon region, location and item names are used. Item icons are PokeAPI sprites for now, hotlinked, with a disclaimer in the footer. This is fine only because the game is personal and never distributed. Other art is original inline SVG/CSS.
 
 ## Status
 
 - [x] Iteration 1 — register click, Potion + Poké Ball, passive sales, buy ×1/×10/Max, autosave
-- [x] Iteration 2 — towns: full Kanto item ladder gated by towns, route map, open next town
-- [ ] Iteration 3 — upgrades: register upgrades, lifetime stats and base achievements done; town perks, item doublings, tier synergies to go
-- [ ] Franchise rework (see "Rework: the PokéMart franchise" in DESIGN.md): steps 1–2 built (four producers, Viridian, item upgrades); next register upgrades, then the remaining towns
+- [x] Iteration 2 — locations: full Kanto item ladder gated by locations, route map, open next location
+- [ ] Iteration 3 — upgrades: register upgrades, lifetime stats and base achievements done; location perks, item doublings, tier synergies to go
+- [ ] Franchise rework (see "Rework: the PokéMart franchise" in DESIGN.md): steps 1–2 built (four producers, Viridian, item upgrades); next register upgrades, then the remaining locations
 - [ ] Iteration 6 — mart scene, pulled forward
 - [ ] 4 staff · 5 flash sales · 7 polish · 8 prestige · 9 Johto · 10 Hoenn
 
 Open design questions: retro handheld look vs. clean dashboard (currently default shadcn theme); pacing target (~2h to clear Kanto, unconfirmed).
 
-TODO later: cache chain sales and the chain multiplier until marts, marts owned or achievements change. Components recompute them about 20 times a frame. Measured at 0.056 ms per frame with all 11 Kanto marts stocked, so it isn't worth doing yet. Revisit when Johto or Hoenn add towns, or if the game feels slow.
+TODO later: cache chain sales and the chain multiplier until marts, marts owned or achievements change. Components recompute them about 20 times a frame. Measured at 0.056 ms per frame with all 11 Kanto marts stocked, so it isn't worth doing yet. Revisit when Johto or Hoenn add locations, or if the game feels slow.
 
 ## Commands
 
@@ -36,7 +36,7 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 ## Code layout
 
 - `src/game/` — game logic, no React except `useGameLoop.ts`
-  - `items.ts` item catalog and FRLG prices · `producers.ts` producers · `stocking.ts` item upgrades and sale value · `towns.ts` Kanto route, stock and open costs · `upgrades.ts` register upgrades · `stats.ts` lifetime stats · `achievements.ts` achievements · `economy.ts` pure math (costs, sales/s, click value) · `format.ts` number formatting
+  - `items.ts` item catalog and FRLG prices · `producers.ts` producers · `stocking.ts` item upgrades and sale value · `locations.ts` Kanto route, stock and open costs · `upgrades.ts` register upgrades · `stats.ts` lifetime stats · `achievements.ts` achievements · `economy.ts` pure math (costs, sales/s, click value) · `format.ts` number formatting
   - `store.ts` zustand store (state + actions) · `save.ts` localStorage save/load/autosave · `useGameLoop.ts` rAF loop
 - `src/components/` — UI, organized by feature folder; `components/ui/` are shadcn primitives (base-nova style, Base UI)
 - `src/hooks/` — React hooks other than the game loop
@@ -77,7 +77,7 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 - **Fix the design, don't work around it.** When a change doesn't fit the current structure, reshape the structure instead of bolting on a special case, flag or duplicate path. If the cleanup is large or unrelated, raise it and do it as a separate change.
 - **Deep modules, simple interfaces.** Hide real complexity behind a small, obvious API. Avoid shallow layers that just pass calls through.
 - **Keep game rules out of components.** Economy, unlocks and pricing live in `src/game/` so they can change without touching UI.
-- **Name things after the game.** Use the words DESIGN.md uses (town, item, staff, flash sale, prestige), one name per concept everywhere.
+- **Name things after the game.** Use the words DESIGN.md uses (location, item, staff, flash sale, prestige), one name per concept everywhere.
 - **Make trade-offs visible.** When you knowingly take a shortcut, say what it costs and when to revisit it.
 - **Strategic isn't speculative.** Design for the change you can see coming (the next iterations in DESIGN.md), not every change you can imagine.
 

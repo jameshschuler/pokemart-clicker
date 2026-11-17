@@ -2,13 +2,13 @@ import { AchievementsDialog } from '@/components/achievements/AchievementsDialog
 import { AchievementToast } from '@/components/achievements/AchievementToast'
 import { WelcomeBackDialog } from '@/components/away/WelcomeBackDialog'
 import { RouteMap } from '@/components/map/RouteMap'
-import { Counter } from '@/components/register/Counter'
 import { Producers } from '@/components/producers/Producers'
+import { Counter } from '@/components/register/Counter'
 import { ResetSaveDialog } from '@/components/save/ResetSaveDialog'
 import { StatsDialog } from '@/components/stats/StatsDialog'
 import { StockList } from '@/components/stock/StockList'
+import { LOCATIONS } from '@/game/locations'
 import { useGame } from '@/game/store'
-import { TOWNS } from '@/game/towns'
 import { useGameLoop } from '@/game/useGameLoop'
 
 export default function App() {
@@ -21,7 +21,7 @@ export default function App() {
         <div className="min-w-0">
           <h1 className="truncate text-base font-semibold">PokéMart Clicker</h1>
           <p className="truncate text-sm text-muted-foreground tabular-nums">
-            Kanto franchise · {martsOwned} of {TOWNS.length} locations
+            Kanto franchise · {martsOwned} of {LOCATIONS.length} locations
           </p>
         </div>
         <div className="flex shrink-0 gap-1">

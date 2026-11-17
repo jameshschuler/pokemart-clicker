@@ -1,12 +1,12 @@
 import type { EarnedAchievements } from './achievements'
 import type { ItemId } from './items'
-import { PRODUCERS, type Producer, type ProducerId } from './producers'
+import { type MartLocation, nextLocation } from './locations'
+import { type Producer, type ProducerId, PRODUCERS } from './producers'
 import { saleValue } from './stocking'
-import { nextTown, type Town } from './towns'
 import { REGISTER_UPGRADES, type RegisterUpgradeId } from './upgrades'
 
 export const COST_GROWTH = 1.15
-export const TOWN_BONUS = 0.05
+export const LOCATION_BONUS = 0.05
 export const ACHIEVEMENT_BONUS = 0.01
 export const OFFLINE_CAP_SECONDS = 2 * 3600
 /** Gaps this long count as time away: paid in full up to the cap, with a welcome back report. */
@@ -60,9 +60,9 @@ export function purchaseQuote(
 }
 
 export interface FranchiseBonus {
-  extraTowns: number
+  extraLocations: number
   achievementTiers: number
-  fromTowns: number
+  fromLocations: number
   fromAchievements: number
 }
 
@@ -70,23 +70,23 @@ export function achievementTiers(earned: EarnedAchievements): number {
   return Object.values(earned).reduce((sum, tiers) => sum + tiers, 0)
 }
 
-/** +5% per town after Pallet and +1% per achievement tier. */
+/** +5% per location after Pallet and +1% per achievement tier. */
 export function franchiseBonus({ martsOwned, achievements }: Franchise): FranchiseBonus {
-  const extraTowns = martsOwned - 1
+  const extraLocations = martsOwned - 1
   const tiers = achievementTiers(achievements)
 
   return {
-    extraTowns,
+    extraLocations,
     achievementTiers: tiers,
-    fromTowns: TOWN_BONUS * extraTowns,
+    fromLocations: LOCATION_BONUS * extraLocations,
     fromAchievements: ACHIEVEMENT_BONUS * tiers,
   }
 }
 
 export function franchiseMultiplier(franchise: Franchise): number {
-  const { fromTowns, fromAchievements } = franchiseBonus(franchise)
+  const { fromLocations, fromAchievements } = franchiseBonus(franchise)
 
-  return 1 + fromTowns + fromAchievements
+  return 1 + fromLocations + fromAchievements
 }
 
 /** Sales per second from every producer, before the franchise bonus. */
@@ -127,26 +127,26 @@ export function clickValue(
 }
 
 export interface OpenRequirements {
-  town: Town
+  location: MartLocation
   hasCoins: boolean
   hasIncome: boolean
   ready: boolean
 }
 
-/** What's needed to open the next town, or undefined when no town can open yet. */
+/** What's needed to open the next location, or undefined when no location can open yet. */
 export function openRequirements(
   franchise: Franchise,
   coins: number,
 ): OpenRequirements | undefined {
-  const town = nextTown(franchise.martsOwned)
-  if (!town) {
+  const location = nextLocation(franchise.martsOwned)
+  if (!location) {
     return undefined
   }
 
-  const hasCoins = coins >= town.openCost
-  const hasIncome = incomePerSecond(franchise) >= town.requiredIncome
+  const hasCoins = coins >= location.openCost
+  const hasIncome = incomePerSecond(franchise) >= location.requiredIncome
 
-  return { town, hasCoins, hasIncome, ready: hasCoins && hasIncome }
+  return { location, hasCoins, hasIncome, ready: hasCoins && hasIncome }
 }
 
 export interface AwayReport {

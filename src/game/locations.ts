@@ -1,6 +1,6 @@
-import { ITEMS, type Item, type ItemId } from './items'
+import { type Item, type ItemId, ITEMS } from './items'
 
-export type TownId =
+export type LocationId =
   | 'pallet'
   | 'viridian'
   | 'pewter'
@@ -18,13 +18,13 @@ export interface Floor {
   stock: ItemId[]
 }
 
-export interface Town {
-  id: TownId
+export interface MartLocation {
+  id: LocationId
   name: string
   openCost: number
   requiredIncome: number
   stock: ItemId[]
-  /** Defaults to "<town> Mart". */
+  /** Defaults to "<location> Mart". */
   storeName?: string
   floors?: Floor[]
 }
@@ -77,7 +77,7 @@ const CELADON_FLOORS: Floor[] = [
   { name: 'Roof · Vending Machines', stock: ['freshWater', 'sodaPop', 'lemonade'] },
 ]
 
-export const TOWNS: Town[] = [
+export const LOCATIONS: MartLocation[] = [
   {
     id: 'pallet',
     name: 'Pallet Town',
@@ -195,38 +195,40 @@ export const TOWNS: Town[] = [
   },
 ]
 
-/** Towns built on the franchise model so far; the rest open in later build steps. */
-export const PLAYABLE_TOWNS = 2
+/** Locations built on the franchise model so far; the rest open in later build steps. */
+export const PLAYABLE_LOCATIONS = 2
 
-const ROUTE_ORDER = new Map(TOWNS.map((town, index) => [town.id, index]))
+const ROUTE_ORDER = new Map(LOCATIONS.map((location, index) => [location.id, index]))
 
-export function townById(townId: TownId): Town {
-  return TOWNS[ROUTE_ORDER.get(townId) ?? 0]
+export function locationById(locationId: LocationId): MartLocation {
+  return LOCATIONS[ROUTE_ORDER.get(locationId) ?? 0]
 }
 
-export function isTownOpen(townId: TownId, martsOwned: number): boolean {
-  return (ROUTE_ORDER.get(townId) ?? TOWNS.length) < martsOwned
+export function isLocationOpen(locationId: LocationId, martsOwned: number): boolean {
+  return (ROUTE_ORDER.get(locationId) ?? LOCATIONS.length) < martsOwned
 }
 
-/** The next town the franchise can open, if any. */
-export function nextTown(martsOwned: number): Town | undefined {
-  return martsOwned < PLAYABLE_TOWNS ? TOWNS[martsOwned] : undefined
+/** The next location the franchise can open, if any. */
+export function nextLocation(martsOwned: number): MartLocation | undefined {
+  return martsOwned < PLAYABLE_LOCATIONS ? LOCATIONS[martsOwned] : undefined
 }
 
-/** Items a town is the first on the route to sell. */
-export function newStock(town: Town): ItemId[] {
-  const earlier = new Set(TOWNS.slice(0, ROUTE_ORDER.get(town.id)).flatMap((stop) => stop.stock))
+/** Items a location is the first on the route to sell. */
+export function newStock(location: MartLocation): ItemId[] {
+  const earlier = new Set(
+    LOCATIONS.slice(0, ROUTE_ORDER.get(location.id)).flatMap((earlier) => earlier.stock),
+  )
 
-  return town.stock.filter((itemId) => !earlier.has(itemId))
+  return location.stock.filter((itemId) => !earlier.has(itemId))
 }
 
 /** "Viridian City" → "Viridian", for tight spaces. */
-export function shortTownName(town: Town): string {
-  return town.name.replace(/ (Town|City|Island)$/, '')
+export function shortLocationName(location: MartLocation): string {
+  return location.name.replace(/ (Town|City|Island)$/, '')
 }
 
-export function storeName(town: Town): string {
-  return town.storeName ?? `${town.name} Mart`
+export function storeName(location: MartLocation): string {
+  return location.storeName ?? `${location.name} Mart`
 }
 
 export interface FloorSection {
@@ -241,11 +243,11 @@ function itemsIn(stock: ItemId[]): Item[] {
 }
 
 /** Everything a store sells, in route-ladder order. */
-export function storeItems(town: Town): Item[] {
-  return itemsIn(town.stock)
+export function storeItems(location: MartLocation): Item[] {
+  return itemsIn(location.stock)
 }
 
 /** A store's items grouped by floor, or undefined for a single-floor mart. */
-export function storeFloors(town: Town): FloorSection[] | undefined {
-  return town.floors?.map((floor) => ({ name: floor.name, items: itemsIn(floor.stock) }))
+export function storeFloors(location: MartLocation): FloorSection[] | undefined {
+  return location.floors?.map((floor) => ({ name: floor.name, items: itemsIn(floor.stock) }))
 }
