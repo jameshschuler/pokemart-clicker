@@ -49,8 +49,8 @@ describe('buyProducer', () => {
   })
 })
 
-describe('buyProducer town', () => {
-  it('refuses a producer whose town is not open', () => {
+describe('buyProducer location', () => {
+  it('refuses a producer whose location is not open', () => {
     useGame.setState({ coins: 1e9 })
 
     useGame.getState().buyProducer('stockClerk', 1)
@@ -61,7 +61,7 @@ describe('buyProducer town', () => {
     })
   })
 
-  it('sells it once the town opens', () => {
+  it('sells it once the location opens', () => {
     useGame.setState({ coins: 1e9, martsOwned: 2 })
 
     useGame.getState().buyProducer('stockClerk', 1)
@@ -70,7 +70,7 @@ describe('buyProducer town', () => {
   })
 })
 
-describe('openNextTown', () => {
+describe('openNextLocation', () => {
   function readyForViridian(coins: number) {
     useGame.setState({ coins, producers: { ...emptyProducers(), deliveryBike: 5 } })
   }
@@ -78,7 +78,7 @@ describe('openNextTown', () => {
   it('opens Viridian and charges its cost', () => {
     readyForViridian(1_200)
 
-    useGame.getState().openNextTown()
+    useGame.getState().openNextLocation()
 
     expect(useGame.getState()).toMatchObject({ martsOwned: 2, coins: 200 })
   })
@@ -86,7 +86,7 @@ describe('openNextTown', () => {
   it('refuses without enough income', () => {
     useGame.setState({ coins: 1e9 })
 
-    useGame.getState().openNextTown()
+    useGame.getState().openNextLocation()
 
     expect(useGame.getState()).toMatchObject({ martsOwned: 1, coins: 1e9 })
   })
@@ -94,23 +94,23 @@ describe('openNextTown', () => {
   it('refuses without enough coins', () => {
     readyForViridian(999)
 
-    useGame.getState().openNextTown()
+    useGame.getState().openNextLocation()
 
     expect(useGame.getState().martsOwned).toBe(1)
   })
 
-  it('stops at the last playable town', () => {
+  it('stops at the last playable location', () => {
     readyForViridian(1e9)
     useGame.setState({ martsOwned: 2 })
 
-    useGame.getState().openNextTown()
+    useGame.getState().openNextLocation()
 
     expect(useGame.getState().martsOwned).toBe(2)
   })
 })
 
 describe('stockItem', () => {
-  it('stocks an item from an open town and raises the sale value', () => {
+  it('stocks an item from an open location and raises the sale value', () => {
     useGame.setState({ coins: 2_000, martsOwned: 2 })
 
     useGame.getState().stockItem('antidote')
@@ -119,7 +119,7 @@ describe('stockItem', () => {
   })
 
   it.each([
-    ['from a town not yet open', 1e9, 1, [], 'antidote'],
+    ['from a location not yet open', 1e9, 1, [], 'antidote'],
     ['already stocked', 1e9, 2, ['antidote'], 'antidote'],
     ['without enough coins', 1_499, 2, [], 'antidote'],
     ['that is the starting item', 1e9, 2, [], 'potion'],

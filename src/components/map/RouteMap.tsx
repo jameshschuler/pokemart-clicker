@@ -1,13 +1,13 @@
+import { LOCATIONS, nextLocation, shortLocationName } from '@/game/locations'
 import { useGame } from '@/game/store'
-import { nextTown, shortTownName, TOWNS } from '@/game/towns'
 import { cn } from '@/lib/utils'
 
-const EDGE_INSET = `${50 / TOWNS.length}%`
+const EDGE_INSET = `${50 / LOCATIONS.length}%`
 
 export function RouteMap() {
   const martsOwned = useGame((state) => state.martsOwned)
-  const progress = (martsOwned - 1) / (TOWNS.length - 1)
-  const upcoming = nextTown(martsOwned)
+  const progress = (martsOwned - 1) / (LOCATIONS.length - 1)
+  const upcoming = nextLocation(martsOwned)
 
   return (
     <nav aria-label="Kanto route" className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
@@ -24,16 +24,16 @@ export function RouteMap() {
         />
         <ol
           className="relative grid"
-          style={{ gridTemplateColumns: `repeat(${TOWNS.length}, minmax(0, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${LOCATIONS.length}, minmax(0, 1fr))` }}
         >
-          {TOWNS.map((town, index) => {
+          {LOCATIONS.map((location, index) => {
             const isOpen = index < martsOwned
-            const isNext = town.id === upcoming?.id
+            const isNext = location.id === upcoming?.id
 
             return (
               <li
-                key={town.id}
-                title={town.name}
+                key={location.id}
+                title={location.name}
                 className="flex min-w-0 flex-col items-center gap-1.5"
               >
                 <span
@@ -50,7 +50,7 @@ export function RouteMap() {
                     !isOpen && !isNext && 'text-muted-foreground/60',
                   )}
                 >
-                  {shortTownName(town)}
+                  {shortLocationName(location)}
                 </span>
               </li>
             )

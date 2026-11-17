@@ -114,9 +114,9 @@ describe('franchiseBonus', () => {
     }
 
     expect(franchiseBonus(grown)).toEqual({
-      extraTowns: 2,
+      extraLocations: 2,
       achievementTiers: 3,
-      fromTowns: 0.1,
+      fromLocations: 0.1,
       fromAchievements: 0.03,
     })
   })
@@ -129,7 +129,7 @@ describe('franchiseMultiplier', () => {
     [1, 1],
     [2, 1.05],
     [11, 1.5],
-  ])('with %i towns is %d', (martsOwned, expected) => {
+  ])('with %i locations is %d', (martsOwned, expected) => {
     expect(franchiseMultiplier({ ...franchise, martsOwned })).toBeCloseTo(expected)
   })
 
@@ -166,7 +166,7 @@ describe('openRequirements', () => {
 
   it('is ready for Viridian with ₽5/s and ₽1,000', () => {
     expect(openRequirements(busy, 1_000)).toMatchObject({
-      town: { id: 'viridian' },
+      location: { id: 'viridian' },
       hasCoins: true,
       hasIncome: true,
       ready: true,
@@ -180,7 +180,7 @@ describe('openRequirements', () => {
     expect(openRequirements(state, coins)?.ready).toBe(false)
   })
 
-  it('is undefined once every playable town is open', () => {
+  it('is undefined once every playable location is open', () => {
     expect(openRequirements({ ...franchise, martsOwned: 2 }, 1e9)).toBeUndefined()
   })
 })

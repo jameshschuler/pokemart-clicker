@@ -1,7 +1,7 @@
 import { formatRate } from '@/game/format'
+import { nextLocation } from '@/game/locations'
 import { saleValue, stockOffers } from '@/game/stocking'
 import { useGame } from '@/game/store'
-import { nextTown } from '@/game/towns'
 import { StockRow } from './StockRow'
 
 export function StockList() {
@@ -9,7 +9,7 @@ export function StockList() {
   const stockedItems = useGame((state) => state.stockedItems)
   const stocked = new Set(stockedItems)
   const offers = stockOffers(martsOwned)
-  const upcoming = nextTown(martsOwned)
+  const upcoming = nextLocation(martsOwned)
 
   return (
     <section className="flex flex-col gap-2">

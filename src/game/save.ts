@@ -1,10 +1,10 @@
-import { emptyAchievements, type EarnedAchievements } from './achievements'
+import { type EarnedAchievements, emptyAchievements } from './achievements'
 import type { Producers } from './economy'
 import type { ItemId } from './items'
+import { PLAYABLE_LOCATIONS } from './locations'
 import { PRODUCERS } from './producers'
 import { stockOffers } from './stocking'
-import { initialState, useGame, type GameState } from './store'
-import { PLAYABLE_TOWNS } from './towns'
+import { type GameState, initialState, useGame } from './store'
 import { REGISTER_UPGRADES } from './upgrades'
 
 const UPGRADE_IDS = new Set(REGISTER_UPGRADES.map((upgrade) => upgrade.id))
@@ -100,7 +100,7 @@ export function loadGame() {
     }
 
     const base = initialState()
-    const martsOwned = Math.floor(clamp(file.state.martsOwned, 1, PLAYABLE_TOWNS, 1))
+    const martsOwned = Math.floor(clamp(file.state.martsOwned, 1, PLAYABLE_LOCATIONS, 1))
     const now = Date.now()
     const savedAt = clamp(file.savedAt, 0, now, now)
 
