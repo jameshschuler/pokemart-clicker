@@ -133,23 +133,42 @@ describe('stockItem', () => {
 })
 
 describe('buyRegisterUpgrade', () => {
-  it('buys an unlocked upgrade and raises the click value', () => {
-    useGame.setState({ coins: 150, producers: { ...emptyProducers(), deliveryBike: 10 } })
+  it('buys an upgrade from an open location and raises the click value', () => {
+    useGame.setState({ coins: 300, producers: { ...emptyProducers(), deliveryBike: 10 } })
 
     useGame.getState().buyRegisterUpgrade('secondTill')
     const earned = useGame.getState().serveCustomer()
 
-    expect(useGame.getState().registerUpgrades).toEqual(['secondTill'])
-    expect(earned).toBeCloseTo(1 + 0.02 * 10)
+    expect(useGame.getState()).toMatchObject({ registerUpgrades: ['secondTill'] })
+    expect(earned).toBeCloseTo(1 + 0.06 * 10)
     expect(useGame.getState().coins).toBeCloseTo(50 + earned)
   })
 
-  it('refuses an upgrade out of order', () => {
+  it('leaves income per second alone', () => {
+    useGame.setState({
+      producers: { ...emptyProducers(), deliveryBike: 10 },
+      registerUpgrades: ['secondTill'],
+    })
+
+    useGame.getState().tick(1)
+
+    expect(useGame.getState().coins).toBeCloseTo(10)
+  })
+
+  it('refuses an upgrade whose location is not open', () => {
     useGame.setState({ coins: 1e9 })
 
     useGame.getState().buyRegisterUpgrade('machopBagger')
 
     expect(useGame.getState()).toMatchObject({ coins: 1e9, registerUpgrades: [] })
+  })
+
+  it('sells upgrades from an open location in any order', () => {
+    useGame.setState({ coins: 1e9, martsOwned: 2 })
+
+    useGame.getState().buyRegisterUpgrade('machopBagger')
+
+    expect(useGame.getState().registerUpgrades).toEqual(['machopBagger'])
   })
 
   it('refuses buying the same upgrade twice', () => {
@@ -161,7 +180,7 @@ describe('buyRegisterUpgrade', () => {
   })
 
   it('refuses without enough coins', () => {
-    useGame.setState({ coins: 99 })
+    useGame.setState({ coins: 249 })
 
     useGame.getState().buyRegisterUpgrade('secondTill')
 

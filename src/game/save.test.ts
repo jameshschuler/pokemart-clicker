@@ -95,6 +95,33 @@ describe('loadGame repairs bad values', () => {
     expect(useGame.getState().stockedItems).toEqual(expected)
   })
 
+  it.each([
+    ['upgrades that no longer exist', 1, ['secondTill', 'goldCard'], ['secondTill']],
+    ['the same upgrade twice', 1, ['secondTill', 'secondTill'], ['secondTill']],
+    ['a list that is not a list', 1, 'secondTill', []],
+  ])('drops %s from register upgrades', (_, martsOwned, registerUpgrades, expected) => {
+    storeSave({ ...initialState(), martsOwned, registerUpgrades })
+
+    loadGame()
+
+    expect(useGame.getState().registerUpgrades).toEqual(expected)
+  })
+
+  it('refunds upgrades from a location not open yet', () => {
+    storeSave({
+      ...initialState(),
+      coins: 100,
+      registerUpgrades: ['secondTill', 'electricTill', 'receiptPrinter'],
+    })
+
+    loadGame()
+
+    expect(useGame.getState()).toMatchObject({
+      registerUpgrades: ['secondTill'],
+      coins: 100 + 6_000 + 12_000,
+    })
+  })
+
   it('starts with nothing stocked for a save from before stocking', () => {
     const { stockedItems: _, ...older } = initialState()
     storeSave(older)

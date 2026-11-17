@@ -3,11 +3,15 @@ import type { ItemId } from './items'
 import { type MartLocation, nextLocation } from './locations'
 import { type Producer, type ProducerId, PRODUCERS } from './producers'
 import { saleValue } from './stocking'
-import { REGISTER_UPGRADES, type RegisterUpgradeId } from './upgrades'
+import type { RegisterUpgradeId } from './upgrades'
 
 export const COST_GROWTH = 1.15
 export const LOCATION_BONUS = 0.05
 export const ACHIEVEMENT_BONUS = 0.01
+/** Every click also serves this share of income per second from the queue. */
+export const CLICK_INCOME_SHARE = 0.01
+/** Each register upgrade adds this share of income per second to every click. */
+export const REGISTER_UPGRADE_SHARE = 0.05
 export const OFFLINE_CAP_SECONDS = 2 * 3600
 /** Gaps this long count as time away: paid in full up to the cap, with a welcome back report. */
 export const AWAY_SECONDS = 15 * 60
@@ -22,6 +26,7 @@ export interface Franchise {
   producers: Producers
   stockedItems: ItemId[]
   martsOwned: number
+  registerUpgrades: RegisterUpgradeId[]
   achievements: EarnedAchievements
 }
 
@@ -64,6 +69,7 @@ export interface FranchiseBonus {
   achievementTiers: number
   fromLocations: number
   fromAchievements: number
+  total: number
 }
 
 export function achievementTiers(earned: EarnedAchievements): number {
@@ -74,19 +80,20 @@ export function achievementTiers(earned: EarnedAchievements): number {
 export function franchiseBonus({ martsOwned, achievements }: Franchise): FranchiseBonus {
   const extraLocations = martsOwned - 1
   const tiers = achievementTiers(achievements)
+  const fromLocations = LOCATION_BONUS * extraLocations
+  const fromAchievements = ACHIEVEMENT_BONUS * tiers
 
   return {
     extraLocations,
     achievementTiers: tiers,
-    fromLocations: LOCATION_BONUS * extraLocations,
-    fromAchievements: ACHIEVEMENT_BONUS * tiers,
+    fromLocations,
+    fromAchievements,
+    total: fromLocations + fromAchievements,
   }
 }
 
 export function franchiseMultiplier(franchise: Franchise): number {
-  const { fromLocations, fromAchievements } = franchiseBonus(franchise)
-
-  return 1 + fromLocations + fromAchievements
+  return 1 + franchiseBonus(franchise).total
 }
 
 /** Sales per second from every producer, before the franchise bonus. */
@@ -111,19 +118,17 @@ export function incomePerSecond(franchise: Franchise): number {
   return salesPerSecond(producers) * saleValue(stockedItems) * franchiseMultiplier(franchise)
 }
 
-/** One click makes one sale, plus each owned register upgrade's share of income per second. */
-export function clickValue(
-  registerUpgrades: RegisterUpgradeId[],
-  sale: number,
-  income: number,
-): number {
-  const owned = new Set(registerUpgrades)
-  const incomeShare = REGISTER_UPGRADES.filter((upgrade) => owned.has(upgrade.id)).reduce(
-    (sum, upgrade) => sum + upgrade.incomeShare,
-    0,
-  )
+/** Share of income per second each click adds: 1% from the queue plus 5% per register upgrade. */
+export function clickIncomeShare(registerUpgrades: RegisterUpgradeId[]): number {
+  return CLICK_INCOME_SHARE + REGISTER_UPGRADE_SHARE * registerUpgrades.length
+}
 
-  return sale + incomeShare * income
+/** One click is one sale with the franchise bonus, plus a share of income per second. */
+export function clickValue(franchise: Franchise): number {
+  const sale = saleValue(franchise.stockedItems) * franchiseMultiplier(franchise)
+  const income = salesPerSecond(franchise.producers) * sale
+
+  return sale + clickIncomeShare(franchise.registerUpgrades) * income
 }
 
 export interface OpenRequirements {

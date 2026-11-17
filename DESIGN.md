@@ -58,19 +58,31 @@ Bought repeatedly, +15% cost each, counted across the whole franchise. **One at 
 
 Opening a location unlocks its items to stock, may unlock the next producer, and adds the franchise bonus (+5% per location). The route map shows how far the franchise reaches. Open costs and requirements get redesigned for the new model.
 
-### Register upgrades (to redesign)
+### Register upgrades (step 3, built)
 
-About checkout instead of abstract doublings:
+**The problem.** Every register upgrade adds a flat share of income per click, while costs climb fast. Upgrade 4 (₽6,000, +2%) at ₽50/s and 3 clicks/s adds ₽3/s and pays back in about 33 minutes; a Stock Clerk (₽12,000, ₽47/s) pays back in 4. They're also no help to anyone who isn't clicking.
 
-- **Sales per click:** Second Till serves two customers at once; a Machop bagger speeds you up.
-- **Upselling:** register customers spend more ("Want a Repel with that?").
-- **Working the queue:** the old "+% of ₽/s per click" returns as serving people from the line, so clicking stays useful late.
+**The fix: bigger shares at sensible costs, and clicks count as sales.** Register upgrades only affect clicking; idle income doesn't depend on them. (An earlier draft had them boost all sales; clicking is what the register is for.)
+
+- Each upgrade adds **+5% of income per second to every click**, up from 1–2%. At ₽50/s and 3 clicks/s, Meowth Coin Counter (₽1,000) adds about ₽7.50/s and pays back in about 2 minutes.
+- **Clicks are sales:** a click is worth the sale value × the franchise bonus, plus 1% of income per second from the queue, plus 5% per register upgrade. With all 17, a click is worth 86% of income per second.
+- **Names come back,** following how a checkout modernizes (cash → electric → scanner → cards → tap → tablet → self checkout), with Pokémon at the counter where it fits.
+- **Several on offer at once:** every upgrade from an open location that you don't own yet, cheapest first. Under the list, "More open with Pewter City." names the next location that brings one.
+
+| Upgrade | Location | Cost (placeholder) | Effect |
+|---|---|---|---|
+| Second Till | Pallet Town | ₽250 | +5% of income per click |
+| Meowth Coin Counter | Viridian City | ₽1,000 | +5% of income per click |
+| Machop Bagger | Viridian City | ₽3,000 | +5% of income per click |
+| Electric Till … Self Checkout (14 more) | Pewter City → Indigo Plateau | set as each location is built | +5% of income per click |
+
+Costs aim for a payback of a few minutes for someone clicking about 3 times a second at the income they'd have when the location opens, and get tuned with the pacing sim.
 
 ### Build order
 
 1. Swap the Clerk for the **Flyer**, make producers franchise-wide, hide the catalog. Saves reset. (Done.)
 2. Viridian: opening the next location plus item upgrades (stock items to raise the sale value); the route map and catalog return.
-3. Register upgrades on the new model.
+3. Register upgrades on the new model: +5% of income per click each, names back, several on offer by location. (Done.)
 4. The remaining locations, their items and the next producers.
 
 ### Step 2: Viridian (built)
@@ -126,7 +138,7 @@ The register, four producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk
   | Delivery Bike | First Delivery | Bike Shop Regular | Pedal Pushers | Route 1 Rush Hour | Cycling Road Club | Fleet of a Thousand |
   | Vending Machine | Coin Slot | Vending Row | Rooftop Envy | Thirst Quenched | Machine Kingdom | Every Corner Covered |
   | Stock Clerk | First Hire | Full Shift | Night Crew | Shelf Command | Stockroom Army | Silph-Sized Staff |
-- Register upgrades are shown numbered ("Register upgrade 1" to 17) with no names, at the table's costs, one at a time in order, above the next-location card. Every one is **% based**: it adds a share of income per second to each click. Upgrades 1–4 (the old ×2 ones) give +2% each, 5–17 give +1%, 21% in all; at 3 clicks/s with every upgrade, clicking adds about 63% on top of income. Click value = sale value + total share × income. Names and the rest of the redesign come in step 3.
+- Register upgrades: named again, +5% of income per click each (clicking only), every one from an open location on offer at once (Second Till in Pallet; Meowth Coin Counter and Machop Bagger in Viridian). A click is the sale value × franchise bonus + (1% + 5% per upgrade) of income. Saves keep only upgrades from open locations.
 - Only Pallet and Viridian can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
 - Removed: per-mart producers, buying items as producers, order milestones, Premier Customer, the order, Stocked and Chain achievements.
 
@@ -283,25 +295,25 @@ One-time purchases.
 
   | Upgrade | Location | Cost | Effect |
   |---|---|---|---|
-  | Second Till | Pallet Town | 100 | +2% (was ×2) |
-  | Meowth Coin Counter | Viridian City | 400 | +2% (was ×2) |
-  | Machop Bagger | Viridian City | 1K | +2% (was ×2) |
-  | Electric Till | Pewter City | 6K | +2% (was ×2) |
-  | Receipt Printer | Pewter City | 12K | +1% of chain ₽/s per click |
-  | Barcode Scanner | Cerulean City | 30K | +1% |
-  | Credit Card Machine | Vermilion City | 150K | +1% |
-  | Express Lane | Lavender Town | 250K | +1% |
-  | Loyalty Stamps | Lavender Town | 400K | +1% |
-  | Conveyor Belt | Celadon City | 1.2M | +1% |
-  | Department Store Counter | Celadon City | 2M | +1% |
-  | Chansey Cashier | Fuchsia City | 8M | +1% |
-  | Silph Card Reader | Saffron City | 15M | +1% |
-  | Alakazam Price Check | Saffron City | 20M | +1% |
-  | Machamp Bagger | Saffron City | 30M | +1% |
-  | Porygon Tablet | Cinnabar Island | 45M | +1% |
-  | Self Checkout | Indigo Plateau | 100M | +1% |
+  | Second Till | Pallet Town | 250 | +5% of income per click |
+  | Meowth Coin Counter | Viridian City | 1K | +5% of income per click |
+  | Machop Bagger | Viridian City | 3K | +5% of income per click |
+  | Electric Till | Pewter City | 6K | +5% of income per click |
+  | Receipt Printer | Pewter City | 12K | +5% of income per click |
+  | Barcode Scanner | Cerulean City | 30K | +5% of income per click |
+  | Credit Card Machine | Vermilion City | 150K | +5% of income per click |
+  | Express Lane | Lavender Town | 250K | +5% of income per click |
+  | Loyalty Stamps | Lavender Town | 400K | +5% of income per click |
+  | Conveyor Belt | Celadon City | 1.2M | +5% of income per click |
+  | Department Store Counter | Celadon City | 2M | +5% of income per click |
+  | Chansey Cashier | Fuchsia City | 8M | +5% of income per click |
+  | Silph Card Reader | Saffron City | 15M | +5% of income per click |
+  | Alakazam Price Check | Saffron City | 20M | +5% of income per click |
+  | Machamp Bagger | Saffron City | 30M | +5% of income per click |
+  | Porygon Tablet | Cinnabar Island | 45M | +5% of income per click |
+  | Self Checkout | Indigo Plateau | 100M | +5% of income per click |
 
-  Click value = ₽1 × 2^(doublings) + (sales share × chain ₽/s): up to ₽16 base and 13% of chain ₽/s per click. At 3 clicks/s with every upgrade, clicking adds about 39% on top of order income. The pacing sim finishes Kanto in ~108m with them vs ~118m without.
+  (Old model, before step 3:) Click value = ₽1 × 2^(doublings) + (sales share × chain ₽/s): up to ₽16 base and 13% of chain ₽/s per click. At 3 clicks/s with every upgrade, clicking adds about 39% on top of order income. The pacing sim finishes Kanto in ~108m with them vs ~118m without.
 
   Saved for later regions: phone pay as the step after Self Checkout (PokéGear pay in Johto, PokéNav pay in Hoenn), continuing the checkout tech line.
 - **Supplier contracts** — ×2 an item family (Balls, Potions, Repels).

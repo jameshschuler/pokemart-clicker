@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   bulkCost,
+  clickIncomeShare,
   clickValue,
   franchiseBonus,
   franchiseMultiplier,
@@ -105,11 +106,12 @@ describe('incomePerSecond', () => {
 })
 
 describe('franchiseBonus', () => {
-  it('splits the bonus by source', () => {
+  it('splits the bonus by source, leaving out register upgrades', () => {
     const franchise = initialState()
     const grown = {
       ...franchise,
       martsOwned: 3,
+      registerUpgrades: ['secondTill' as const],
       achievements: { ...franchise.achievements, customersServed: 2, idleHands: 1 },
     }
 
@@ -118,6 +120,7 @@ describe('franchiseBonus', () => {
       achievementTiers: 3,
       fromLocations: 0.1,
       fromAchievements: 0.03,
+      total: 0.13,
     })
   })
 })
@@ -133,6 +136,12 @@ describe('franchiseMultiplier', () => {
     expect(franchiseMultiplier({ ...franchise, martsOwned })).toBeCloseTo(expected)
   })
 
+  it('ignores register upgrades', () => {
+    expect(
+      franchiseMultiplier({ ...franchise, registerUpgrades: ['secondTill', 'meowthCoinCounter'] }),
+    ).toBe(1)
+  })
+
   it('adds +1% per achievement tier', () => {
     const achieved = {
       ...franchise,
@@ -143,20 +152,40 @@ describe('franchiseMultiplier', () => {
   })
 })
 
-describe('clickValue', () => {
+describe('clickIncomeShare', () => {
   it.each([
-    [[], 1_000, 1],
-    [['secondTill'], 1_000, 21],
-    [['secondTill', 'meowthCoinCounter', 'machopBagger', 'electricTill'], 1_000, 81],
-    [['barcodeScanner'], 1_000, 11],
-    [['secondTill', 'barcodeScanner', 'loyaltyStamps'], 1_000, 41],
-    [['secondTill'], 0, 1],
-  ] as const)('with %j at ₽%d/s is ₽%d', (upgrades, income, expected) => {
-    expect(clickValue([...upgrades], 1, income)).toBeCloseTo(expected)
+    [[], 0.01],
+    [['secondTill'], 0.06],
+    [['secondTill', 'meowthCoinCounter', 'machopBagger'], 0.16],
+  ] as const)('with %j is %d', (upgrades, expected) => {
+    expect(clickIncomeShare([...upgrades])).toBeCloseTo(expected)
+  })
+})
+
+describe('clickValue', () => {
+  const franchise = initialState()
+  const bikes = { ...emptyProducers(), deliveryBike: 10 }
+
+  it('is ₽1 for a new franchise', () => {
+    expect(clickValue(franchise)).toBe(1)
+  })
+
+  it('adds 1% of income per second', () => {
+    expect(clickValue({ ...franchise, producers: bikes })).toBeCloseTo(1 + 0.01 * 10)
+  })
+
+  it('adds 5% of income per register upgrade', () => {
+    const upgraded = { ...franchise, producers: bikes, registerUpgrades: ['secondTill' as const] }
+
+    expect(clickValue(upgraded)).toBeCloseTo(1 + 0.06 * 10)
+  })
+
+  it('applies the franchise bonus to the sale', () => {
+    expect(clickValue({ ...franchise, martsOwned: 2 })).toBeCloseTo(1.05)
   })
 
   it('starts from the stocked sale value', () => {
-    expect(clickValue(['secondTill'], 1.5, 100)).toBeCloseTo(3.5)
+    expect(clickValue({ ...franchise, stockedItems: ['antidote'] })).toBeCloseTo(1.1)
   })
 })
 
