@@ -5,9 +5,7 @@ import { PLAYABLE_LOCATIONS } from './locations'
 import { PRODUCERS } from './producers'
 import { stockOffers } from './stocking'
 import { type GameState, initialState, useGame } from './store'
-import { REGISTER_UPGRADES } from './upgrades'
-
-const UPGRADE_IDS = new Set(REGISTER_UPGRADES.map((upgrade) => upgrade.id))
+import { type RegisterUpgradeId, unlockedRegisterUpgrades } from './upgrades'
 
 const SAVE_KEY = 'mart-clicker:save'
 const SAVE_VERSION = 4
@@ -75,6 +73,19 @@ function mergeStockedItems(saved: unknown, martsOwned: number): ItemId[] {
   return [...new Set(saved)].filter((itemId): itemId is ItemId => stockable.has(itemId))
 }
 
+/** Keeps register upgrades the loaded franchise could have bought, once each. */
+function mergeRegisterUpgrades(saved: unknown, martsOwned: number): RegisterUpgradeId[] {
+  if (!Array.isArray(saved)) {
+    return []
+  }
+
+  const savedIds = new Set(saved)
+
+  return unlockedRegisterUpgrades(martsOwned)
+    .filter((upgrade) => savedIds.has(upgrade.id))
+    .map((upgrade) => upgrade.id)
+}
+
 /** Keeps earned tiers for achievements that still exist; new ones start unearned. */
 function mergeAchievements(saved: Partial<EarnedAchievements> = {}): EarnedAchievements {
   const base = emptyAchievements()
@@ -111,9 +122,7 @@ export function loadGame() {
       martsOwned,
       producers: mergeProducers(file.state.producers),
       stockedItems: mergeStockedItems(file.state.stockedItems, martsOwned),
-      registerUpgrades: (file.state.registerUpgrades ?? []).filter((upgradeId) =>
-        UPGRADE_IDS.has(upgradeId),
-      ),
+      registerUpgrades: mergeRegisterUpgrades(file.state.registerUpgrades, martsOwned),
       stats: { ...base.stats, ...file.state.stats },
       achievements: mergeAchievements(file.state.achievements),
       paidUntil: clamp(file.state.paidUntil, 0, now, savedAt),

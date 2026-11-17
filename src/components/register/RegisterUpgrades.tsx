@@ -1,10 +1,22 @@
+import { useShallow } from 'zustand/react/shallow'
+import { locationById } from '@/game/locations'
 import { useGame } from '@/game/store'
-import { nextRegisterUpgrade, REGISTER_UPGRADES } from '@/game/upgrades'
+import {
+  availableRegisterUpgrades,
+  nextLockedRegisterUpgrade,
+  REGISTER_UPGRADES,
+} from '@/game/upgrades'
 import { RegisterUpgradeRow } from './RegisterUpgradeRow'
 
 export function RegisterUpgrades() {
-  const registerUpgrades = useGame((state) => state.registerUpgrades)
-  const next = nextRegisterUpgrade(registerUpgrades)
+  const { registerUpgrades, martsOwned } = useGame(
+    useShallow((state) => ({
+      registerUpgrades: state.registerUpgrades,
+      martsOwned: state.martsOwned,
+    })),
+  )
+  const available = availableRegisterUpgrades(registerUpgrades, martsOwned)
+  const nextLocked = nextLockedRegisterUpgrade(martsOwned)
 
   return (
     <section className="flex flex-col gap-2">
@@ -15,10 +27,26 @@ export function RegisterUpgrades() {
         </span>
       </div>
 
-      {next ? (
-        <RegisterUpgradeRow upgrade={next} />
-      ) : (
-        <p className="px-3 text-xs text-muted-foreground">Every register upgrade owned.</p>
+      {available.length > 0 && (
+        <ul className="flex flex-col gap-1">
+          {available.map((upgrade) => (
+            <li key={upgrade.id}>
+              <RegisterUpgradeRow upgrade={upgrade} />
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {nextLocked && (
+        <p className="px-3 text-xs text-muted-foreground">
+          More open with {locationById(nextLocked.location).name}.
+        </p>
+      )}
+
+      {available.length === 0 && !nextLocked && (
+        <p className="px-3 text-xs text-muted-foreground">
+          Every register upgrade so far is owned.
+        </p>
       )}
     </section>
   )

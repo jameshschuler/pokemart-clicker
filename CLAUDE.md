@@ -15,7 +15,7 @@ Cookie Clicker–style idle game: you own the PokéMart in Pallet Town and expan
 - [x] Iteration 1 — register click, Potion + Poké Ball, passive sales, buy ×1/×10/Max, autosave
 - [x] Iteration 2 — locations: full Kanto item ladder gated by locations, route map, open next location
 - [ ] Iteration 3 — upgrades: register upgrades, lifetime stats and base achievements done; location perks, item doublings, tier synergies to go
-- [ ] Franchise rework (see "Rework: the PokéMart franchise" in DESIGN.md): steps 1–2 built (four producers, Viridian, item upgrades); next register upgrades, then the remaining locations
+- [ ] Franchise rework (see "Rework: the PokéMart franchise" in DESIGN.md): steps 1–3 built (four producers, Viridian, item upgrades, register upgrades); next the remaining locations
 - [ ] Iteration 6 — mart scene, pulled forward
 - [ ] 4 staff · 5 flash sales · 7 polish · 8 prestige · 9 Johto · 10 Hoenn
 
@@ -47,7 +47,7 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 - Keep economy math pure and covered in `economy.test.ts`; components read derived values via selectors.
 - Select narrowly from the store (`useShallow` for objects) — the loop updates `coins` every frame.
 - Shared game state and actions live in the zustand store, not React context or props passed down several levels.
-- Bump `SAVE_VERSION` in `save.ts` only for breaking save changes; new fields should merge in with defaults instead.
+- Bump `SAVE_VERSION` in `save.ts` only for breaking save changes; new fields should merge in with defaults instead. The game is unreleased: no migrations, refunds or renamed-field carry-overs for old saves. Loading still validates and clamps what it reads.
 - The shadcn CLI once rewrote `cn` imports to an npm package named `cn`. After `shadcn add`, check imports use `@/lib/utils`, then run `npm run format` (the CLI writes `src/index.css` in its own style).
 
 ## Coding style

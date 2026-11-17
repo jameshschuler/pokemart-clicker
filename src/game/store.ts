@@ -15,8 +15,8 @@ import type { ItemId } from './items'
 import { isLocationOpen } from './locations'
 import { type ProducerId, PRODUCERS } from './producers'
 import { emptyStats, type LifetimeStats } from './stats'
-import { saleValue, stockOffers } from './stocking'
-import { nextRegisterUpgrade, type RegisterUpgradeId } from './upgrades'
+import { stockOffers } from './stocking'
+import { availableRegisterUpgrades, type RegisterUpgradeId } from './upgrades'
 
 export interface GameState {
   coins: number
@@ -76,11 +76,7 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
 
   serveCustomer: () => {
     const state = get()
-    const earned = clickValue(
-      state.registerUpgrades,
-      saleValue(state.stockedItems),
-      incomePerSecond(state),
-    )
+    const earned = clickValue(state)
     set({
       coins: state.coins + earned,
       stats: {
@@ -135,9 +131,11 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
 
   buyRegisterUpgrade: (upgradeId) => {
     const state = get()
-    const { coins, registerUpgrades } = state
-    const upgrade = nextRegisterUpgrade(registerUpgrades)
-    if (upgrade?.id !== upgradeId || upgrade.cost > coins) {
+    const { coins, registerUpgrades, martsOwned } = state
+    const upgrade = availableRegisterUpgrades(registerUpgrades, martsOwned).find(
+      (offered) => offered.id === upgradeId,
+    )
+    if (!upgrade || upgrade.cost > coins) {
       return
     }
 

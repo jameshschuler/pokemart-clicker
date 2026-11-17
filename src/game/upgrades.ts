@@ -1,4 +1,4 @@
-import { formatPercent } from './format'
+import { isLocationOpen, type LocationId, PLAYABLE_LOCATIONS } from './locations'
 
 export type RegisterUpgradeId =
   | 'secondTill'
@@ -21,117 +21,155 @@ export type RegisterUpgradeId =
 
 export interface RegisterUpgrade {
   id: RegisterUpgradeId
+  name: string
+  description: string
+  /** The location whose opening puts it on offer. */
+  location: LocationId
   cost: number
-  /** Share of income per second each click adds. */
-  incomeShare: number
 }
-
-/** Early upgrades give more, since early income is small. */
-const EARLY_SHARE = 0.02
-const LATE_SHARE = 0.01
 
 export const REGISTER_UPGRADES: RegisterUpgrade[] = [
   {
     id: 'secondTill',
-    cost: 100,
-    incomeShare: EARLY_SHARE,
+    name: 'Second Till',
+    description: 'Two cash drawers, half the waiting.',
+    location: 'pallet',
+    cost: 250,
   },
   {
     id: 'meowthCoinCounter',
-    cost: 400,
-    incomeShare: EARLY_SHARE,
+    name: 'Meowth Coin Counter',
+    description: 'Meowth counts the change. Pay Day comes naturally.',
+    location: 'viridian',
+    cost: 1_000,
   },
   {
     id: 'machopBagger',
-    cost: 1_000,
-    incomeShare: EARLY_SHARE,
+    name: 'Machop Bagger',
+    description: 'A Machop bags every order while you ring it up.',
+    location: 'viridian',
+    cost: 3_000,
   },
   {
     id: 'electricTill',
+    name: 'Electric Till',
+    description: 'Retires the hand-crank register. A Pikachu keeps it charged.',
+    location: 'pewter',
     cost: 6_000,
-    incomeShare: EARLY_SHARE,
   },
   {
     id: 'receiptPrinter',
+    name: 'Receipt Printer',
+    description: 'Prints a receipt in a second. No more handwritten tickets.',
+    location: 'pewter',
     cost: 12_000,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'barcodeScanner',
+    name: 'Barcode Scanner',
+    description: 'No more typing in prices by hand.',
+    location: 'cerulean',
     cost: 30_000,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'creditCardMachine',
+    name: 'Credit Card Machine',
+    description: 'Takes cards, not just cash. Sailors off the S.S. Anne never carry cash.',
+    location: 'vermilion',
     cost: 150_000,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'expressLane',
+    name: 'Express Lane',
+    description: 'Ten items or fewer. Trainers in a hurry love it.',
+    location: 'lavender',
     cost: 250_000,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'loyaltyStamps',
+    name: 'Loyalty Stamps',
+    description: 'Every sale at the register earns a stamp, and regulars spend more.',
+    location: 'lavender',
     cost: 400_000,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'conveyorBelt',
+    name: 'Conveyor Belt',
+    description: 'Items roll up to the till on their own.',
+    location: 'celadon',
     cost: 1.2e6,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'departmentCounter',
+    name: 'Department Store Counter',
+    description: 'A long counter with four tills, straight out of Celadon.',
+    location: 'celadon',
     cost: 2e6,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'chanseyCashier',
+    name: 'Chansey Cashier',
+    description: 'Chansey opens a second register. Nobody leaves without a smile.',
+    location: 'fuchsia',
     cost: 8e6,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'silphCardReader',
+    name: 'Silph Card Reader',
+    description: 'Tap to pay. Silph Co. tech, mostly legal.',
+    location: 'saffron',
     cost: 15e6,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'alakazamPriceCheck',
+    name: 'Alakazam Price Check',
+    description: 'Knows every price by heart. Price checks take no time at all.',
+    location: 'saffron',
     cost: 20e6,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'machampBagger',
+    name: 'Machamp Bagger',
+    description: 'Machop evolved. Four arms, four bags at once.',
+    location: 'saffron',
     cost: 30e6,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'porygonTablet',
+    name: 'Porygon Tablet',
+    description: 'The register is a tablet now. Porygon runs the software.',
+    location: 'cinnabar',
     cost: 45e6,
-    incomeShare: LATE_SHARE,
   },
   {
     id: 'selfCheckout',
+    name: 'Self Checkout',
+    description: 'Trainers ring themselves up. Nobody steals a Potion. Probably.',
+    location: 'indigoPlateau',
     cost: 100e6,
-    incomeShare: LATE_SHARE,
   },
 ]
 
-const UPGRADE_NUMBER = new Map(REGISTER_UPGRADES.map((upgrade, index) => [upgrade.id, index]))
+/** Upgrades whose location is open, owned or not, in cost order. */
+export function unlockedRegisterUpgrades(martsOwned: number): RegisterUpgrade[] {
+  return REGISTER_UPGRADES.filter((upgrade) => isLocationOpen(upgrade.location, martsOwned))
+}
 
-/** The one register upgrade on offer: the first not yet owned. Placeholder until step 3. */
-export function nextRegisterUpgrade(owned: RegisterUpgradeId[]): RegisterUpgrade | undefined {
+/** Upgrades on offer: every one from an open location not owned yet, cheapest first. */
+export function availableRegisterUpgrades(
+  owned: RegisterUpgradeId[],
+  martsOwned: number,
+): RegisterUpgrade[] {
   const ownedIds = new Set(owned)
 
-  return REGISTER_UPGRADES.find((upgrade) => !ownedIds.has(upgrade.id))
+  return unlockedRegisterUpgrades(martsOwned).filter((upgrade) => !ownedIds.has(upgrade.id))
 }
 
-/** Placeholder label until register upgrades are redesigned: "Register upgrade 3". */
-export function upgradeLabel(upgradeId: RegisterUpgradeId): string {
-  return `Register upgrade ${(UPGRADE_NUMBER.get(upgradeId) ?? 0) + 1}`
-}
-
-export function describeEffect(upgrade: RegisterUpgrade): string {
-  return `+${formatPercent(upgrade.incomeShare)} of income per click`
+/** The next upgrade waiting on a location that can open in this build, for a "More open with …" hint. */
+export function nextLockedRegisterUpgrade(martsOwned: number): RegisterUpgrade | undefined {
+  return REGISTER_UPGRADES.find(
+    (upgrade) =>
+      !isLocationOpen(upgrade.location, martsOwned) &&
+      isLocationOpen(upgrade.location, PLAYABLE_LOCATIONS),
+  )
 }
