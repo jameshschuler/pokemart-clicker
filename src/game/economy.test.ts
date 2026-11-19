@@ -13,6 +13,7 @@ import {
   salesPerSecond,
 } from './economy'
 import { formatDuration, formatMoney, formatPercent, formatRate, formatWholeMoney } from './format'
+import { PLAYABLE_LOCATIONS } from './locations'
 import { PRODUCERS } from './producers'
 import { emptyProducers, initialState } from './store'
 
@@ -203,6 +204,22 @@ describe('openRequirements', () => {
   })
 
   it.each([
+    [17, 142.8, false],
+    [18, 151.2, true],
+  ])('with %i Vending Machines (₽%s/s) Pewter ready is %s', (machines, _, expected) => {
+    const viridian = {
+      ...franchise,
+      martsOwned: 2,
+      producers: { ...emptyProducers(), vendingMachine: machines },
+    }
+
+    expect(openRequirements(viridian, 20_000)).toMatchObject({
+      location: { id: 'pewter' },
+      ready: expected,
+    })
+  })
+
+  it.each([
     ['coins', busy, 999],
     ['income', franchise, 1e9],
   ])('is not ready without enough %s', (_, state, coins) => {
@@ -210,7 +227,7 @@ describe('openRequirements', () => {
   })
 
   it('is undefined once every playable location is open', () => {
-    expect(openRequirements({ ...franchise, martsOwned: 2 }, 1e9)).toBeUndefined()
+    expect(openRequirements({ ...franchise, martsOwned: PLAYABLE_LOCATIONS }, 1e9)).toBeUndefined()
   })
 })
 

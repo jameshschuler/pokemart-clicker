@@ -61,6 +61,17 @@ describe('buyProducer location', () => {
     })
   })
 
+  it.each([
+    [2, 0],
+    [3, 1],
+  ])('with %i locations open sells %i Delivery Trucks', (martsOwned, expected) => {
+    useGame.setState({ coins: 1e9, martsOwned })
+
+    useGame.getState().buyProducer('deliveryTruck', 1)
+
+    expect(useGame.getState().producers.deliveryTruck).toBe(expected)
+  })
+
   it('sells it once the location opens', () => {
     useGame.setState({ coins: 1e9, martsOwned: 2 })
 

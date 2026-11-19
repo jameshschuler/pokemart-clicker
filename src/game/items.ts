@@ -100,6 +100,7 @@ export const ITEMS: Item[] = [
     name: 'Awakening',
     description: 'Wakes a sleeping Pokémon. Jigglypuff is a menace.',
     price: 250,
+    stockCost: 20_000,
     sprite: 'awakening',
   },
   {
@@ -107,6 +108,7 @@ export const ITEMS: Item[] = [
     name: 'Burn Heal',
     description: 'Cures a burn. Popular with anyone training near Charmander.',
     price: 250,
+    stockCost: 30_000,
     sprite: 'burn-heal',
   },
   {
@@ -114,6 +116,7 @@ export const ITEMS: Item[] = [
     name: 'Repel',
     description: 'Keeps the Zubat away in Mt. Moon. Mostly.',
     price: 350,
+    stockCost: 50_000,
     sprite: 'repel',
   },
   {
@@ -121,6 +124,7 @@ export const ITEMS: Item[] = [
     name: 'Escape Rope',
     description: 'For anyone lost in a cave. Which is everyone.',
     price: 550,
+    stockCost: 80_000,
     sprite: 'escape-rope',
   },
   {

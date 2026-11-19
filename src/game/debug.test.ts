@@ -17,10 +17,10 @@ describe('debug commands', () => {
   })
 
   it.each([
-    [undefined, 2],
+    [undefined, 3],
     [2, 2],
     [0, 1],
-    [99, 2],
+    [99, 3],
   ])('openMarts(%s) owns %i marts', (count, expected) => {
     debugCommands.openMarts(count)
 

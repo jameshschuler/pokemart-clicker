@@ -95,8 +95,8 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'pewter',
     name: 'Pewter City',
-    openCost: 1_900,
-    requiredIncome: 16,
+    openCost: 20_000,
+    requiredIncome: 150,
     stock: [
       'potion',
       'pokeBall',
@@ -111,8 +111,8 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'cerulean',
     name: 'Cerulean City',
-    openCost: 13_000,
-    requiredIncome: 110,
+    openCost: 45_000,
+    requiredIncome: 400,
     stock: [
       'potion',
       'pokeBall',
@@ -196,7 +196,7 @@ export const LOCATIONS: MartLocation[] = [
 ]
 
 /** Locations built on the franchise model so far; the rest open in later build steps. */
-export const PLAYABLE_LOCATIONS = 2
+export const PLAYABLE_LOCATIONS = 3
 
 const ROUTE_ORDER = new Map(LOCATIONS.map((location, index) => [location.id, index]))
 
