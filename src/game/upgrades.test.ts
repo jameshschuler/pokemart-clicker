@@ -18,6 +18,12 @@ describe('register upgrades', () => {
     }
   })
 
+  it('never costs less than opening its location', () => {
+    for (const upgrade of REGISTER_UPGRADES) {
+      expect(upgrade.cost).toBeGreaterThanOrEqual(locationById(upgrade.location).openCost)
+    }
+  })
+
   it('unlocks at least one upgrade in every location', () => {
     const locations = new Set(REGISTER_UPGRADES.map((upgrade) => upgrade.location))
 
