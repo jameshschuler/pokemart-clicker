@@ -73,6 +73,14 @@ const PRODUCER_TIER_NAMES: Record<ProducerId, TierNames> = {
     'Stockroom Army',
     'Silph-Sized Staff',
   ],
+  deliveryTruck: [
+    'First Haul',
+    'Loading Dock',
+    'Convoy',
+    'Route 3 Traffic',
+    'Mt. Moon Express',
+    'Kanto Freight Line',
+  ],
 }
 
 function producerOwned(producer: Producer): Achievement {

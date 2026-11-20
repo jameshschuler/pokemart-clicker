@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ITEMS } from './items'
-import { LOCATIONS, newStock, PLAYABLE_LOCATIONS } from './locations'
+import { LOCATIONS, locationById, newStock, PLAYABLE_LOCATIONS } from './locations'
 import { saleValue, STARTING_ITEM, stockBonus, stockOffers } from './stocking'
 
 describe('stockBonus', () => {
@@ -40,12 +40,24 @@ describe('stockOffers', () => {
     ])
   })
 
+  it("adds Pewter's new items with their costs once it opens", () => {
+    const pewterItems = new Set(newStock(locationById('pewter')))
+    const pewterOffers = stockOffers(3).filter((offer) => pewterItems.has(offer.item.id))
+
+    expect(pewterOffers.map((offer) => [offer.item.id, offer.cost])).toEqual([
+      ['awakening', 20_000],
+      ['burnHeal', 30_000],
+      ['repel', 50_000],
+      ['escapeRope', 80_000],
+    ])
+  })
+
   it('never offers the starting item', () => {
     expect(offeredIds(11)).not.toContain(STARTING_ITEM)
   })
 
   it('leaves out items that have no price yet', () => {
-    expect(offeredIds(3)).toEqual(offeredIds(2))
+    expect(offeredIds(PLAYABLE_LOCATIONS + 1)).toEqual(offeredIds(PLAYABLE_LOCATIONS))
   })
 
   it('prices every new item in a playable location', () => {

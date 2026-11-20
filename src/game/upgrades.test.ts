@@ -36,6 +36,7 @@ describe('availableRegisterUpgrades', () => {
     [[], 2, ['secondTill', 'meowthCoinCounter', 'machopBagger']],
     [['meowthCoinCounter'], 2, ['secondTill', 'machopBagger']],
     [['secondTill'], 1, []],
+    [['secondTill', 'meowthCoinCounter', 'machopBagger'], 3, ['electricTill', 'receiptPrinter']],
   ] as const)('with %j owned and %i locations offers %j', (owned, martsOwned, expected) => {
     expect(ids([...owned], martsOwned)).toEqual(expected)
   })
@@ -44,6 +45,7 @@ describe('availableRegisterUpgrades', () => {
 describe('nextLockedRegisterUpgrade', () => {
   it.each([
     [1, 'meowthCoinCounter'],
+    [2, 'electricTill'],
     [PLAYABLE_LOCATIONS, undefined],
   ] as const)('with %i locations open is %s', (martsOwned, expected) => {
     expect(nextLockedRegisterUpgrade(martsOwned)?.id).toBe(expected)

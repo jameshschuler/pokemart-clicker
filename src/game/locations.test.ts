@@ -110,6 +110,10 @@ describe('nextLocation', () => {
     expect(nextLocation(1)?.id).toBe('viridian')
   })
 
+  it('is Pewter from Viridian', () => {
+    expect(nextLocation(2)?.id).toBe('pewter')
+  })
+
   it('stops at the last playable location', () => {
     expect(nextLocation(PLAYABLE_LOCATIONS)).toBeUndefined()
   })
@@ -119,6 +123,7 @@ describe('newStock', () => {
   it.each([
     ['pallet', ['potion']],
     ['viridian', ['antidote', 'pokeBall', 'paralyzeHeal']],
+    ['pewter', ['awakening', 'burnHeal', 'repel', 'escapeRope']],
     ['cinnabar', []],
   ] as const)('%s introduces %j', (locationId, expected) => {
     expect(newStock(locationById(locationId))).toEqual(expected)

@@ -12,7 +12,7 @@ Pokémon Dollars (₽). Start with ₽0.
 
 **Naming:** the game says **location**, not town, for each stop on the route. Indigo Plateau isn't a town, and later regions add more places that aren't. Real names keep their own words (Pallet Town, Lavender Town).
 
-**Status:** build step 1 done (the Flyer). See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
+**Status:** build steps 1–3 done, and step 4 has started with Pewter. See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
 
 **The idea.** You're building a **PokéMart franchise** across Kanto. You're the owner growing the brand, not the clerk behind one counter.
 
@@ -35,8 +35,8 @@ Bought repeatedly, +15% cost each, counted across the whole franchise. **One at 
 | 2 | Delivery Bike | Brings orders to trainers on the routes |
 | 3 | Vending Machine | Sells on its own, day and night |
 | 4 | Stock Clerk | Keeps shelves full so nothing sells out (first employee) |
-| 5 | Franchise Store | A new PokéMart run by a franchisee, paying you royalties |
-| 6 | Delivery Truck | A regional supply fleet |
+| 5 | Delivery Truck | A regional supply fleet (built, Pewter) |
+| 6 | Franchise Store | A new PokéMart run by a franchisee, paying you royalties |
 | 7 | Distribution Center | Keeps every store stocked |
 | 8 | Department Store | A flagship, like Celadon |
 
@@ -83,7 +83,7 @@ Costs aim for a payback of a few minutes for someone clicking about 3 times a se
 1. Swap the Clerk for the **Flyer**, make producers franchise-wide, hide the catalog. Saves reset. (Done.)
 2. Viridian: opening the next location plus item upgrades (stock items to raise the sale value); the route map and catalog return.
 3. Register upgrades on the new model: +5% of income per click each, names back, several on offer by location. (Done.)
-4. The remaining locations, their items and the next producers.
+4. The remaining locations, their items and the next producers, one location at a time. Pewter is built.
 
 ### Step 2: Viridian (built)
 
@@ -122,15 +122,46 @@ The **Stock** list under the producers shows every open location's new items: st
 
 **Later producers alternate employees and logistics, each tied to its location's real FRLG landmark.** Ideas: Cashier, Store Manager, Regional Manager, Machop Mover (Vermilion's ground-stomping Machop); Crossroads Warehouse (Viridian, where Routes 1, 2 and 22 meet), Underground Path Runner (Cerulean–Vermilion, Lavender–Celadon), S.S. Anne Freight (Vermilion), Cycling Road Courier (Celadon–Fuchsia), Silph Co. Supply Line (Saffron). The Pokémon Center Counter waits until every location has a Center to put one in.
 
-A producer shows once its location is open. Only Pallet and Viridian can open for now; the route map shows the rest locked.
+A producer shows once its location is open. Pallet, Viridian and Pewter can open for now; the route map shows the rest locked.
 
-### What's in the code now (steps 1–2)
+### Step 4a: Pewter (built)
 
-The register, four producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk), opening Viridian, stocking Viridian's items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 4; stocked items merge into older version 4 saves as none.
+Same pattern as Viridian: open the location, stock its items, buy its register upgrades and its producer. Numbers come from a greedy pacing sim at 3 clicks a second: Viridian opens around 6 minutes in, Pewter around 16, the first Delivery Truck around 21.
+
+**Opening Pewter**
+
+| | |
+|---|---|
+| Cost | ₽20,000 |
+| Needs | ₽150/s of income (about 3 Stock Clerks plus the Pallet producers) |
+| Gives | +5% franchise bonus; Pewter's items, register upgrades and the Delivery Truck |
+
+**Pewter's items** (the bonus rule is unchanged, +1% per ₽10):
+
+| Item | FRLG price | Bonus | Cost (placeholder) |
+|---|---|---|---|
+| Awakening | ₽250 | +25% | ₽20,000 |
+| Burn Heal | ₽250 | +25% | ₽30,000 |
+| Repel | ₽350 | +35% | ₽50,000 |
+| Escape Rope | ₽550 | +55% | ₽80,000 |
+
+**Register upgrades:** Electric Till (₽6,000) and Receipt Printer (₽12,000), at the costs already listed.
+
+**Producer 5: Delivery Truck** (logistics, after the Stock Clerk employee). ₽130,000, 260 sales/s, Cookie Clicker's fifth-step shape. It hauls stock up the road to Pewter and Mt. Moon orders back. It swaps places with the Franchise Store on the ladder so employees and logistics keep alternating.
+
+| Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
+|---|---|---|---|---|---|---|
+| Delivery Truck | First Haul | Loading Dock | Convoy | Route 3 Traffic | Mt. Moon Express | Kanto Freight Line |
+
+Cerulean's open cost moved to a ₽45,000 / ₽400/s placeholder so the route still gets pricier at each stop. It gets real numbers when Cerulean is built.
+
+### What's in the code now (steps 1–4a)
+
+The register, five producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk, Delivery Truck), opening Viridian and Pewter, stocking their items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 4; stocked items merge into older version 4 saves as none.
 
 - One franchise-wide producer list; each row has ×1 / ×10 / Max, how many you own and ₽/s each.
-- The route map shows the franchise's reach; an "Open Viridian" card sits under the register.
-- Achievements (32 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade and Idle Hands. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
+- The route map shows the franchise's reach; a card under the register offers the next location (Viridian, then Pewter) and goes away once Pewter is open.
+- Achievements (38 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade and Idle Hands. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
 
   | Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
   |---|---|---|---|---|---|---|
@@ -138,8 +169,9 @@ The register, four producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk
   | Delivery Bike | First Delivery | Bike Shop Regular | Pedal Pushers | Route 1 Rush Hour | Cycling Road Club | Fleet of a Thousand |
   | Vending Machine | Coin Slot | Vending Row | Rooftop Envy | Thirst Quenched | Machine Kingdom | Every Corner Covered |
   | Stock Clerk | First Hire | Full Shift | Night Crew | Shelf Command | Stockroom Army | Silph-Sized Staff |
+  | Delivery Truck | First Haul | Loading Dock | Convoy | Route 3 Traffic | Mt. Moon Express | Kanto Freight Line |
 - Register upgrades: named again, +5% of income per click each (clicking only), every one from an open location on offer at once (Second Till in Pallet; Meowth Coin Counter and Machop Bagger in Viridian). A click is the sale value × franchise bonus + (1% + 5% per upgrade) of income. Saves keep only upgrades from open locations.
-- Only Pallet and Viridian can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
+- Only Pallet, Viridian and Pewter can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
 - Removed: per-mart producers, buying items as producers, order milestones, Premier Customer, the order, Stocked and Chain achievements.
 
 ## Core loop
