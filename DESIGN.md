@@ -145,7 +145,7 @@ Same pattern as Viridian: open the location, stock its items, buy its register u
 | Repel | ₽350 | +35% | ₽50,000 |
 | Escape Rope | ₽550 | +55% | ₽80,000 |
 
-**Register upgrades:** Electric Till (₽6,000) and Receipt Printer (₽12,000), at the costs already listed.
+**Register upgrades:** Electric Till (₽25,000) and Receipt Printer (₽40,000). A location's register upgrades never cost less than opening it, so they aren't free picks the moment it opens.
 
 **Producer 5: Delivery Truck** (logistics, after the Stock Clerk employee). ₽130,000, 260 sales/s, Cookie Clicker's fifth-step shape. It hauls stock up the road to Pewter and Mt. Moon orders back. It swaps places with the Franchise Store on the ladder so employees and logistics keep alternating.
 
@@ -153,7 +153,7 @@ Same pattern as Viridian: open the location, stock its items, buy its register u
 |---|---|---|---|---|---|---|
 | Delivery Truck | First Haul | Loading Dock | Convoy | Route 3 Traffic | Mt. Moon Express | Kanto Freight Line |
 
-Cerulean's open cost moved to a ₽45,000 / ₽400/s placeholder so the route still gets pricier at each stop. It gets real numbers when Cerulean is built.
+Cerulean's open cost moved to a ₽45,000 / ₽400/s placeholder and Barcode Scanner to ₽60,000, so open and upgrade costs still rise at each stop. It gets real numbers when Cerulean is built.
 
 ### What's in the code now (steps 1–4a)
 
@@ -330,9 +330,9 @@ One-time purchases.
   | Second Till | Pallet Town | 250 | +5% of income per click |
   | Meowth Coin Counter | Viridian City | 1K | +5% of income per click |
   | Machop Bagger | Viridian City | 3K | +5% of income per click |
-  | Electric Till | Pewter City | 6K | +5% of income per click |
-  | Receipt Printer | Pewter City | 12K | +5% of income per click |
-  | Barcode Scanner | Cerulean City | 30K | +5% of income per click |
+  | Electric Till | Pewter City | 25K | +5% of income per click |
+  | Receipt Printer | Pewter City | 40K | +5% of income per click |
+  | Barcode Scanner | Cerulean City | 60K (placeholder) | +5% of income per click |
   | Credit Card Machine | Vermilion City | 150K | +5% of income per click |
   | Express Lane | Lavender Town | 250K | +5% of income per click |
   | Loyalty Stamps | Lavender Town | 400K | +5% of income per click |
