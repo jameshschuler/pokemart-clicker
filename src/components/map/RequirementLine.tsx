@@ -8,14 +8,10 @@ interface RequirementLineProps {
 
 export function RequirementLine({ met, children }: RequirementLineProps) {
   return (
-    <li className={cn('flex gap-1.5', met ? 'text-foreground' : 'text-muted-foreground')}>
-      <span aria-hidden className="w-2.5 shrink-0">
-        {met ? '✓' : '·'}
-      </span>
-      <span className="min-w-0">
-        {children}
-        <span className="sr-only">{met ? ' (met)' : ' (not met yet)'}</span>
-      </span>
+    <li className={cn('min-w-0', met ? 'text-foreground' : 'text-muted-foreground')}>
+      {children}
+      {met && <span aria-hidden> ✓</span>}
+      <span className="sr-only">{met ? ' (met)' : ' (not met yet)'}</span>
     </li>
   )
 }

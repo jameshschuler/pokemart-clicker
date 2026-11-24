@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { LOCATIONS, locationById, PLAYABLE_LOCATIONS } from './locations'
-import { availableRegisterUpgrades, nextLockedRegisterUpgrade, REGISTER_UPGRADES } from './upgrades'
+import { LOCATIONS, locationById } from './locations'
+import { availableRegisterUpgrades, REGISTER_UPGRADES } from './upgrades'
 
 describe('register upgrades', () => {
   it('costs more each step', () => {
@@ -45,16 +45,5 @@ describe('availableRegisterUpgrades', () => {
     [['secondTill', 'meowthCoinCounter', 'machopBagger'], 3, ['electricTill', 'receiptPrinter']],
   ] as const)('with %j owned and %i locations offers %j', (owned, martsOwned, expected) => {
     expect(ids([...owned], martsOwned)).toEqual(expected)
-  })
-})
-
-describe('nextLockedRegisterUpgrade', () => {
-  it.each([
-    [1, 'meowthCoinCounter'],
-    [2, 'electricTill'],
-    [3, 'barcodeScanner'],
-    [PLAYABLE_LOCATIONS, undefined],
-  ] as const)('with %i locations open is %s', (martsOwned, expected) => {
-    expect(nextLockedRegisterUpgrade(martsOwned)?.id).toBe(expected)
   })
 })

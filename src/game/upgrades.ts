@@ -1,4 +1,4 @@
-import { isLocationOpen, type LocationId, PLAYABLE_LOCATIONS } from './locations'
+import { isLocationOpen, type LocationId } from './locations'
 
 export type RegisterUpgradeId =
   | 'secondTill'
@@ -163,13 +163,4 @@ export function availableRegisterUpgrades(
   const ownedIds = new Set(owned)
 
   return unlockedRegisterUpgrades(martsOwned).filter((upgrade) => !ownedIds.has(upgrade.id))
-}
-
-/** The next upgrade waiting on a location that can open in this build, for a "More open with …" hint. */
-export function nextLockedRegisterUpgrade(martsOwned: number): RegisterUpgrade | undefined {
-  return REGISTER_UPGRADES.find(
-    (upgrade) =>
-      !isLocationOpen(upgrade.location, martsOwned) &&
-      isLocationOpen(upgrade.location, PLAYABLE_LOCATIONS),
-  )
 }

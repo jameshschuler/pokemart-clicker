@@ -11,6 +11,7 @@ import {
   openRequirements,
   producerIncome,
   purchaseQuote,
+  secondsUntilAffordable,
   salesPerSecond,
 } from './economy'
 import { formatDuration, formatMoney, formatPercent, formatRate, formatWholeMoney } from './format'
@@ -29,6 +30,17 @@ describe('bulkCost', () => {
 
   it('is zero for zero units', () => {
     expect(bulkCost(15, 5, 0)).toBe(0)
+  })
+})
+
+describe('secondsUntilAffordable', () => {
+  it.each([
+    ['affordable now', 100, 150, 10, 0],
+    ['exactly enough', 100, 100, 0, 0],
+    ['saving up', 130_000, 30_000, 500, 200],
+    ['no income', 100, 50, 0, Infinity],
+  ])('%s', (_, cost, coins, income, expected) => {
+    expect(secondsUntilAffordable(cost, coins, income)).toBe(expected)
   })
 })
 

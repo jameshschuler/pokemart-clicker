@@ -8,9 +8,8 @@ export function Producers() {
   const available = PRODUCERS.filter((producer) => isLocationOpen(producer.location, martsOwned))
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2 className="truncate text-base font-medium">PokéMart franchise</h2>
-
+    <section className="flex flex-col gap-2">
+      <h2 className="px-2 text-sm font-medium">Producers</h2>
       <ul className="flex flex-col gap-2">
         {available.map((producer) => (
           <li key={producer.id}>

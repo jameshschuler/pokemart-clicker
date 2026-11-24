@@ -54,6 +54,15 @@ export function maxAffordable(baseCost: number, owned: number, coins: number): n
   return bulkCost(baseCost, owned, count) > coins ? count - 1 : count
 }
 
+/** Seconds of income until `coins` reach `cost`: 0 if affordable now, Infinity with no income. */
+export function secondsUntilAffordable(cost: number, coins: number, income: number): number {
+  if (coins >= cost) {
+    return 0
+  }
+
+  return income > 0 ? (cost - coins) / income : Infinity
+}
+
 /** Units and price for a purchase. For 'max', buys at least one so the price shown is the next unit. */
 export function purchaseQuote(
   baseCost: number,

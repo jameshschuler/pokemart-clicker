@@ -1,3 +1,4 @@
+import { ReadyIn } from '@/components/shared/ReadyIn'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { formatMoney, formatPercent } from '@/game/format'
@@ -34,6 +35,7 @@ export function StockRow({ offer, stocked }: StockRowProps) {
         <span className="truncate text-xs text-muted-foreground tabular-nums">
           +{formatPercent(stockBonus(item))} sale value
         </span>
+        {!stocked && <ReadyIn cost={cost} />}
       </div>
       {stocked ? (
         <span className="shrink-0 px-3 text-xs text-muted-foreground">Stocked</span>

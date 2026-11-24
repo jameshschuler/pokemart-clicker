@@ -33,3 +33,13 @@ export function stockOffers(martsOwned: number): StockOffer[] {
     offered.has(item.id) && item.stockCost !== undefined ? [{ item, cost: item.stockCost }] : [],
   )
 }
+
+/** Offers still to stock first, then stocked ones, each in their original order. */
+export function unstockedFirst(offers: StockOffer[], stockedItems: ItemId[]): StockOffer[] {
+  const stocked = new Set(stockedItems)
+
+  return [
+    ...offers.filter((offer) => !stocked.has(offer.item.id)),
+    ...offers.filter((offer) => stocked.has(offer.item.id)),
+  ]
+}

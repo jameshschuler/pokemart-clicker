@@ -3,12 +3,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { LOCATION_BONUS, openRequirements } from '@/game/economy'
 import { formatMoney, formatPercent, formatRate } from '@/game/format'
-import { LOCATIONS, shortLocationName } from '@/game/locations'
+import { shortLocationName } from '@/game/locations'
 import { useGame } from '@/game/store'
 import { RequirementLine } from './RequirementLine'
 
 export function OpenNextLocation() {
-  const martsOwned = useGame((state) => state.martsOwned)
   const { location, hasCoins, hasIncome, ready } = useGame(
     useShallow((state) => {
       const requirements = openRequirements(state, state.coins)
@@ -24,11 +23,7 @@ export function OpenNextLocation() {
   const openNextLocation = useGame((state) => state.openNextLocation)
 
   if (!location) {
-    return martsOwned < LOCATIONS.length ? (
-      <p className="px-3 text-xs text-muted-foreground">
-        More of Kanto opens up in a later update.
-      </p>
-    ) : null
+    return null
   }
 
   return (
@@ -42,14 +37,19 @@ export function OpenNextLocation() {
         </div>
 
         <div className="flex items-end justify-between gap-3">
-          <ul className="flex min-w-0 flex-1 flex-col gap-1 text-xs tabular-nums">
-            <RequirementLine met={hasIncome}>
-              Income ₽{formatRate(location.requiredIncome)}/s
-            </RequirementLine>
-            <RequirementLine met={hasCoins}>
-              ₽{formatMoney(location.openCost)} to open
-            </RequirementLine>
-          </ul>
+          <div className="flex min-w-0 flex-1 flex-col gap-1 text-xs tabular-nums">
+            <p id="open-requirements" className="font-medium text-muted-foreground">
+              Requirements
+            </p>
+            <ul aria-labelledby="open-requirements" className="flex flex-col gap-1">
+              <RequirementLine met={hasIncome}>
+                Income ₽{formatRate(location.requiredIncome)}/s
+              </RequirementLine>
+              <RequirementLine met={hasCoins}>
+                ₽{formatMoney(location.openCost)} to open
+              </RequirementLine>
+            </ul>
+          </div>
           <Button size="sm" disabled={!ready} onClick={openNextLocation} className="shrink-0">
             Open {shortLocationName(location)}
           </Button>

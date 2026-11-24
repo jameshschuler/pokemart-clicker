@@ -68,7 +68,7 @@ Opening a location unlocks its items to stock, may unlock the next producer, and
 - Each upgrade **doubles the sale a click makes** and adds **+5% of income per second to every click**. The doubling is what you feel early: with no income, three upgrades take a click from ₽1 to ₽8. (With only the income share, three upgrades moved a click from about ₽1 to ₽2, which felt like nothing.) The income share is what keeps later upgrades worth buying.
 - **Clicks are sales:** a click is worth the sale value × the franchise bonus × 2 per register upgrade, plus 1% of income per second from the queue, plus 5% per register upgrade. With all 17, the sale part is ×131,072 and the income part is 86% of income per second.
 - **Names come back,** following how a checkout modernizes (cash → electric → scanner → cards → tap → tablet → self checkout), with Pokémon at the counter where it fits.
-- **Several on offer at once:** every upgrade from an open location that you don't own yet, cheapest first. Under the list, "More open with Pewter City." names the next location that brings one.
+- **Several on offer at once:** every upgrade from an open location that you don't own yet, cheapest first.
 
 | Upgrade | Location | Cost (placeholder) | Effect |
 |---|---|---|---|
@@ -185,6 +185,10 @@ Same pattern again. The sim (3 clicks a second) opens Cerulean at about 23 minut
 ### Backlog
 
 - **Special items:** off-menu items outside the FRLG Poké Mart lists, such as Slowpoke Tail, Cooked Magikarp and Roasted Pidgey. Slowpoke Tail is real (sold in Azalea Town in Gold/Silver for ₽9,800). The other two are fan jokes, not real items, so they'd need original art. How you get them, what they do and when they appear aren't decided yet.
+- **Fast-clicking achievement:** for serving a lot of customers in a short window, such as 10 seconds. It needs click timestamps tracked over a rolling window. The click count and tier names aren't set yet.
+- **Export and import a save:** copy the save out as text or a file, and load one back in. Import goes through the same checks and clamping as loading from storage.
+- **Export achievement:** a one-time achievement for exporting a save, like Cookie Clicker's backup achievement. Probably hidden.
+- **Stocking achievements:** tiers for how many items the franchise has stocked (for example 5, 10, 25, and every Kanto item). The goals depend on how many items each location ends up adding, so they're set once more locations are built.
 
 ### What's in the code now (steps 1–4b)
 
