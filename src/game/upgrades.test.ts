@@ -52,6 +52,7 @@ describe('nextLockedRegisterUpgrade', () => {
   it.each([
     [1, 'meowthCoinCounter'],
     [2, 'electricTill'],
+    [3, 'barcodeScanner'],
     [PLAYABLE_LOCATIONS, undefined],
   ] as const)('with %i locations open is %s', (martsOwned, expected) => {
     expect(nextLockedRegisterUpgrade(martsOwned)?.id).toBe(expected)

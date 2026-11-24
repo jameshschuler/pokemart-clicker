@@ -31,7 +31,7 @@ export function BuyButton({ producer, owned, amount }: BuyButtonProps) {
       disabled={!affordable}
       onClick={() => buyProducer(producer.id, amount)}
       aria-label={`Buy ${count} ${producer.name} for ${price}`}
-      className="h-auto min-w-20 flex-col items-stretch gap-0.5 px-3 py-1.5 tabular-nums"
+      className="h-auto w-24 flex-col items-stretch gap-0.5 px-3 py-1.5 tabular-nums"
     >
       <span className="text-xs text-muted-foreground">{label}</span>
       <span className="font-mono text-sm">{price}</span>

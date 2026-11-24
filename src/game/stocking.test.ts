@@ -52,6 +52,12 @@ describe('stockOffers', () => {
     ])
   })
 
+  it("adds Cerulean's Super Potion once it opens", () => {
+    const superPotion = stockOffers(4).find((offer) => offer.item.id === 'superPotion')
+
+    expect(superPotion?.cost).toBe(700_000)
+  })
+
   it('never offers the starting item', () => {
     expect(offeredIds(11)).not.toContain(STARTING_ITEM)
   })

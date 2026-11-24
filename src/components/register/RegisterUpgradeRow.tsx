@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { REGISTER_UPGRADE_SHARE } from '@/game/economy'
+import { REGISTER_UPGRADE_SALE_MULTIPLIER, REGISTER_UPGRADE_SHARE } from '@/game/economy'
 import { formatMoney, formatPercent } from '@/game/format'
 import { useGame } from '@/game/store'
 import type { RegisterUpgrade } from '@/game/upgrades'
@@ -30,7 +30,8 @@ export function RegisterUpgradeRow({ upgrade }: RegisterUpgradeRowProps) {
         <span className="flex min-w-0 flex-col">
           <span className="truncate font-medium">{upgrade.name}</span>
           <span className="truncate text-xs font-normal text-muted-foreground">
-            +{formatPercent(REGISTER_UPGRADE_SHARE)} of income per click
+            ×{REGISTER_UPGRADE_SALE_MULTIPLIER} sale, +{formatPercent(REGISTER_UPGRADE_SHARE)} of
+            income per click
           </span>
           <span className="sr-only">{upgrade.description}</span>
         </span>

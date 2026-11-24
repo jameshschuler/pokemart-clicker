@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { LOCATIONS } from './locations'
+import { PRODUCERS } from './producers'
 import { emptyProducers, initialState, useGame } from './store'
 
 beforeEach(() => {
@@ -61,23 +63,29 @@ describe('buyProducer location', () => {
     })
   })
 
-  it.each([
-    [2, 0],
-    [3, 1],
-  ])('with %i locations open sells %i Delivery Trucks', (martsOwned, expected) => {
-    useGame.setState({ coins: 1e9, martsOwned })
+  const routeIndex = new Map(LOCATIONS.map((location, index) => [location.id, index]))
+  const martsNeeded = PRODUCERS.map((producer) => ({
+    producerId: producer.id,
+    marts: (routeIndex.get(producer.location) ?? 0) + 1,
+  }))
 
-    useGame.getState().buyProducer('deliveryTruck', 1)
+  it.each(martsNeeded.filter(({ marts }) => marts > 1))(
+    'refuses $producerId with fewer than $marts locations open',
+    ({ producerId, marts }) => {
+      useGame.setState({ coins: 1e15, martsOwned: marts - 1 })
 
-    expect(useGame.getState().producers.deliveryTruck).toBe(expected)
-  })
+      useGame.getState().buyProducer(producerId, 1)
 
-  it('sells it once the location opens', () => {
-    useGame.setState({ coins: 1e9, martsOwned: 2 })
+      expect(useGame.getState().producers[producerId]).toBe(0)
+    },
+  )
 
-    useGame.getState().buyProducer('stockClerk', 1)
+  it.each(martsNeeded)('sells $producerId with $marts locations open', ({ producerId, marts }) => {
+    useGame.setState({ coins: 1e15, martsOwned: marts })
 
-    expect(useGame.getState().producers.stockClerk).toBe(1)
+    useGame.getState().buyProducer(producerId, 1)
+
+    expect(useGame.getState().producers[producerId]).toBe(1)
   })
 })
 
@@ -151,7 +159,7 @@ describe('buyRegisterUpgrade', () => {
     const earned = useGame.getState().serveCustomer()
 
     expect(useGame.getState()).toMatchObject({ registerUpgrades: ['secondTill'] })
-    expect(earned).toBeCloseTo(1 + 0.06 * 10)
+    expect(earned).toBeCloseTo(2 + 0.06 * 10)
     expect(useGame.getState().coins).toBeCloseTo(50 + earned)
   })
 

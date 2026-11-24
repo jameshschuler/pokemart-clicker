@@ -110,8 +110,11 @@ describe('nextLocation', () => {
     expect(nextLocation(1)?.id).toBe('viridian')
   })
 
-  it('is Pewter from Viridian', () => {
-    expect(nextLocation(2)?.id).toBe('pewter')
+  it.each([
+    [2, 'pewter'],
+    [3, 'cerulean'],
+  ])('with %i locations open is %s', (martsOwned, expected) => {
+    expect(nextLocation(martsOwned)?.id).toBe(expected)
   })
 
   it('stops at the last playable location', () => {
@@ -124,6 +127,7 @@ describe('newStock', () => {
     ['pallet', ['potion']],
     ['viridian', ['antidote', 'pokeBall', 'paralyzeHeal']],
     ['pewter', ['awakening', 'burnHeal', 'repel', 'escapeRope']],
+    ['cerulean', ['superPotion']],
     ['cinnabar', []],
   ] as const)('%s introduces %j', (locationId, expected) => {
     expect(newStock(locationById(locationId))).toEqual(expected)

@@ -27,7 +27,7 @@ export function ProducerRow({ producer }: ProducerRowProps) {
           ₽{formatRate(eachPerSecond)}/s each
         </span>
       </div>
-      <div className="flex min-w-12 shrink-0 flex-col items-end gap-0.5 tabular-nums">
+      <div className="flex w-16 shrink-0 flex-col items-end gap-0.5 tabular-nums">
         <span className="font-mono text-2xl leading-none font-semibold">{owned}</span>
         <span className="text-xs text-muted-foreground">owned</span>
       </div>

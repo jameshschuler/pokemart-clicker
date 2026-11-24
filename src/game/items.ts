@@ -132,6 +132,7 @@ export const ITEMS: Item[] = [
     name: 'Super Potion',
     description: 'Restores 50 HP. Gym challengers stock up before Misty.',
     price: 700,
+    stockCost: 700_000,
     sprite: 'super-potion',
   },
   {

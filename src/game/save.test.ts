@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { PLAYABLE_LOCATIONS } from './locations'
 import { loadGame } from './save'
 import { emptyProducers, initialState, useGame } from './store'
 
@@ -59,7 +60,7 @@ describe('loadGame achievements', () => {
 describe('loadGame repairs bad values', () => {
   it.each([
     ['too few marts', { martsOwned: 0 }, { martsOwned: 1 }],
-    ['too many marts', { martsOwned: 40 }, { martsOwned: 3 }],
+    ['too many marts', { martsOwned: 40 }, { martsOwned: PLAYABLE_LOCATIONS }],
     ['negative coins', { coins: -50 }, { coins: 0 }],
     ['non-numeric coins', { coins: 'lots' }, { coins: 0 }],
   ])('fixes %s', (_, saved, expected) => {
