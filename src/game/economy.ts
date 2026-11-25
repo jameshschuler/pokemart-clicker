@@ -14,8 +14,7 @@ export const CLICK_INCOME_SHARE = 0.01
 export const REGISTER_UPGRADE_SHARE = 0.05
 /** Each register upgrade multiplies the sale a click makes by this much. */
 export const REGISTER_UPGRADE_SALE_MULTIPLIER = 2
-export const OFFLINE_CAP_SECONDS = 2 * 3600
-/** Gaps this long count as time away: paid in full up to the cap, with a welcome back report. */
+/** Gaps this long count as time away: paid in full, with a welcome back report. */
 export const AWAY_SECONDS = 15 * 60
 
 export type BuyAmount = 1 | 10 | 'max'

@@ -277,14 +277,14 @@ describe('tick across a gap', () => {
     })
   })
 
-  it('stops paying at the offline cap', () => {
+  it('pays a long time away in full', () => {
     postFlyers(10)
 
-    useGame.getState().tick(5 * 3600)
+    useGame.getState().tick(24 * 3600)
 
     expect(useGame.getState()).toMatchObject({
-      coins: 2 * 3600,
-      awayReport: { seconds: 2 * 3600 },
+      coins: 24 * 3600,
+      awayReport: { seconds: 24 * 3600 },
     })
   })
 

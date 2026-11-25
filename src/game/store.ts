@@ -6,7 +6,6 @@ import {
   type BuyAmount,
   clickValue,
   incomePerSecond,
-  OFFLINE_CAP_SECONDS,
   openRequirements,
   type Producers,
   purchaseQuote,
@@ -145,7 +144,7 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
   tick: (seconds) => {
     const state = get()
     const isAway = seconds >= AWAY_SECONDS
-    const paidSeconds = Math.min(Math.max(seconds, 0), OFFLINE_CAP_SECONDS)
+    const paidSeconds = Math.max(seconds, 0)
     const earned = incomePerSecond(state) * paidSeconds
     const stats = isAway
       ? { ...state.stats, awayEarnings: state.stats.awayEarnings + earned }

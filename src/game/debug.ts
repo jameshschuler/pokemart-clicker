@@ -12,7 +12,7 @@ export const debugCommands = {
     useGame.setState({ martsOwned: Math.min(Math.max(count, 1), PLAYABLE_LOCATIONS) })
   },
 
-  /** Pretends the game was closed for `seconds`, up to the offline cap. Under 15 minutes counts as play time, with no report. */
+  /** Pretends the game was closed for `seconds`. Under 15 minutes counts as play time, with no report. */
   away(seconds: number) {
     useGame.getState().tick(seconds)
   },

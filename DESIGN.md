@@ -189,6 +189,7 @@ Same pattern again. The sim (3 clicks a second) opens Cerulean at about 23 minut
 - **Export and import a save:** copy the save out as text or a file, and load one back in. Import goes through the same checks and clamping as loading from storage.
 - **Export achievement:** a one-time achievement for exporting a save, like Cookie Clicker's backup achievement. Probably hidden.
 - **Stocking achievements:** tiers for how many items the franchise has stocked (for example 5, 10, 25, and every Kanto item). The goals depend on how many items each location ends up adding, so they're set once more locations are built.
+- **Minigames:** games like the ones in the main series, such as Voltorb Flip and the Game Corner slots. They'd use our own rules and art, not copies of the originals. Where they live (Celadon's Game Corner is the obvious fit), what they cost to play and what they pay out aren't decided yet.
 
 ### What's in the code now (steps 1–4b)
 
@@ -353,9 +354,9 @@ One-time purchases.
   | Vermilion City | S.S. Anne Supply Contract | Poké, Great and Ultra Balls ×2 |
   | Lavender Town | Pokémon Tower Vigil Supplies | Escape Ropes and Repels ×2 |
   | Celadon City | Game Corner Prize Counter | Each click has a 1% chance to pay ×77 |
-  | Fuchsia City | Safari Zone Kiosk | Offline cap 2h → 3h |
+  | Fuchsia City | Safari Zone Kiosk | To be decided |
   | Saffron City | Silph Co. Partnership | +25% all sales |
-  | Cinnabar Island | Lab Research Grant | Offline cap 3h → 4h |
+  | Cinnabar Island | Lab Research Grant | To be decided |
   | Indigo Plateau | Elite Four Sponsorship | +1% all sales per achievement tier, doubling the achievement bonus |
 
   Costs and exact values get tuned with the pacing sim when built.
@@ -462,7 +463,7 @@ PokeAPI has no town, building or trainer art, so the storefronts, town landmarks
 
 localStorage autosave every 10s and on tab hide. Export/import as a string.
 
-**Offline earnings** (built): time away pays sales in full, capped at 2h. There's no rate penalty: an idle game shouldn't punish you for not watching it. Clicks don't count. Kanto takes about 2h to clear, so the cap stops one night away from paying for most of the region. Raise it with each region as runs get longer (Fuchsia and Cinnabar perks add an hour each). The game saves the wall-clock time it has paid sales up to. Any gap since then (a closed tab, a hidden tab the browser paused, a sleeping laptop) is paid on return. Gaps of 15 minutes or more count as time away: a "Welcome back" dialog shows the time and ₽ earned, and lifetime stats track "Earned while away". Shorter gaps count as play time.
+**Offline earnings** (built): time away pays sales in full, with no cap and no rate penalty: an idle game shouldn't punish you for not watching it. Clicks don't count. The game saves the wall-clock time it has paid sales up to. Any gap since then (a closed tab, a hidden tab the browser paused, a sleeping laptop) is paid on return. Gaps of 15 minutes or more count as time away: a "Welcome back" dialog shows the time and ₽ earned, and lifetime stats track "Earned while away". Shorter gaps count as play time.
 
 ## Layout
 
