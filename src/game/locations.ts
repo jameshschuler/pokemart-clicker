@@ -128,8 +128,8 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'vermilion',
     name: 'Vermilion City',
-    openCost: 5e6,
-    requiredIncome: 30_000,
+    openCost: 15e6,
+    requiredIncome: 80_000,
     stock: ['pokeBall', 'antidote', 'paralyzeHeal', 'awakening', 'repel', 'superPotion', 'iceHeal'],
   },
   {
@@ -196,7 +196,7 @@ export const LOCATIONS: MartLocation[] = [
 ]
 
 /** Locations built on the franchise model so far; the rest open in later build steps. */
-export const PLAYABLE_LOCATIONS = 4
+export const PLAYABLE_LOCATIONS = 5
 
 const ROUTE_ORDER = new Map(LOCATIONS.map((location, index) => [location.id, index]))
 

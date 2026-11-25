@@ -58,6 +58,12 @@ describe('stockOffers', () => {
     expect(superPotion?.cost).toBe(700_000)
   })
 
+  it("adds Vermilion's Ice Heal once it opens", () => {
+    const iceHeal = stockOffers(5).find((offer) => offer.item.id === 'iceHeal')
+
+    expect(iceHeal?.cost).toBe(5_000_000)
+  })
+
   it('never offers the starting item', () => {
     expect(offeredIds(11)).not.toContain(STARTING_ITEM)
   })
