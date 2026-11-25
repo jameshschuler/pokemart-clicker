@@ -122,7 +122,7 @@ The **Stock** list under the producers shows every open location's new items: st
 | Vending Machine | ₽1,100 | 8 | Pallet |
 | Stock Clerk | ₽12,000 | 47 | Viridian |
 
-**Later producers alternate employees and logistics, each tied to its location's real FRLG landmark.** Ideas: Cashier, Store Manager, Regional Manager, Machop Mover (Vermilion's ground-stomping Machop); Crossroads Warehouse (Viridian, where Routes 1, 2 and 22 meet), Underground Path Runner (Cerulean–Vermilion, Lavender–Celadon), S.S. Anne Freight (Vermilion), Cycling Road Courier (Celadon–Fuchsia), Silph Co. Supply Line (Saffron). The Pokémon Center Counter waits until every location has a Center to put one in.
+**Later producers alternate employees and logistics, each tied to its location's real FRLG landmark.** Ideas: Store Manager, Regional Manager, Machop Mover (Vermilion's ground-stomping Machop); Crossroads Warehouse (Viridian, where Routes 1, 2 and 22 meet), Underground Path Runner (Cerulean–Vermilion, Lavender–Celadon), Cycling Road Courier (Celadon–Fuchsia), Silph Co. Supply Line (Saffron). The Pokémon Center Counter waits until every location has a Center to put one in.
 
 A producer shows once its location is open. Pallet through Cerulean can open for now; the route map shows the rest locked.
 
@@ -187,7 +187,7 @@ Same pattern again. The sim (3 clicks a second) opens Vermilion at about 36 minu
 |---|---|---|---|---|---|---|
 | Shipping Container | All Aboard | Full Manifest | Cargo Hold | Harbor Master | Seafoam Crossing | Kanto Fleet |
 
-**Placeholders for the rest of Kanto.** Opening Cerulean costs ₽500,000, more than the old placeholders for later locations. So every unbuilt location and register upgrade was rescaled to a rough ×7–10 per stop, keeping costs rising and each upgrade at or above its location's open cost. Each location gets real numbers when it's built.
+**Placeholders for the rest of Kanto.** Opening Cerulean costs ₽500,000, more than the old placeholders for later locations. So every unbuilt location and register upgrade was rescaled to a rough ×7–10 per stop, keeping costs rising and each upgrade at or above its location's open cost. Each location gets real numbers when it's built. Vermilion's real ₽15M left Lavender's placeholder only ×2.7 above it; Lavender is next, so it's fixed then.
 
 | Location | Open cost | Needs |
 |---|---|---|
@@ -206,6 +206,7 @@ Same pattern again. The sim (3 clicks a second) opens Vermilion at about 36 minu
 - **Export achievement:** a one-time achievement for exporting a save, like Cookie Clicker's backup achievement. Probably hidden.
 - **Stocking achievements:** tiers for how many items the franchise has stocked (for example 5, 10, 25, and every Kanto item). The goals depend on how many items each location ends up adding, so they're set once more locations are built.
 - **Minigames:** games like the ones in the main series, such as Voltorb Flip and the Game Corner slots. They'd use our own rules and art, not copies of the originals. Where they live (Celadon's Game Corner is the obvious fit), what they cost to play and what they pay out aren't decided yet.
+- **Income achievements:** tiers for reaching ₽/s milestones, like Cookie Clicker's cookies-per-second achievements. Once earned, a tier stays earned, even when income resets after prestige. The goals and names wait until the Kanto income curve is set.
 
 ### What's in the code now (steps 1–4c)
 
