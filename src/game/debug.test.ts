@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { debugCommands } from './debug'
+import { PLAYABLE_LOCATIONS } from './locations'
 import { emptyProducers, initialState, useGame } from './store'
 
 beforeEach(() => {
@@ -17,10 +18,10 @@ describe('debug commands', () => {
   })
 
   it.each([
-    [undefined, 3],
+    [undefined, PLAYABLE_LOCATIONS],
     [2, 2],
     [0, 1],
-    [99, 3],
+    [99, PLAYABLE_LOCATIONS],
   ])('openMarts(%s) owns %i marts', (count, expected) => {
     debugCommands.openMarts(count)
 

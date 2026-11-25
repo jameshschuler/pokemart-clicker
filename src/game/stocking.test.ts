@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { ITEMS } from './items'
+import { type ItemId, ITEMS } from './items'
 import { LOCATIONS, locationById, newStock, PLAYABLE_LOCATIONS } from './locations'
-import { saleValue, STARTING_ITEM, stockBonus, stockOffers } from './stocking'
+import { saleValue, STARTING_ITEM, stockBonus, stockOffers, unstockedFirst } from './stocking'
 
 describe('stockBonus', () => {
   it.each([
@@ -52,6 +52,12 @@ describe('stockOffers', () => {
     ])
   })
 
+  it("adds Cerulean's Super Potion once it opens", () => {
+    const superPotion = stockOffers(4).find((offer) => offer.item.id === 'superPotion')
+
+    expect(superPotion?.cost).toBe(700_000)
+  })
+
   it('never offers the starting item', () => {
     expect(offeredIds(11)).not.toContain(STARTING_ITEM)
   })
@@ -64,5 +70,20 @@ describe('stockOffers', () => {
     const newItems = LOCATIONS.slice(1, PLAYABLE_LOCATIONS).flatMap(newStock)
 
     expect(offeredIds(PLAYABLE_LOCATIONS)).toEqual(newItems)
+  })
+})
+
+describe('unstockedFirst', () => {
+  const ids = (stockedItems: ItemId[]) =>
+    unstockedFirst(stockOffers(3), stockedItems).map((offer) => offer.item.id)
+
+  it.each([
+    [[], ['antidote', 'pokeBall', 'paralyzeHeal', 'awakening', 'burnHeal', 'repel', 'escapeRope']],
+    [
+      ['antidote', 'repel'],
+      ['pokeBall', 'paralyzeHeal', 'awakening', 'burnHeal', 'escapeRope', 'antidote', 'repel'],
+    ],
+  ] as const)('with %j stocked lists %j', (stockedItems, expected) => {
+    expect(ids([...stockedItems])).toEqual(expected)
   })
 })

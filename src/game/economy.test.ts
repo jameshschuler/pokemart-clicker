@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   bulkCost,
   clickIncomeShare,
+  clickSaleMultiplier,
   clickValue,
   franchiseBonus,
   franchiseMultiplier,
@@ -10,6 +11,7 @@ import {
   openRequirements,
   producerIncome,
   purchaseQuote,
+  secondsUntilAffordable,
   salesPerSecond,
 } from './economy'
 import { formatDuration, formatMoney, formatPercent, formatRate, formatWholeMoney } from './format'
@@ -28,6 +30,17 @@ describe('bulkCost', () => {
 
   it('is zero for zero units', () => {
     expect(bulkCost(15, 5, 0)).toBe(0)
+  })
+})
+
+describe('secondsUntilAffordable', () => {
+  it.each([
+    ['affordable now', 100, 150, 10, 0],
+    ['exactly enough', 100, 100, 0, 0],
+    ['saving up', 130_000, 30_000, 500, 200],
+    ['no income', 100, 50, 0, Infinity],
+  ])('%s', (_, cost, coins, income, expected) => {
+    expect(secondsUntilAffordable(cost, coins, income)).toBe(expected)
   })
 })
 
@@ -163,6 +176,16 @@ describe('clickIncomeShare', () => {
   })
 })
 
+describe('clickSaleMultiplier', () => {
+  it.each([
+    [[], 1],
+    [['secondTill'], 2],
+    [['secondTill', 'meowthCoinCounter', 'machopBagger'], 8],
+  ] as const)('with %j is ×%i', (upgrades, expected) => {
+    expect(clickSaleMultiplier([...upgrades])).toBe(expected)
+  })
+})
+
 describe('clickValue', () => {
   const franchise = initialState()
   const bikes = { ...emptyProducers(), deliveryBike: 10 }
@@ -175,10 +198,23 @@ describe('clickValue', () => {
     expect(clickValue({ ...franchise, producers: bikes })).toBeCloseTo(1 + 0.01 * 10)
   })
 
-  it('adds 5% of income per register upgrade', () => {
+  it('doubles the sale and adds 5% of income per register upgrade', () => {
     const upgraded = { ...franchise, producers: bikes, registerUpgrades: ['secondTill' as const] }
 
-    expect(clickValue(upgraded)).toBeCloseTo(1 + 0.06 * 10)
+    expect(clickValue(upgraded)).toBeCloseTo(2 + 0.06 * 10)
+  })
+
+  it('goes from ₽1 to ₽8 a click with three register upgrades and no income', () => {
+    const upgraded = {
+      ...franchise,
+      registerUpgrades: [
+        'secondTill' as const,
+        'meowthCoinCounter' as const,
+        'machopBagger' as const,
+      ],
+    }
+
+    expect(clickValue(upgraded)).toBe(8)
   })
 
   it('applies the franchise bonus to the sale', () => {

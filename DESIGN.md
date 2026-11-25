@@ -12,7 +12,7 @@ Pokémon Dollars (₽). Start with ₽0.
 
 **Naming:** the game says **location**, not town, for each stop on the route. Indigo Plateau isn't a town, and later regions add more places that aren't. Real names keep their own words (Pallet Town, Lavender Town).
 
-**Status:** build steps 1–3 done, and step 4 has started with Pewter. See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
+**Status:** build steps 1–3 done, and step 4 is underway: Pewter and Cerulean are built. See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
 
 **The idea.** You're building a **PokéMart franchise** across Kanto. You're the owner growing the brand, not the clerk behind one counter.
 
@@ -36,9 +36,10 @@ Bought repeatedly, +15% cost each, counted across the whole franchise. **One at 
 | 3 | Vending Machine | Sells on its own, day and night |
 | 4 | Stock Clerk | Keeps shelves full so nothing sells out (first employee) |
 | 5 | Delivery Truck | A regional supply fleet (built, Pewter) |
-| 6 | Franchise Store | A new PokéMart run by a franchisee, paying you royalties |
-| 7 | Distribution Center | Keeps every store stocked |
-| 8 | Department Store | A flagship, like Celadon |
+| 6 | Cashier | Works a register of their own (built, Cerulean) |
+| 7 | Franchise Store | A new PokéMart run by a franchisee, paying you royalties |
+| 8 | Distribution Center | Keeps every store stocked |
+| 9 | Department Store | A flagship, like Celadon |
 
 **Flyer (producer 1):**
 
@@ -64,17 +65,17 @@ Opening a location unlocks its items to stock, may unlock the next producer, and
 
 **The fix: bigger shares at sensible costs, and clicks count as sales.** Register upgrades only affect clicking; idle income doesn't depend on them. (An earlier draft had them boost all sales; clicking is what the register is for.)
 
-- Each upgrade adds **+5% of income per second to every click**, up from 1–2%. At ₽50/s and 3 clicks/s, Meowth Coin Counter (₽1,000) adds about ₽7.50/s and pays back in about 2 minutes.
-- **Clicks are sales:** a click is worth the sale value × the franchise bonus, plus 1% of income per second from the queue, plus 5% per register upgrade. With all 17, a click is worth 86% of income per second.
+- Each upgrade **doubles the sale a click makes** and adds **+5% of income per second to every click**. The doubling is what you feel early: with no income, three upgrades take a click from ₽1 to ₽8. (With only the income share, three upgrades moved a click from about ₽1 to ₽2, which felt like nothing.) The income share is what keeps later upgrades worth buying.
+- **Clicks are sales:** a click is worth the sale value × the franchise bonus × 2 per register upgrade, plus 1% of income per second from the queue, plus 5% per register upgrade. With all 17, the sale part is ×131,072 and the income part is 86% of income per second.
 - **Names come back,** following how a checkout modernizes (cash → electric → scanner → cards → tap → tablet → self checkout), with Pokémon at the counter where it fits.
-- **Several on offer at once:** every upgrade from an open location that you don't own yet, cheapest first. Under the list, "More open with Pewter City." names the next location that brings one.
+- **Several on offer at once:** every upgrade from an open location that you don't own yet, cheapest first.
 
 | Upgrade | Location | Cost (placeholder) | Effect |
 |---|---|---|---|
-| Second Till | Pallet Town | ₽250 | +5% of income per click |
-| Meowth Coin Counter | Viridian City | ₽1,000 | +5% of income per click |
-| Machop Bagger | Viridian City | ₽3,000 | +5% of income per click |
-| Electric Till … Self Checkout (14 more) | Pewter City → Indigo Plateau | set as each location is built | +5% of income per click |
+| Second Till | Pallet Town | ₽250 | ×2 sale, +5% of income per click |
+| Meowth Coin Counter | Viridian City | ₽1,000 | ×2 sale, +5% of income per click |
+| Machop Bagger | Viridian City | ₽3,000 | ×2 sale, +5% of income per click |
+| Electric Till … Self Checkout (14 more) | Pewter City → Indigo Plateau | set as each location is built | ×2 sale, +5% of income per click |
 
 Costs aim for a payback of a few minutes for someone clicking about 3 times a second at the income they'd have when the location opens, and get tuned with the pacing sim.
 
@@ -82,8 +83,8 @@ Costs aim for a payback of a few minutes for someone clicking about 3 times a se
 
 1. Swap the Clerk for the **Flyer**, make producers franchise-wide, hide the catalog. Saves reset. (Done.)
 2. Viridian: opening the next location plus item upgrades (stock items to raise the sale value); the route map and catalog return.
-3. Register upgrades on the new model: +5% of income per click each, names back, several on offer by location. (Done.)
-4. The remaining locations, their items and the next producers, one location at a time. Pewter is built.
+3. Register upgrades on the new model: ×2 click sale and +5% of income per click each, names back, several on offer by location. (Done.)
+4. The remaining locations, their items and the next producers, one location at a time. Pewter and Cerulean are built.
 
 ### Step 2: Viridian (built)
 
@@ -122,11 +123,11 @@ The **Stock** list under the producers shows every open location's new items: st
 
 **Later producers alternate employees and logistics, each tied to its location's real FRLG landmark.** Ideas: Cashier, Store Manager, Regional Manager, Machop Mover (Vermilion's ground-stomping Machop); Crossroads Warehouse (Viridian, where Routes 1, 2 and 22 meet), Underground Path Runner (Cerulean–Vermilion, Lavender–Celadon), S.S. Anne Freight (Vermilion), Cycling Road Courier (Celadon–Fuchsia), Silph Co. Supply Line (Saffron). The Pokémon Center Counter waits until every location has a Center to put one in.
 
-A producer shows once its location is open. Pallet, Viridian and Pewter can open for now; the route map shows the rest locked.
+A producer shows once its location is open. Pallet through Cerulean can open for now; the route map shows the rest locked.
 
 ### Step 4a: Pewter (built)
 
-Same pattern as Viridian: open the location, stock its items, buy its register upgrades and its producer. Numbers come from a greedy pacing sim at 3 clicks a second: Viridian opens around 6 minutes in, Pewter around 16, the first Delivery Truck around 21.
+Same pattern as Viridian: open the location, stock its items, buy its register upgrades and its producer. Numbers come from a greedy pacing sim at 3 clicks a second: Viridian opens around 5 minutes in, Pewter around 13, the first Delivery Truck around 19.
 
 **Opening Pewter**
 
@@ -153,15 +154,50 @@ Same pattern as Viridian: open the location, stock its items, buy its register u
 |---|---|---|---|---|---|---|
 | Delivery Truck | First Haul | Loading Dock | Convoy | Route 3 Traffic | Mt. Moon Express | Kanto Freight Line |
 
-Cerulean's open cost moved to a ₽45,000 / ₽400/s placeholder and Barcode Scanner to ₽60,000, so open and upgrade costs still rise at each stop. It gets real numbers when Cerulean is built.
+### Step 4b: Cerulean (built)
 
-### What's in the code now (steps 1–4a)
+Same pattern again. The sim (3 clicks a second) opens Cerulean at about 23 minutes and buys the first Cashier at about 26.
 
-The register, five producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk, Delivery Truck), opening Viridian and Pewter, stocking their items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 4; stocked items merge into older version 4 saves as none.
+| | |
+|---|---|
+| Open cost | ₽500,000 |
+| Needs | ₽4,000/s of income |
+| New item | Super Potion (FRLG ₽700, +70%), ₽700,000 to stock |
+| Register upgrade | Barcode Scanner, ₽600,000 |
+| Producer 6 | Cashier (employee, after the Delivery Truck): ₽1,400,000, 1,400 sales/s, Cookie Clicker's sixth-step shape |
+
+| Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
+|---|---|---|---|---|---|---|
+| Cashier | Open Register | Every Lane Open | Gym Rush | Cascade of Change | Checkout Brigade | Cashier Nation |
+
+**Placeholders for the rest of Kanto.** Opening Cerulean costs ₽500,000, more than the old placeholders for later locations. So every unbuilt location and register upgrade was rescaled to a rough ×7–10 per stop, keeping costs rising and each upgrade at or above its location's open cost. Each location gets real numbers when it's built.
+
+| Location | Open cost | Needs |
+|---|---|---|
+| Vermilion City | ₽5M | ₽30,000/s |
+| Lavender Town | ₽40M | ₽200,000/s |
+| Celadon City | ₽300M | ₽1.5M/s |
+| Fuchsia City | ₽2B | ₽10M/s |
+| Saffron City | ₽15B | ₽70M/s |
+| Cinnabar Island | ₽100B | ₽500M/s |
+| Indigo Plateau | ₽700B | ₽3B/s |
+
+### Backlog
+
+- **Special items:** off-menu items outside the FRLG Poké Mart lists, such as Slowpoke Tail, Cooked Magikarp and Roasted Pidgey. Slowpoke Tail is real (sold in Azalea Town in Gold/Silver for ₽9,800). The other two are fan jokes, not real items, so they'd need original art. How you get them, what they do and when they appear aren't decided yet.
+- **Fast-clicking achievement:** for serving a lot of customers in a short window, such as 10 seconds. It needs click timestamps tracked over a rolling window. The click count and tier names aren't set yet.
+- **Export and import a save:** copy the save out as text or a file, and load one back in. Import goes through the same checks and clamping as loading from storage.
+- **Export achievement:** a one-time achievement for exporting a save, like Cookie Clicker's backup achievement. Probably hidden.
+- **Stocking achievements:** tiers for how many items the franchise has stocked (for example 5, 10, 25, and every Kanto item). The goals depend on how many items each location ends up adding, so they're set once more locations are built.
+- **Minigames:** games like the ones in the main series, such as Voltorb Flip and the Game Corner slots. They'd use our own rules and art, not copies of the originals. Where they live (Celadon's Game Corner is the obvious fit), what they cost to play and what they pay out aren't decided yet.
+
+### What's in the code now (steps 1–4b)
+
+The register, six producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk, Delivery Truck, Cashier), opening Viridian, Pewter and Cerulean, stocking their items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 4; stocked items merge into older version 4 saves as none.
 
 - One franchise-wide producer list; each row has ×1 / ×10 / Max, how many you own and ₽/s each.
-- The route map shows the franchise's reach; a card under the register offers the next location (Viridian, then Pewter) and goes away once Pewter is open.
-- Achievements (38 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade and Idle Hands. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
+- The route map shows the franchise's reach; a card under the register offers the next location (Viridian, Pewter, then Cerulean) and goes away once Cerulean is open.
+- Achievements (44 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade and Idle Hands. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
 
   | Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
   |---|---|---|---|---|---|---|
@@ -170,8 +206,9 @@ The register, five producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk
   | Vending Machine | Coin Slot | Vending Row | Rooftop Envy | Thirst Quenched | Machine Kingdom | Every Corner Covered |
   | Stock Clerk | First Hire | Full Shift | Night Crew | Shelf Command | Stockroom Army | Silph-Sized Staff |
   | Delivery Truck | First Haul | Loading Dock | Convoy | Route 3 Traffic | Mt. Moon Express | Kanto Freight Line |
-- Register upgrades: named again, +5% of income per click each (clicking only), every one from an open location on offer at once (Second Till in Pallet; Meowth Coin Counter and Machop Bagger in Viridian). A click is the sale value × franchise bonus + (1% + 5% per upgrade) of income. Saves keep only upgrades from open locations.
-- Only Pallet, Viridian and Pewter can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
+  | Cashier | Open Register | Every Lane Open | Gym Rush | Cascade of Change | Checkout Brigade | Cashier Nation |
+- Register upgrades: named again, ×2 click sale and +5% of income per click each (clicking only), every one from an open location on offer at once (Second Till in Pallet; Meowth Coin Counter and Machop Bagger in Viridian). A click is the sale value × franchise bonus × 2 per upgrade + (1% + 5% per upgrade) of income. Saves keep only upgrades from open locations.
+- Only Pallet through Cerulean can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
 - Removed: per-mart producers, buying items as producers, order milestones, Premier Customer, the order, Stocked and Chain achievements.
 
 ## Core loop
@@ -317,9 +354,9 @@ One-time purchases.
   | Vermilion City | S.S. Anne Supply Contract | Poké, Great and Ultra Balls ×2 |
   | Lavender Town | Pokémon Tower Vigil Supplies | Escape Ropes and Repels ×2 |
   | Celadon City | Game Corner Prize Counter | Each click has a 1% chance to pay ×77 |
-  | Fuchsia City | Safari Zone Kiosk | Offline cap 2h → 3h |
+  | Fuchsia City | Safari Zone Kiosk | To be decided |
   | Saffron City | Silph Co. Partnership | +25% all sales |
-  | Cinnabar Island | Lab Research Grant | Offline cap 3h → 4h |
+  | Cinnabar Island | Lab Research Grant | To be decided |
   | Indigo Plateau | Elite Four Sponsorship | +1% all sales per achievement tier, doubling the achievement bonus |
 
   Costs and exact values get tuned with the pacing sim when built.
@@ -327,23 +364,23 @@ One-time purchases.
 
   | Upgrade | Location | Cost | Effect |
   |---|---|---|---|
-  | Second Till | Pallet Town | 250 | +5% of income per click |
-  | Meowth Coin Counter | Viridian City | 1K | +5% of income per click |
-  | Machop Bagger | Viridian City | 3K | +5% of income per click |
-  | Electric Till | Pewter City | 25K | +5% of income per click |
-  | Receipt Printer | Pewter City | 40K | +5% of income per click |
-  | Barcode Scanner | Cerulean City | 60K (placeholder) | +5% of income per click |
-  | Credit Card Machine | Vermilion City | 150K | +5% of income per click |
-  | Express Lane | Lavender Town | 250K | +5% of income per click |
-  | Loyalty Stamps | Lavender Town | 400K | +5% of income per click |
-  | Conveyor Belt | Celadon City | 1.2M | +5% of income per click |
-  | Department Store Counter | Celadon City | 2M | +5% of income per click |
-  | Chansey Cashier | Fuchsia City | 8M | +5% of income per click |
-  | Silph Card Reader | Saffron City | 15M | +5% of income per click |
-  | Alakazam Price Check | Saffron City | 20M | +5% of income per click |
-  | Machamp Bagger | Saffron City | 30M | +5% of income per click |
-  | Porygon Tablet | Cinnabar Island | 45M | +5% of income per click |
-  | Self Checkout | Indigo Plateau | 100M | +5% of income per click |
+  | Second Till | Pallet Town | 250 | ×2 sale, +5% of income per click |
+  | Meowth Coin Counter | Viridian City | 1K | ×2 sale, +5% of income per click |
+  | Machop Bagger | Viridian City | 3K | ×2 sale, +5% of income per click |
+  | Electric Till | Pewter City | 25K | ×2 sale, +5% of income per click |
+  | Receipt Printer | Pewter City | 40K | ×2 sale, +5% of income per click |
+  | Barcode Scanner | Cerulean City | 600K | ×2 sale, +5% of income per click |
+  | Credit Card Machine | Vermilion City | 6M (placeholder) | ×2 sale, +5% of income per click |
+  | Express Lane | Lavender Town | 50M (placeholder) | ×2 sale, +5% of income per click |
+  | Loyalty Stamps | Lavender Town | 80M (placeholder) | ×2 sale, +5% of income per click |
+  | Conveyor Belt | Celadon City | 400M (placeholder) | ×2 sale, +5% of income per click |
+  | Department Store Counter | Celadon City | 600M (placeholder) | ×2 sale, +5% of income per click |
+  | Chansey Cashier | Fuchsia City | 3B (placeholder) | ×2 sale, +5% of income per click |
+  | Silph Card Reader | Saffron City | 20B (placeholder) | ×2 sale, +5% of income per click |
+  | Alakazam Price Check | Saffron City | 30B (placeholder) | ×2 sale, +5% of income per click |
+  | Machamp Bagger | Saffron City | 45B (placeholder) | ×2 sale, +5% of income per click |
+  | Porygon Tablet | Cinnabar Island | 150B (placeholder) | ×2 sale, +5% of income per click |
+  | Self Checkout | Indigo Plateau | 1T (placeholder) | ×2 sale, +5% of income per click |
 
   (Old model, before step 3:) Click value = ₽1 × 2^(doublings) + (sales share × chain ₽/s): up to ₽16 base and 13% of chain ₽/s per click. At 3 clicks/s with every upgrade, clicking adds about 39% on top of order income. The pacing sim finishes Kanto in ~108m with them vs ~118m without.
 
@@ -426,7 +463,7 @@ PokeAPI has no town, building or trainer art, so the storefronts, town landmarks
 
 localStorage autosave every 10s and on tab hide. Export/import as a string.
 
-**Offline earnings** (built): time away pays sales in full, capped at 2h. There's no rate penalty: an idle game shouldn't punish you for not watching it. Clicks don't count. Kanto takes about 2h to clear, so the cap stops one night away from paying for most of the region. Raise it with each region as runs get longer (Fuchsia and Cinnabar perks add an hour each). The game saves the wall-clock time it has paid sales up to. Any gap since then (a closed tab, a hidden tab the browser paused, a sleeping laptop) is paid on return. Gaps of 15 minutes or more count as time away: a "Welcome back" dialog shows the time and ₽ earned, and lifetime stats track "Earned while away". Shorter gaps count as play time.
+**Offline earnings** (built): time away pays sales in full, with no cap and no rate penalty: an idle game shouldn't punish you for not watching it. Clicks don't count. The game saves the wall-clock time it has paid sales up to. Any gap since then (a closed tab, a hidden tab the browser paused, a sleeping laptop) is paid on return. Gaps of 15 minutes or more count as time away: a "Welcome back" dialog shows the time and ₽ earned, and lifetime stats track "Earned while away". Shorter gaps count as play time.
 
 ## Layout
 

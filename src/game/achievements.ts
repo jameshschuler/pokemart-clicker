@@ -81,6 +81,14 @@ const PRODUCER_TIER_NAMES: Record<ProducerId, TierNames> = {
     'Mt. Moon Express',
     'Kanto Freight Line',
   ],
+  cashier: [
+    'Open Register',
+    'Every Lane Open',
+    'Gym Rush',
+    'Cascade of Change',
+    'Checkout Brigade',
+    'Cashier Nation',
+  ],
 }
 
 function producerOwned(producer: Producer): Achievement {

@@ -111,8 +111,8 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'cerulean',
     name: 'Cerulean City',
-    openCost: 45_000,
-    requiredIncome: 400,
+    openCost: 500_000,
+    requiredIncome: 4_000,
     stock: [
       'potion',
       'pokeBall',
@@ -128,15 +128,15 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'vermilion',
     name: 'Vermilion City',
-    openCost: 70_000,
-    requiredIncome: 600,
+    openCost: 5e6,
+    requiredIncome: 30_000,
     stock: ['pokeBall', 'antidote', 'paralyzeHeal', 'awakening', 'repel', 'superPotion', 'iceHeal'],
   },
   {
     id: 'lavender',
     name: 'Lavender Town',
-    openCost: 240_000,
-    requiredIncome: 2_000,
+    openCost: 40e6,
+    requiredIncome: 200_000,
     stock: [
       'antidote',
       'paralyzeHeal',
@@ -151,8 +151,8 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'celadon',
     name: 'Celadon City',
-    openCost: 920_000,
-    requiredIncome: 7_700,
+    openCost: 300e6,
+    requiredIncome: 1.5e6,
     storeName: 'Celadon City Department Store',
     floors: CELADON_FLOORS,
     stock: CELADON_FLOORS.flatMap((floor) => floor.stock),
@@ -160,22 +160,22 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'fuchsia',
     name: 'Fuchsia City',
-    openCost: 4.1e6,
-    requiredIncome: 34_000,
+    openCost: 2e9,
+    requiredIncome: 10e6,
     stock: ['superPotion', 'greatBall', 'revive', 'fullHeal', 'maxRepel', 'ultraBall'],
   },
   {
     id: 'saffron',
     name: 'Saffron City',
-    openCost: 13e6,
-    requiredIncome: 110_000,
+    openCost: 15e9,
+    requiredIncome: 70e6,
     stock: ['escapeRope', 'greatBall', 'revive', 'fullHeal', 'maxRepel', 'hyperPotion'],
   },
   {
     id: 'cinnabar',
     name: 'Cinnabar Island',
-    openCost: 32e6,
-    requiredIncome: 270_000,
+    openCost: 100e9,
+    requiredIncome: 500e6,
     stock: [
       'escapeRope',
       'greatBall',
@@ -189,14 +189,14 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'indigoPlateau',
     name: 'Indigo Plateau',
-    openCost: 71e6,
-    requiredIncome: 590_000,
+    openCost: 700e9,
+    requiredIncome: 3e9,
     stock: ['greatBall', 'revive', 'fullHeal', 'ultraBall', 'maxRepel', 'maxPotion', 'fullRestore'],
   },
 ]
 
 /** Locations built on the franchise model so far; the rest open in later build steps. */
-export const PLAYABLE_LOCATIONS = 3
+export const PLAYABLE_LOCATIONS = 4
 
 const ROUTE_ORDER = new Map(LOCATIONS.map((location, index) => [location.id, index]))
 

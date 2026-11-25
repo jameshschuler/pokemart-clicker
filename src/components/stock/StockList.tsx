@@ -1,6 +1,5 @@
 import { formatRate } from '@/game/format'
-import { nextLocation } from '@/game/locations'
-import { saleValue, stockOffers } from '@/game/stocking'
+import { saleValue, stockOffers, unstockedFirst } from '@/game/stocking'
 import { useGame } from '@/game/store'
 import { StockRow } from './StockRow'
 
@@ -8,8 +7,7 @@ export function StockList() {
   const martsOwned = useGame((state) => state.martsOwned)
   const stockedItems = useGame((state) => state.stockedItems)
   const stocked = new Set(stockedItems)
-  const offers = stockOffers(martsOwned)
-  const upcoming = nextLocation(martsOwned)
+  const offers = unstockedFirst(stockOffers(martsOwned), stockedItems)
 
   return (
     <section className="flex flex-col gap-2">
@@ -27,11 +25,6 @@ export function StockList() {
             </li>
           ))}
         </ul>
-      )}
-      {upcoming && (
-        <p className="px-2 text-xs text-muted-foreground">
-          Open {upcoming.name} to stock its new items.
-        </p>
       )}
     </section>
   )

@@ -1,4 +1,4 @@
-import { isLocationOpen, type LocationId, PLAYABLE_LOCATIONS } from './locations'
+import { isLocationOpen, type LocationId } from './locations'
 
 export type RegisterUpgradeId =
   | 'secondTill'
@@ -69,84 +69,84 @@ export const REGISTER_UPGRADES: RegisterUpgrade[] = [
     name: 'Barcode Scanner',
     description: 'No more typing in prices by hand.',
     location: 'cerulean',
-    cost: 60_000,
+    cost: 600_000,
   },
   {
     id: 'creditCardMachine',
     name: 'Credit Card Machine',
     description: 'Takes cards, not just cash. Sailors off the S.S. Anne never carry cash.',
     location: 'vermilion',
-    cost: 150_000,
+    cost: 6e6,
   },
   {
     id: 'expressLane',
     name: 'Express Lane',
     description: 'Ten items or fewer. Trainers in a hurry love it.',
     location: 'lavender',
-    cost: 250_000,
+    cost: 50e6,
   },
   {
     id: 'loyaltyStamps',
     name: 'Loyalty Stamps',
     description: 'Every sale at the register earns a stamp, and regulars spend more.',
     location: 'lavender',
-    cost: 400_000,
+    cost: 80e6,
   },
   {
     id: 'conveyorBelt',
     name: 'Conveyor Belt',
     description: 'Items roll up to the till on their own.',
     location: 'celadon',
-    cost: 1.2e6,
+    cost: 400e6,
   },
   {
     id: 'departmentCounter',
     name: 'Department Store Counter',
     description: 'A long counter with four tills, straight out of Celadon.',
     location: 'celadon',
-    cost: 2e6,
+    cost: 600e6,
   },
   {
     id: 'chanseyCashier',
     name: 'Chansey Cashier',
     description: 'Chansey opens a second register. Nobody leaves without a smile.',
     location: 'fuchsia',
-    cost: 8e6,
+    cost: 3e9,
   },
   {
     id: 'silphCardReader',
     name: 'Silph Card Reader',
     description: 'Tap to pay. Silph Co. tech, mostly legal.',
     location: 'saffron',
-    cost: 15e6,
+    cost: 20e9,
   },
   {
     id: 'alakazamPriceCheck',
     name: 'Alakazam Price Check',
     description: 'Knows every price by heart. Price checks take no time at all.',
     location: 'saffron',
-    cost: 20e6,
+    cost: 30e9,
   },
   {
     id: 'machampBagger',
     name: 'Machamp Bagger',
     description: 'Machop evolved. Four arms, four bags at once.',
     location: 'saffron',
-    cost: 30e6,
+    cost: 45e9,
   },
   {
     id: 'porygonTablet',
     name: 'Porygon Tablet',
     description: 'The register is a tablet now. Porygon runs the software.',
     location: 'cinnabar',
-    cost: 45e6,
+    cost: 150e9,
   },
   {
     id: 'selfCheckout',
     name: 'Self Checkout',
     description: 'Trainers ring themselves up. Nobody steals a Potion. Probably.',
     location: 'indigoPlateau',
-    cost: 100e6,
+    cost: 1e12,
   },
 ]
 
@@ -163,13 +163,4 @@ export function availableRegisterUpgrades(
   const ownedIds = new Set(owned)
 
   return unlockedRegisterUpgrades(martsOwned).filter((upgrade) => !ownedIds.has(upgrade.id))
-}
-
-/** The next upgrade waiting on a location that can open in this build, for a "More open with …" hint. */
-export function nextLockedRegisterUpgrade(martsOwned: number): RegisterUpgrade | undefined {
-  return REGISTER_UPGRADES.find(
-    (upgrade) =>
-      !isLocationOpen(upgrade.location, martsOwned) &&
-      isLocationOpen(upgrade.location, PLAYABLE_LOCATIONS),
-  )
 }

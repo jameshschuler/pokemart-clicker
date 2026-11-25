@@ -3,12 +3,10 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { OFFLINE_CAP_SECONDS } from '@/game/economy'
 import { formatDuration, formatMoney } from '@/game/format'
 import { useGame } from '@/game/store'
 
@@ -22,10 +20,6 @@ export function WelcomeBackDialog() {
       <DialogContent className="sm:max-w-sm" showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>Welcome back</DialogTitle>
-          <DialogDescription>
-            Your marts kept selling while you were away, for up to{' '}
-            {formatDuration(OFFLINE_CAP_SECONDS)}.
-          </DialogDescription>
         </DialogHeader>
         {report && (
           <dl className="flex flex-col gap-1.5 text-sm tabular-nums">

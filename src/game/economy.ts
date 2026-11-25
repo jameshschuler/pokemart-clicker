@@ -12,8 +12,9 @@ export const ACHIEVEMENT_BONUS = 0.01
 export const CLICK_INCOME_SHARE = 0.01
 /** Each register upgrade adds this share of income per second to every click. */
 export const REGISTER_UPGRADE_SHARE = 0.05
-export const OFFLINE_CAP_SECONDS = 2 * 3600
-/** Gaps this long count as time away: paid in full up to the cap, with a welcome back report. */
+/** Each register upgrade multiplies the sale a click makes by this much. */
+export const REGISTER_UPGRADE_SALE_MULTIPLIER = 2
+/** Gaps this long count as time away: paid in full, with a welcome back report. */
 export const AWAY_SECONDS = 15 * 60
 
 export type BuyAmount = 1 | 10 | 'max'
@@ -50,6 +51,15 @@ export function maxAffordable(baseCost: number, owned: number, coins: number): n
 
   // Guard against floating-point overshoot at exact boundaries.
   return bulkCost(baseCost, owned, count) > coins ? count - 1 : count
+}
+
+/** Seconds of income until `coins` reach `cost`: 0 if affordable now, Infinity with no income. */
+export function secondsUntilAffordable(cost: number, coins: number, income: number): number {
+  if (coins >= cost) {
+    return 0
+  }
+
+  return income > 0 ? (cost - coins) / income : Infinity
 }
 
 /** Units and price for a purchase. For 'max', buys at least one so the price shown is the next unit. */
@@ -123,12 +133,20 @@ export function clickIncomeShare(registerUpgrades: RegisterUpgradeId[]): number 
   return CLICK_INCOME_SHARE + REGISTER_UPGRADE_SHARE * registerUpgrades.length
 }
 
-/** One click is one sale with the franchise bonus, plus a share of income per second. */
+export function clickSaleMultiplier(registerUpgrades: RegisterUpgradeId[]): number {
+  return REGISTER_UPGRADE_SALE_MULTIPLIER ** registerUpgrades.length
+}
+
+/**
+ * One click is one sale with the franchise bonus, doubled per register upgrade,
+ * plus a share of income per second.
+ */
 export function clickValue(franchise: Franchise): number {
   const sale = saleValue(franchise.stockedItems) * franchiseMultiplier(franchise)
-  const income = salesPerSecond(franchise.producers) * sale
+  const income = incomePerSecond(franchise)
+  const { registerUpgrades } = franchise
 
-  return sale + clickIncomeShare(franchise.registerUpgrades) * income
+  return sale * clickSaleMultiplier(registerUpgrades) + clickIncomeShare(registerUpgrades) * income
 }
 
 export interface OpenRequirements {
