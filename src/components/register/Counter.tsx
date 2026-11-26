@@ -1,5 +1,4 @@
 import { useRef, useState, type MouseEvent } from 'react'
-import { OpenNextLocation } from '@/components/map/OpenNextLocation'
 import { Button } from '@/components/ui/button'
 import { clickValue } from '@/game/economy'
 import { formatMoney } from '@/game/format'
@@ -63,8 +62,6 @@ export function Counter() {
       </Button>
 
       <RegisterUpgrades />
-
-      <OpenNextLocation />
 
       <FranchiseBonus />
     </section>
