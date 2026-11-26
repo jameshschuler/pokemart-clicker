@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { LOCATION_BONUS, openRequirements } from '@/game/economy'
 import { formatMoney, formatPercent, formatRate } from '@/game/format'
-import { shortLocationName } from '@/game/locations'
 import { useGame } from '@/game/store'
 import { RequirementLine } from './RequirementLine'
 
@@ -27,17 +26,17 @@ export function OpenNextLocation() {
   }
 
   return (
-    <Card size="sm" className="bg-muted/30 shadow-none">
-      <CardContent className="flex flex-col gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium">Next location: {location.name}</p>
+    <Card size="sm" className="rounded-lg bg-muted/30">
+      <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+        <div className="min-w-0 sm:flex-1">
+          <h2 className="truncate text-sm font-medium">Next location: {location.name}</h2>
           <p className="truncate text-xs text-muted-foreground">
             New items to stock · +{formatPercent(LOCATION_BONUS)} franchise bonus
           </p>
         </div>
 
-        <div className="flex items-end justify-between gap-3">
-          <div className="flex min-w-0 flex-1 flex-col gap-1 text-xs tabular-nums">
+        <div className="flex items-end justify-between gap-3 sm:contents">
+          <div className="flex shrink-0 flex-col gap-1 text-xs tabular-nums">
             <p id="open-requirements" className="font-medium text-muted-foreground">
               Requirements
             </p>
@@ -51,7 +50,7 @@ export function OpenNextLocation() {
             </ul>
           </div>
           <Button size="sm" disabled={!ready} onClick={openNextLocation} className="shrink-0">
-            Open {shortLocationName(location)}
+            Open location<span className="sr-only">: {location.name}</span>
           </Button>
         </div>
       </CardContent>

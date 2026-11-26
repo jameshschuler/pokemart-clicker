@@ -1,6 +1,7 @@
 import { AchievementsDialog } from '@/components/achievements/AchievementsDialog'
 import { AchievementToast } from '@/components/achievements/AchievementToast'
 import { WelcomeBackDialog } from '@/components/away/WelcomeBackDialog'
+import { OpenNextLocation } from '@/components/map/OpenNextLocation'
 import { RouteMap } from '@/components/map/RouteMap'
 import { Producers } from '@/components/producers/Producers'
 import { Counter } from '@/components/register/Counter'
@@ -31,13 +32,18 @@ export default function App() {
         </div>
       </header>
 
-      <RouteMap />
+      <main className="flex flex-1 flex-col gap-6">
+        <div className="flex flex-col gap-4">
+          <RouteMap />
+          <OpenNextLocation />
+        </div>
 
-      <main className="grid flex-1 content-start gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-8">
-        <Counter />
-        <div className="flex min-w-0 flex-col gap-6">
-          <Producers />
-          <StockList />
+        <div className="grid content-start gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-8">
+          <Counter />
+          <div className="flex min-w-0 flex-col gap-6">
+            <Producers />
+            <StockList />
+          </div>
         </div>
       </main>
 
