@@ -23,6 +23,11 @@ export function formatMoney(value: number): string {
 }
 
 /** Money with every digit: 1_040_123.9 → "1,040,123". */
+/** A price in ₽, rounded up so it never reads below the real cost: 60.75 → "₽61". */
+export function formatPrice(cost: number): string {
+  return `₽${formatMoney(Math.ceil(cost))}`
+}
+
 export function formatWholeMoney(value: number): string {
   return Math.floor(value).toLocaleString('en-US')
 }

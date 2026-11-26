@@ -1,4 +1,4 @@
-import type { LocationId } from './locations'
+import { isLocationOpen, type LocationId } from './locations'
 
 export type ProducerId =
   | 'helpingHand'
@@ -98,3 +98,7 @@ export const PRODUCERS: Producer[] = [
     salesPerSecond: 44_000,
   },
 ]
+
+export function nextLockedProducer(martsOwned: number): Producer | undefined {
+  return PRODUCERS.find((producer) => !isLocationOpen(producer.location, martsOwned))
+}

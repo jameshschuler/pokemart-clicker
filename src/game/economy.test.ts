@@ -14,7 +14,14 @@ import {
   secondsUntilAffordable,
   salesPerSecond,
 } from './economy'
-import { formatDuration, formatMoney, formatPercent, formatRate, formatWholeMoney } from './format'
+import {
+  formatDuration,
+  formatMoney,
+  formatPercent,
+  formatPrice,
+  formatRate,
+  formatWholeMoney,
+} from './format'
 import { PLAYABLE_LOCATIONS } from './locations'
 import { PRODUCERS } from './producers'
 import { emptyProducers, initialState } from './store'
@@ -302,6 +309,14 @@ describe('format', () => {
     expect(formatPercent(0)).toBe('0%')
     expect(formatPercent(0.15)).toBe('15%')
     expect(formatPercent(0.05 * 3)).toBe('15%')
+  })
+
+  it.each([
+    [60.75, '₽61'],
+    [115, '₽115'],
+    [1_400_000, '₽1.40M'],
+  ])('prices %d as %s', (cost, expected) => {
+    expect(formatPrice(cost)).toBe(expected)
   })
 
   it('formats rates', () => {
