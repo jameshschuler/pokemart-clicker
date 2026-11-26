@@ -5,8 +5,11 @@ import {
   locationById,
   LOCATIONS,
   newStock,
+  nextFloor,
   nextLocation,
+  openStock,
   PLAYABLE_LOCATIONS,
+  shortFloorName,
   shortLocationName,
   storeFloors,
   storeItems,
@@ -105,6 +108,48 @@ describe('storeFloors', () => {
   })
 })
 
+describe('openStock', () => {
+  it('sells everything at a location without floors', () => {
+    expect(openStock(locationById('lavender'), 1)).toEqual(locationById('lavender').stock)
+  })
+
+  it('sells only the open floors at the Department Store', () => {
+    const [secondFloor, fourthFloor] = locationById('celadon').floors ?? []
+
+    expect(openStock(locationById('celadon'), 2)).toEqual([
+      ...secondFloor.stock,
+      ...fourthFloor.stock,
+    ])
+  })
+})
+
+describe('shortFloorName', () => {
+  it.each([
+    ["2F · Trainer's Market", '2F'],
+    ['Roof · Vending Machines', 'Roof'],
+  ])('shortens %s to %s', (name, expected) => {
+    expect(shortFloorName({ name, stock: [] })).toBe(expected)
+  })
+})
+
+describe('nextFloor', () => {
+  it('is nothing before Celadon opens', () => {
+    expect(nextFloor(6, 1)).toBeUndefined()
+  })
+
+  it.each([
+    [1, '4F · Wise Man Gifts', 1e9],
+    [2, '5F · Drugstore', 2e9],
+    [3, 'Roof · Vending Machines', 3e9],
+  ])('after %i floors is %s for %d', (floorsOpen, name, openCost) => {
+    expect(nextFloor(7, floorsOpen)).toMatchObject({ name, openCost })
+  })
+
+  it('is nothing once the roof is open', () => {
+    expect(nextFloor(7, 4)).toBeUndefined()
+  })
+})
+
 describe('nextLocation', () => {
   it('is Viridian from Pallet', () => {
     expect(nextLocation(1)?.id).toBe('viridian')
@@ -115,6 +160,7 @@ describe('nextLocation', () => {
     [3, 'cerulean'],
     [4, 'vermilion'],
     [5, 'lavender'],
+    [6, 'celadon'],
   ])('with %i locations open is %s', (martsOwned, expected) => {
     expect(nextLocation(martsOwned)?.id).toBe(expected)
   })

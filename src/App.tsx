@@ -1,6 +1,8 @@
 import { AchievementsDialog } from '@/components/achievements/AchievementsDialog'
 import { AchievementToast } from '@/components/achievements/AchievementToast'
 import { WelcomeBackDialog } from '@/components/away/WelcomeBackDialog'
+import { DevTools } from '@/components/devtools/DevTools'
+import { RoamingEevee } from '@/components/eevee/RoamingEevee'
 import { OpenNextLocation } from '@/components/map/OpenNextLocation'
 import { RouteMap } from '@/components/map/RouteMap'
 import { Producers } from '@/components/producers/Producers'
@@ -55,6 +57,8 @@ export default function App() {
 
       <AchievementToast />
       <WelcomeBackDialog />
+      <RoamingEevee />
+      {import.meta.env.DEV && <DevTools />}
     </div>
   )
 }

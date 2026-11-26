@@ -27,7 +27,7 @@ describe('achievement data', () => {
   })
 
   it('counts every tier in the total', () => {
-    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(56)
+    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(66)
   })
 })
 

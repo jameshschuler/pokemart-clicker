@@ -1,7 +1,8 @@
 import { type EarnedAchievements, emptyAchievements } from './achievements'
+import { isEeveeForm } from './eevee'
 import type { Producers } from './economy'
 import type { ItemId } from './items'
-import { PLAYABLE_LOCATIONS } from './locations'
+import { CELADON_FLOORS, isLocationOpen, PLAYABLE_LOCATIONS } from './locations'
 import { PRODUCERS } from './producers'
 import { stockOffers } from './stocking'
 import { type GameState, initialState, useGame } from './store'
@@ -23,6 +24,8 @@ export function saveGame() {
     producers,
     stockedItems,
     martsOwned,
+    floorsOpen,
+    eevee,
     registerUpgrades,
     stats,
     achievements,
@@ -36,6 +39,8 @@ export function saveGame() {
       producers,
       stockedItems,
       martsOwned,
+      floorsOpen,
+      eevee,
       registerUpgrades,
       stats,
       achievements,
@@ -63,12 +68,14 @@ function mergeProducers(saved: Partial<Producers> = {}): Producers {
 }
 
 /** Keeps stocked items the loaded franchise could have stocked, once each. */
-function mergeStockedItems(saved: unknown, martsOwned: number): ItemId[] {
+function mergeStockedItems(saved: unknown, martsOwned: number, floorsOpen: number): ItemId[] {
   if (!Array.isArray(saved)) {
     return []
   }
 
-  const stockable = new Set<unknown>(stockOffers(martsOwned).map((offer) => offer.item.id))
+  const stockable = new Set<unknown>(
+    stockOffers(martsOwned, floorsOpen).map((offer) => offer.item.id),
+  )
 
   return [...new Set(saved)].filter((itemId): itemId is ItemId => stockable.has(itemId))
 }
@@ -112,6 +119,9 @@ export function loadGame() {
 
     const base = initialState()
     const martsOwned = Math.floor(clamp(file.state.martsOwned, 1, PLAYABLE_LOCATIONS, 1))
+    const celadonOpen = isLocationOpen('celadon', martsOwned)
+    const maxFloors = celadonOpen ? CELADON_FLOORS.length : 1
+    const floorsOpen = Math.floor(clamp(file.state.floorsOpen, 1, maxFloors, 1))
     const now = Date.now()
     const savedAt = clamp(file.savedAt, 0, now, now)
 
@@ -120,8 +130,10 @@ export function loadGame() {
       ...file.state,
       coins: clamp(file.state.coins, 0, Infinity, 0),
       martsOwned,
+      floorsOpen,
+      eevee: celadonOpen && isEeveeForm(file.state.eevee) ? file.state.eevee : null,
       producers: mergeProducers(file.state.producers),
-      stockedItems: mergeStockedItems(file.state.stockedItems, martsOwned),
+      stockedItems: mergeStockedItems(file.state.stockedItems, martsOwned, floorsOpen),
       registerUpgrades: mergeRegisterUpgrades(file.state.registerUpgrades, martsOwned),
       stats: { ...base.stats, ...file.state.stats },
       achievements: mergeAchievements(file.state.achievements),

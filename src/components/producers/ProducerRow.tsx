@@ -7,7 +7,7 @@ import { useGame } from '@/game/store'
 import { cn } from '@/lib/utils'
 import { BULK_AMOUNTS } from './buy-amounts'
 import { BuyButton } from './BuyButton'
-import { PRODUCER_ICONS } from './producer-icons'
+import { PRODUCER_ART } from './producer-icons'
 
 interface ProducerRowProps {
   producer: Producer
@@ -19,7 +19,7 @@ export function ProducerRow({ producer }: ProducerRowProps) {
   const cost = bulkCost(producer.baseCost, owned, 1)
   const affordable = useGame((state) => state.coins >= cost)
   const buyProducer = useGame((state) => state.buyProducer)
-  const Icon = PRODUCER_ICONS[producer.id]
+  const { icon: Icon, tint } = PRODUCER_ART[producer.id]
   const price = formatPrice(cost)
 
   return (
@@ -46,7 +46,10 @@ export function ProducerRow({ producer }: ProducerRowProps) {
         >
           <span
             aria-hidden
-            className="flex size-12 shrink-0 items-center justify-center rounded-md border border-border bg-background text-muted-foreground"
+            className={cn(
+              'flex size-12 shrink-0 items-center justify-center rounded-md border transition-colors',
+              affordable ? tint : 'border-border bg-background text-muted-foreground/60',
+            )}
           >
             <Icon className="size-6" />
           </span>

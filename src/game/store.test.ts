@@ -151,6 +151,87 @@ describe('stockItem', () => {
   })
 })
 
+describe('openNextFloor', () => {
+  it('opens the next Department Store floor and charges its cost', () => {
+    useGame.setState({ coins: 1.5e9, martsOwned: 7 })
+
+    useGame.getState().openNextFloor()
+
+    expect(useGame.getState()).toMatchObject({ floorsOpen: 2, coins: 0.5e9 })
+  })
+
+  it.each([
+    ['before Celadon opens', 1e12, 6, 1],
+    ['without enough coins', 1e9 - 1, 7, 1],
+    ['once the roof is open', 1e12, 7, 4],
+  ])('refuses %s', (_, coins, martsOwned, floorsOpen) => {
+    useGame.setState({ coins, martsOwned, floorsOpen })
+
+    useGame.getState().openNextFloor()
+
+    expect(useGame.getState()).toMatchObject({ coins, floorsOpen })
+  })
+
+  it('lets the new floor’s items be stocked', () => {
+    useGame.setState({ coins: 2e9, martsOwned: 7 })
+
+    useGame.getState().openNextFloor()
+    useGame.getState().stockItem('fireStone')
+
+    expect(useGame.getState().stockedItems).toEqual(['fireStone'])
+  })
+})
+
+describe('findEevee', () => {
+  it('finds Eevee once Celadon is open and earns its hidden achievement', () => {
+    useGame.setState({ martsOwned: 7 })
+
+    useGame.getState().findEevee()
+
+    expect(useGame.getState()).toMatchObject({ eevee: 'eevee', achievements: { eevee: 1 } })
+  })
+
+  it('does nothing before Celadon opens', () => {
+    useGame.getState().findEevee()
+
+    expect(useGame.getState().eevee).toBeNull()
+  })
+
+  it('leaves an evolved Eevee alone', () => {
+    useGame.setState({ martsOwned: 7, eevee: 'flareon' })
+
+    useGame.getState().findEevee()
+
+    expect(useGame.getState().eevee).toBe('flareon')
+  })
+})
+
+describe('evolveEevee', () => {
+  it.each([
+    ['fireStone', 'flareon'],
+    ['waterStone', 'vaporeon'],
+    ['thunderStone', 'jolteon'],
+  ] as const)('uses a stocked %s to evolve into %s', (stone, form) => {
+    useGame.setState({ martsOwned: 7, eevee: 'eevee', stockedItems: [stone] })
+
+    useGame.getState().evolveEevee(form)
+
+    expect(useGame.getState()).toMatchObject({ eevee: form, achievements: { [form]: 1 } })
+  })
+
+  it.each([
+    ['without its stone stocked', 'eevee', ['waterStone']],
+    ['before Eevee is found', null, ['fireStone']],
+    ['once Eevee has already evolved', 'jolteon', ['fireStone']],
+  ] as const)('refuses %s', (_, eevee, stockedItems) => {
+    useGame.setState({ martsOwned: 7, eevee, stockedItems: [...stockedItems] })
+
+    useGame.getState().evolveEevee('flareon')
+
+    expect(useGame.getState().eevee).toBe(eevee)
+  })
+})
+
 describe('buyRegisterUpgrade', () => {
   it('buys an upgrade from an open location and raises the click value', () => {
     useGame.setState({ coins: 300, producers: { ...emptyProducers(), deliveryBike: 10 } })

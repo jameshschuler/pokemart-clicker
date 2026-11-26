@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ITEMS, itemSpriteUrl } from './items'
+import { itemById, ITEMS, itemSpriteUrl } from './items'
 
 describe('items', () => {
   it('have unique ids', () => {
@@ -10,6 +10,12 @@ describe('items', () => {
     for (const item of ITEMS) {
       expect(item.price).toBeGreaterThanOrEqual(100)
     }
+  })
+})
+
+describe('itemById', () => {
+  it('finds an item by its id', () => {
+    expect(itemById('fireStone').name).toBe('Fire Stone')
   })
 })
 

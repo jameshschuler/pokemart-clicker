@@ -22,16 +22,9 @@ npm run dev      # http://localhost:5173
 
 Progress saves to localStorage every 10 seconds and when the tab is hidden. Use "Reset save" in the header to start over.
 
-## Debug commands
+## Dev tools
 
-The dev server adds a `mart` object to the browser console for playtesting. Production builds leave it out.
-
-```js
-mart.addMoney(1e6)   // add ₽ without counting it as earned
-mart.openMarts(2)    // open the first 2 locations for free (no number: every playable location)
-mart.away(3600)      // pretend you were away an hour (welcome back dialog)
-mart.help()          // list the commands
-```
+The dev server shows a wrench button in the bottom-right corner. It opens a panel for playtesting: add ₽ without counting it as earned, set how many locations and Department Store floors are open, and skip time as if you were away (15 minutes or more shows the welcome back dialog). Production builds leave it out.
 
 ## Stack
 

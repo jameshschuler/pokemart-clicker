@@ -1,10 +1,19 @@
+import { type Eeveelution, EVOLUTIONS } from './eevee'
 import { PRODUCERS, type Producer, type ProducerId } from './producers'
 import { totalEarned } from './stats'
 import type { GameState } from './store'
 import { REGISTER_UPGRADES } from './upgrades'
 
 export type AchievementId =
-  'customersServed' | 'totalEarned' | 'allRegisterUpgrades' | `${ProducerId}Owned` | 'idleHands'
+  | 'customersServed'
+  | 'totalEarned'
+  | 'allRegisterUpgrades'
+  | `${ProducerId}Owned`
+  | 'idleHands'
+  | 'eevee'
+  | 'flareon'
+  | 'vaporeon'
+  | 'jolteon'
 
 export type AchievementCategory = 'register' | 'earnings' | 'upgrades' | 'producers' | 'hidden'
 
@@ -105,6 +114,14 @@ const PRODUCER_TIER_NAMES: Record<ProducerId, TierNames> = {
     'Mass Production',
     'Silph Co. Rival',
   ],
+  tmWorkshop: [
+    'First Disc',
+    'Move Tutor',
+    'Hyper Beam Batch',
+    'Burn Rate',
+    'Disc Jockey',
+    'Every Move in Kanto',
+  ],
 }
 
 function producerOwned(producer: Producer): Achievement {
@@ -122,6 +139,15 @@ function producerOwned(producer: Producer): Achievement {
           : `Own ${goal.toLocaleString('en-US')} ${producer.plural}.`,
     })),
     progress: (state) => state.producers[producer.id],
+  }
+}
+
+function evolved(form: Eeveelution, name: string): Achievement {
+  return {
+    id: form,
+    category: 'hidden',
+    tiers: [{ goal: 1, name, description: `Evolve Eevee into ${name}.` }],
+    progress: (state) => (state.eevee === form ? 1 : 0),
   }
 }
 
@@ -191,6 +217,19 @@ export const ACHIEVEMENTS: Achievement[] = [
     ],
     progress: (state) => state.stats.awayEarnings,
   },
+  {
+    id: 'eevee',
+    category: 'hidden',
+    tiers: [
+      {
+        goal: 1,
+        name: 'Back Door of the Mansion',
+        description: 'Find the Eevee in Celadon Mansion.',
+      },
+    ],
+    progress: (state) => (state.eevee ? 1 : 0),
+  },
+  ...EVOLUTIONS.map((evolution) => evolved(evolution.form, evolution.name)),
 ]
 
 export const TOTAL_ACHIEVEMENT_TIERS = ACHIEVEMENTS.reduce(
