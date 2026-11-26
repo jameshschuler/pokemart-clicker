@@ -3,7 +3,7 @@ import { ReadyIn } from '@/components/shared/ReadyIn'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { purchaseQuote, salesPerSecond, type BuyAmount } from '@/game/economy'
-import { formatMoney } from '@/game/format'
+import { formatPrice } from '@/game/format'
 import type { Producer } from '@/game/producers'
 import { useGame } from '@/game/store'
 
@@ -28,7 +28,7 @@ export function BuyButton({ producer, owned, amount }: BuyButtonProps) {
   )
   const buyProducer = useGame((state) => state.buyProducer)
   const label = amount === 'max' ? `Max ×${count}` : `×${count}`
-  const price = `₽${formatMoney(Math.ceil(cost))}`
+  const price = formatPrice(cost)
 
   return (
     <Tooltip disabled={affordable || !hasIncome}>
@@ -36,17 +36,17 @@ export function BuyButton({ producer, owned, amount }: BuyButtonProps) {
         render={
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
             disabled={!affordable}
             focusableWhenDisabled
             onClick={() => buyProducer(producer.id, amount)}
             aria-label={`Buy ${count} ${producer.name} for ${price}`}
-            className="h-auto w-24 flex-col items-stretch gap-0.5 px-3 py-1.5 tabular-nums aria-disabled:active:translate-y-0 aria-disabled:opacity-50 aria-disabled:hover:bg-background dark:aria-disabled:hover:bg-input/30"
+            className="h-auto w-16 flex-col gap-0 px-1 py-1 tabular-nums aria-disabled:active:translate-y-0 aria-disabled:opacity-40 aria-disabled:hover:bg-transparent dark:aria-disabled:hover:bg-transparent"
           />
         }
       >
-        <span className="text-xs text-muted-foreground">{label}</span>
-        <span className="font-mono text-sm">{price}</span>
+        <span className="text-xs font-medium">{label}</span>
+        <span className="font-mono text-xs text-muted-foreground">{price}</span>
       </TooltipTrigger>
       <TooltipContent>
         <ReadyIn cost={cost} className="text-background" />

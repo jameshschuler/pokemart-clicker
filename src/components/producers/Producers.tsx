@@ -1,11 +1,13 @@
 import { isLocationOpen } from '@/game/locations'
-import { PRODUCERS } from '@/game/producers'
+import { nextLockedProducer, PRODUCERS } from '@/game/producers'
 import { useGame } from '@/game/store'
+import { LockedProducerRow } from './LockedProducerRow'
 import { ProducerRow } from './ProducerRow'
 
 export function Producers() {
   const martsOwned = useGame((state) => state.martsOwned)
   const available = PRODUCERS.filter((producer) => isLocationOpen(producer.location, martsOwned))
+  const locked = nextLockedProducer(martsOwned)
 
   return (
     <section className="flex flex-col gap-2">
@@ -16,6 +18,11 @@ export function Producers() {
             <ProducerRow producer={producer} />
           </li>
         ))}
+        {locked && (
+          <li>
+            <LockedProducerRow producer={locked} />
+          </li>
+        )}
       </ul>
     </section>
   )
