@@ -10,8 +10,9 @@ import {
   type Producers,
   purchaseQuote,
 } from './economy'
+import { type Eeveelution, type EeveeForm, evolutionFor } from './eevee'
 import type { ItemId } from './items'
-import { isLocationOpen } from './locations'
+import { isLocationOpen, nextFloor } from './locations'
 import { type ProducerId, PRODUCERS } from './producers'
 import { emptyStats, type LifetimeStats } from './stats'
 import { stockOffers } from './stocking'
@@ -22,6 +23,9 @@ export interface GameState {
   producers: Producers
   stockedItems: ItemId[]
   martsOwned: number
+  /** Department Store floors open, counting the one that opens with Celadon. */
+  floorsOpen: number
+  eevee: EeveeForm | null
   registerUpgrades: RegisterUpgradeId[]
   stats: LifetimeStats
   achievements: EarnedAchievements
@@ -36,6 +40,9 @@ interface GameActions {
   buyProducer: (producerId: ProducerId, amount: BuyAmount) => void
   stockItem: (itemId: ItemId) => void
   openNextLocation: () => void
+  openNextFloor: () => void
+  findEevee: () => void
+  evolveEevee: (form: Eeveelution) => void
   buyRegisterUpgrade: (upgradeId: RegisterUpgradeId) => void
   tick: (seconds: number) => void
   advanceTo: (now: number) => void
@@ -55,6 +62,8 @@ export function initialState(): GameState {
     producers: emptyProducers(),
     stockedItems: [],
     martsOwned: 1,
+    floorsOpen: 1,
+    eevee: null,
     registerUpgrades: [],
     stats: emptyStats(Date.now()),
     achievements: emptyAchievements(),
@@ -109,8 +118,10 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
 
   stockItem: (itemId) => {
     const state = get()
-    const { coins, stockedItems, martsOwned } = state
-    const offer = stockOffers(martsOwned).find((candidate) => candidate.item.id === itemId)
+    const { coins, stockedItems, martsOwned, floorsOpen } = state
+    const offer = stockOffers(martsOwned, floorsOpen).find(
+      (candidate) => candidate.item.id === itemId,
+    )
     if (!offer || stockedItems.includes(itemId) || offer.cost > coins) {
       return
     }
@@ -126,6 +137,35 @@ export const useGame = create<GameState & GameActions>()((set, get) => ({
     }
 
     set({ ...spend(state, requirements.location.openCost), martsOwned: state.martsOwned + 1 })
+  },
+
+  openNextFloor: () => {
+    const state = get()
+    const floor = nextFloor(state.martsOwned, state.floorsOpen)
+    if (!floor?.openCost || floor.openCost > state.coins) {
+      return
+    }
+
+    set({ ...spend(state, floor.openCost), floorsOpen: state.floorsOpen + 1 })
+  },
+
+  findEevee: () => {
+    const state = get()
+    if (state.eevee || !isLocationOpen('celadon', state.martsOwned)) {
+      return
+    }
+
+    set({ eevee: 'eevee', achievements: checkAchievements({ ...state, eevee: 'eevee' }) })
+  },
+
+  evolveEevee: (form) => {
+    const state = get()
+    const evolution = evolutionFor(form)
+    if (state.eevee !== 'eevee' || !evolution || !state.stockedItems.includes(evolution.stone)) {
+      return
+    }
+
+    set({ eevee: form, achievements: checkAchievements({ ...state, eevee: form }) })
   },
 
   buyRegisterUpgrade: (upgradeId) => {

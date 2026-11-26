@@ -1,13 +1,26 @@
+import { useRef } from 'react'
 import { LOCATIONS, nextLocation, shortLocationName } from '@/game/locations'
 import { useGame } from '@/game/store'
 import { cn } from '@/lib/utils'
 
 const EDGE_INSET = `${50 / LOCATIONS.length}%`
 
+/** Clicks on Celadon's dot that find the Eevee in Celadon Mansion. */
+const MANSION_KNOCKS = 5
+
 export function RouteMap() {
   const martsOwned = useGame((state) => state.martsOwned)
   const progress = (martsOwned - 1) / (LOCATIONS.length - 1)
   const upcoming = nextLocation(martsOwned)
+  const findEevee = useGame((state) => state.findEevee)
+  const mansionKnocks = useRef(0)
+
+  function knockOnMansion() {
+    mansionKnocks.current += 1
+    if (mansionKnocks.current >= MANSION_KNOCKS) {
+      findEevee()
+    }
+  }
 
   return (
     <nav aria-label="Kanto route" className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
@@ -37,6 +50,7 @@ export function RouteMap() {
                 className="flex min-w-0 flex-col items-center gap-1.5"
               >
                 <span
+                  onClick={location.id === 'celadon' && isOpen ? knockOnMansion : undefined}
                   className={cn(
                     'size-3 rounded-full border-2 bg-background',
                     isOpen ? 'border-foreground bg-foreground' : 'border-border',

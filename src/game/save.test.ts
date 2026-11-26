@@ -66,6 +66,11 @@ describe('loadGame repairs bad values', () => {
     ['too many marts', { martsOwned: 40 }, { martsOwned: PLAYABLE_LOCATIONS }],
     ['negative coins', { coins: -50 }, { coins: 0 }],
     ['non-numeric coins', { coins: 'lots' }, { coins: 0 }],
+    ['floors before Celadon opens', { martsOwned: 6, floorsOpen: 3 }, { floorsOpen: 1 }],
+    ['too many floors', { martsOwned: 7, floorsOpen: 9 }, { floorsOpen: 4 }],
+    ['Eevee before Celadon opens', { martsOwned: 6, eevee: 'eevee' }, { eevee: null }],
+    ['an unknown Eevee form', { martsOwned: 7, eevee: 'umbreon' }, { eevee: null }],
+    ['an evolved Eevee', { martsOwned: 7, eevee: 'vaporeon' }, { eevee: 'vaporeon' }],
   ])('fixes %s', (_, saved, expected) => {
     storeSave({ ...initialState(), ...saved })
 

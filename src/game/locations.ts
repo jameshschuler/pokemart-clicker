@@ -16,6 +16,8 @@ export type LocationId =
 export interface Floor {
   name: string
   stock: ItemId[]
+  /** What it costs to open; the first floor opens with its location. */
+  openCost?: number
 }
 
 export interface MartLocation {
@@ -27,10 +29,12 @@ export interface MartLocation {
   /** Defaults to "<location> Mart". */
   storeName?: string
   floors?: Floor[]
+  /** Sale value each of its new items adds per ₽ of FRLG price. */
+  bonusPerPrice?: number
 }
 
 /** The FRLG Department Store's selling floors and rooftop. Potions through Escape Ropes are added to 2F. */
-const CELADON_FLOORS: Floor[] = [
+export const CELADON_FLOORS: Floor[] = [
   {
     name: "2F · Trainer's Market",
     stock: [
@@ -55,9 +59,14 @@ const CELADON_FLOORS: Floor[] = [
       'tmAttract',
     ],
   },
-  { name: '4F · Wise Man Gifts', stock: ['fireStone', 'thunderStone', 'waterStone', 'leafStone'] },
+  {
+    name: '4F · Wise Man Gifts',
+    stock: ['fireStone', 'thunderStone', 'waterStone', 'leafStone'],
+    openCost: 1e9,
+  },
   {
     name: '5F · Drugstore',
+    openCost: 2e9,
     stock: [
       'xAttack',
       'xDefend',
@@ -74,7 +83,7 @@ const CELADON_FLOORS: Floor[] = [
       'carbos',
     ],
   },
-  { name: 'Roof · Vending Machines', stock: ['freshWater', 'sodaPop', 'lemonade'] },
+  { name: 'Roof · Vending Machines', stock: ['freshWater', 'sodaPop', 'lemonade'], openCost: 3e9 },
 ]
 
 export const LOCATIONS: MartLocation[] = [
@@ -155,6 +164,7 @@ export const LOCATIONS: MartLocation[] = [
     requiredIncome: 1.5e6,
     storeName: 'Celadon City Department Store',
     floors: CELADON_FLOORS,
+    bonusPerPrice: 1 / 10_000,
     stock: CELADON_FLOORS.flatMap((floor) => floor.stock),
   },
   {
@@ -196,7 +206,7 @@ export const LOCATIONS: MartLocation[] = [
 ]
 
 /** Locations built on the franchise model so far; the rest open in later build steps. */
-export const PLAYABLE_LOCATIONS = 6
+export const PLAYABLE_LOCATIONS = 7
 
 const ROUTE_ORDER = new Map(LOCATIONS.map((location, index) => [location.id, index]))
 
@@ -250,4 +260,21 @@ export function storeItems(location: MartLocation): Item[] {
 /** A store's items grouped by floor, or undefined for a single-floor mart. */
 export function storeFloors(location: MartLocation): FloorSection[] | undefined {
   return location.floors?.map((floor) => ({ name: floor.name, items: itemsIn(floor.stock) }))
+}
+
+/** What a location sells with `floorsOpen` floors open; locations without floors sell everything. */
+export function openStock(location: MartLocation, floorsOpen: number): ItemId[] {
+  return location.floors
+    ? location.floors.slice(0, floorsOpen).flatMap((floor) => floor.stock)
+    : location.stock
+}
+
+/** The Department Store's next floor to open, once Celadon is open. */
+export function nextFloor(martsOwned: number, floorsOpen: number): Floor | undefined {
+  return isLocationOpen('celadon', martsOwned) ? CELADON_FLOORS[floorsOpen] : undefined
+}
+
+/** A floor's label without its department name: "4F · Wise Man Gifts" → "4F". */
+export function shortFloorName(floor: Floor): string {
+  return floor.name.split(' · ')[0]
 }

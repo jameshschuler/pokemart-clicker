@@ -148,6 +148,7 @@ export const ITEMS: Item[] = [
     name: 'Fresh Water',
     description: 'Restores 50 HP. The rooftop vending machine sells out on hot days.',
     price: 200,
+    stockCost: 20_000_000,
     sprite: 'fresh-water',
   },
   {
@@ -155,6 +156,7 @@ export const ITEMS: Item[] = [
     name: 'Soda Pop',
     description: 'Restores 60 HP. Fizzy, and the machine sometimes drops a second can.',
     price: 300,
+    stockCost: 30_000_000,
     sprite: 'soda-pop',
   },
   {
@@ -162,6 +164,7 @@ export const ITEMS: Item[] = [
     name: 'Lemonade',
     description: 'Restores 80 HP. The priciest drink on the roof, and the one to trade a guard.',
     price: 350,
+    stockCost: 35_000_000,
     sprite: 'lemonade',
   },
   {
@@ -169,6 +172,7 @@ export const ITEMS: Item[] = [
     name: 'X Speed',
     description: 'Raises Speed for one battle. Outrun anything for a few turns.',
     price: 350,
+    stockCost: 35_000_000,
     sprite: 'x-speed',
   },
   {
@@ -176,6 +180,7 @@ export const ITEMS: Item[] = [
     name: 'X Special',
     description: 'Raises Special for one battle. Psychic types love it.',
     price: 350,
+    stockCost: 35_000_000,
     sprite: 'x-sp-atk',
   },
   {
@@ -191,6 +196,7 @@ export const ITEMS: Item[] = [
     name: 'X Attack',
     description: 'Raises Attack for one battle. Trainers buy them by the handful before a Gym.',
     price: 500,
+    stockCost: 50_000_000,
     sprite: 'x-attack',
   },
   {
@@ -198,6 +204,7 @@ export const ITEMS: Item[] = [
     name: 'X Defend',
     description: 'Raises Defense for one battle. Popular before Brock and his Onix.',
     price: 550,
+    stockCost: 55_000_000,
     sprite: 'x-defense',
   },
   {
@@ -205,6 +212,7 @@ export const ITEMS: Item[] = [
     name: 'Dire Hit',
     description: 'Raises the critical-hit ratio for one battle.',
     price: 650,
+    stockCost: 65_000_000,
     sprite: 'dire-hit',
   },
   {
@@ -220,6 +228,7 @@ export const ITEMS: Item[] = [
     name: 'Guard Spec.',
     description: 'Stops stat drops for five turns. Mist in a bottle.',
     price: 700,
+    stockCost: 70_000_000,
     sprite: 'guard-spec',
   },
   {
@@ -227,6 +236,7 @@ export const ITEMS: Item[] = [
     name: 'X Accuracy',
     description: 'Raises accuracy for one battle. Pair it with a one-hit move and pray.',
     price: 950,
+    stockCost: 95_000_000,
     sprite: 'x-accuracy',
   },
   {
@@ -234,6 +244,7 @@ export const ITEMS: Item[] = [
     name: 'TM05 Roar',
     description: 'Scares off wild Pokémon. Cheapest TM on the counter.',
     price: 1_000,
+    stockCost: 100_000_000,
     sprite: 'tm-normal',
   },
   {
@@ -241,6 +252,7 @@ export const ITEMS: Item[] = [
     name: 'TM28 Dig',
     description: 'Burrow underground, then strike. Also gets you out of caves.',
     price: 2_000,
+    stockCost: 200_000_000,
     sprite: 'tm-ground',
   },
   {
@@ -248,6 +260,7 @@ export const ITEMS: Item[] = [
     name: 'Fire Stone',
     description: 'Evolves Vulpix, Growlithe and Eevee. Warm to the touch.',
     price: 2_100,
+    stockCost: 210_000_000,
     sprite: 'fire-stone',
   },
   {
@@ -255,6 +268,7 @@ export const ITEMS: Item[] = [
     name: 'Thunder Stone',
     description: 'Evolves Pikachu and Eevee. Crackles on the shelf.',
     price: 2_100,
+    stockCost: 210_000_000,
     sprite: 'thunder-stone',
   },
   {
@@ -262,6 +276,7 @@ export const ITEMS: Item[] = [
     name: 'Water Stone',
     description: 'Evolves Shellder, Staryu, Poliwhirl and Eevee.',
     price: 2_100,
+    stockCost: 210_000_000,
     sprite: 'water-stone',
   },
   {
@@ -269,6 +284,7 @@ export const ITEMS: Item[] = [
     name: 'Leaf Stone',
     description: 'Evolves Gloom, Weepinbell and Exeggcute.',
     price: 2_100,
+    stockCost: 210_000_000,
     sprite: 'leaf-stone',
   },
   {
@@ -276,6 +292,7 @@ export const ITEMS: Item[] = [
     name: 'Revive',
     description: 'Brings a fainted Pokémon back. Always the first thing to sell out.',
     price: 1_500,
+    stockCost: 150_000_000,
     sprite: 'revive',
   },
   {
@@ -283,6 +300,7 @@ export const ITEMS: Item[] = [
     name: 'TM31 Brick Break',
     description: 'Smashes through Reflect and Light Screen.',
     price: 3_000,
+    stockCost: 300_000_000,
     sprite: 'tm-fighting',
   },
   {
@@ -290,6 +308,7 @@ export const ITEMS: Item[] = [
     name: 'TM43 Secret Power',
     description: 'Its side effect changes with where you battle.',
     price: 3_000,
+    stockCost: 300_000_000,
     sprite: 'tm-normal',
   },
   {
@@ -297,6 +316,7 @@ export const ITEMS: Item[] = [
     name: 'TM45 Attract',
     description: 'Infatuates foes of the opposite gender.',
     price: 3_000,
+    stockCost: 300_000_000,
     sprite: 'tm-normal',
   },
   {
@@ -304,6 +324,7 @@ export const ITEMS: Item[] = [
     name: 'HP Up',
     description: 'Raises base HP. Pricey, and serious trainers buy them by the box.',
     price: 9_800,
+    stockCost: 980_000_000,
     sprite: 'hp-up',
   },
   {
@@ -311,6 +332,7 @@ export const ITEMS: Item[] = [
     name: 'Protein',
     description: 'Raises base Attack.',
     price: 9_800,
+    stockCost: 980_000_000,
     sprite: 'protein',
   },
   {
@@ -318,6 +340,7 @@ export const ITEMS: Item[] = [
     name: 'Iron',
     description: 'Raises base Defense.',
     price: 9_800,
+    stockCost: 980_000_000,
     sprite: 'iron',
   },
   {
@@ -325,6 +348,7 @@ export const ITEMS: Item[] = [
     name: 'Calcium',
     description: 'Raises base Special Attack.',
     price: 9_800,
+    stockCost: 980_000_000,
     sprite: 'calcium',
   },
   {
@@ -332,6 +356,7 @@ export const ITEMS: Item[] = [
     name: 'Zinc',
     description: 'Raises base Special Defense.',
     price: 9_800,
+    stockCost: 980_000_000,
     sprite: 'zinc',
   },
   {
@@ -339,6 +364,7 @@ export const ITEMS: Item[] = [
     name: 'Carbos',
     description: 'Raises base Speed.',
     price: 9_800,
+    stockCost: 980_000_000,
     sprite: 'carbos',
   },
   {
@@ -353,6 +379,7 @@ export const ITEMS: Item[] = [
     name: 'TM15 Hyper Beam',
     description: 'The most powerful move money can buy. Needs a turn to recharge.',
     price: 7_500,
+    stockCost: 750_000_000,
     sprite: 'tm-normal',
   },
   {
@@ -391,3 +418,14 @@ export const ITEMS: Item[] = [
     sprite: 'full-restore',
   },
 ]
+
+const ITEM_BY_ID = new Map(ITEMS.map((item) => [item.id, item]))
+
+export function itemById(itemId: ItemId): Item {
+  const item = ITEM_BY_ID.get(itemId)
+  if (!item) {
+    throw new Error(`Unknown item: ${itemId}`)
+  }
+
+  return item
+}

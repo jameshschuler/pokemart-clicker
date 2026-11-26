@@ -9,6 +9,7 @@ export type ProducerId =
   | 'medicineLab'
   | 'trader'
   | 'factory'
+  | 'tmWorkshop'
 
 export interface Producer {
   id: ProducerId
@@ -96,6 +97,15 @@ export const PRODUCERS: Producer[] = [
     location: 'lavender',
     baseCost: 330_000_000,
     salesPerSecond: 44_000,
+  },
+  {
+    id: 'tmWorkshop',
+    name: 'TM Workshop',
+    plural: 'TM Workshops',
+    description: 'Presses blank discs and burns moves onto them for the Department Store’s 2F.',
+    location: 'celadon',
+    baseCost: 1_500_000_000,
+    salesPerSecond: 200_000,
   },
 ]
 

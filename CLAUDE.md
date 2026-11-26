@@ -15,7 +15,7 @@ Cookie Clicker–style idle game: you own the PokéMart in Pallet Town and expan
 - [x] Iteration 1 — register click, Potion + Poké Ball, passive sales, buy ×1/×10/Max, autosave
 - [x] Iteration 2 — locations: full Kanto item ladder gated by locations, route map, open next location
 - [ ] Iteration 3 — upgrades: register upgrades, lifetime stats and base achievements done; location perks, item doublings, tier synergies to go
-- [ ] Franchise rework (see "Rework: the PokéMart franchise" in DESIGN.md): steps 1–3 built (producers, Viridian, item upgrades, register upgrades); step 4 underway, Pewter, Cerulean, Vermilion and Lavender done, Celadon next
+- [ ] Franchise rework (see "Rework: the PokéMart franchise" in DESIGN.md): steps 1–3 built (producers, Viridian, item upgrades, register upgrades); step 4 underway, Pewter, Cerulean, Vermilion, Lavender and Celadon done, Fuchsia next
 - [ ] Iteration 6 — mart scene, pulled forward
 - [ ] 4 staff · 5 flash sales · 7 polish · 8 prestige · 9 Johto · 10 Hoenn
 
@@ -28,7 +28,7 @@ TODO later: cache chain sales and the chain multiplier until marts, marts owned 
 - `npm run dev` — Vite dev server
 - `npm test` — Vitest (economy math)
 - `npm run build` — typecheck + build
-- Dev console: `mart.addMoney(1e6)`, `mart.openMarts(2)`, `mart.away(3600)`, `mart.help()` (dev builds only)
+- Dev tools: the wrench button in the bottom-right corner (dev builds only) adds ₽, opens locations and floors, and skips time. Commands live in `src/game/debug.ts`.
 - `npm run lint` — oxlint (the two `only-export-components` warnings in `components/ui/` are expected)
 - `npm run format` / `npm run format:check` — Prettier (single quotes, no semicolons, 100 columns; skips `components/ui/` and Markdown)
 - `npm run typecheck` — `tsc -b`

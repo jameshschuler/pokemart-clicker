@@ -28,6 +28,32 @@ describe('debug commands', () => {
     expect(useGame.getState().martsOwned).toBe(expected)
   })
 
+  it.each([
+    [2, 2],
+    [0, 1],
+    [9, 4],
+  ])('openFloors(%i) opens %i floors', (count, expected) => {
+    useGame.setState({ martsOwned: 7 })
+
+    debugCommands.openFloors(count)
+
+    expect(useGame.getState().floorsOpen).toBe(expected)
+  })
+
+  it('openFloors does nothing before Celadon opens', () => {
+    debugCommands.openFloors(3)
+
+    expect(useGame.getState().floorsOpen).toBe(1)
+  })
+
+  it('closing Celadon closes its floors and loses Eevee', () => {
+    useGame.setState({ martsOwned: 7, floorsOpen: 4, eevee: 'eevee' })
+
+    debugCommands.openMarts(6)
+
+    expect(useGame.getState()).toMatchObject({ martsOwned: 6, floorsOpen: 1, eevee: null })
+  })
+
   it('away pays the time in full and opens the report', () => {
     useGame.setState({ producers: { ...emptyProducers(), helpingHand: 10 } })
 

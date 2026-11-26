@@ -12,7 +12,7 @@ Pokémon Dollars (₽). Start with ₽0.
 
 **Naming:** the game says **location**, not town, for each stop on the route. Indigo Plateau isn't a town, and later regions add more places that aren't. Real names keep their own words (Pallet Town, Lavender Town).
 
-**Status:** build steps 1–3 done, and step 4 is underway: Pewter, Cerulean, Vermilion and Lavender are built. See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
+**Status:** build steps 1–3 done, and step 4 is underway: Pewter, Cerulean, Vermilion, Lavender and Celadon are built. See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
 
 **The idea.** You're building a **PokéMart franchise** across Kanto. You're the owner growing the brand, not the clerk behind one counter.
 
@@ -43,8 +43,9 @@ Ladder, cheap to expensive:
 | 6 | Medicine Lab | Makes Potions, Antidotes and every Heal for the marts (built, Cerulean) |
 | 7 | Trader | A trading partner who ships stock in and out through Vermilion Harbor (built, Vermilion) |
 | 8 | Factory | Makes the non-medicine goods: Poké Balls, Repels, Escape Ropes (built, Lavender) |
+| 9 | TM Workshop | Burns moves onto discs for the Department Store (built, Celadon) |
 
-Later slots are decided when their location is built. Ideas: TM Workshop (Celadon's TMs), Berry Farm.
+Later slots are decided when their location is built. Idea: Berry Farm.
 
 **Helping Hand (producer 1):**
 
@@ -89,7 +90,7 @@ Costs aim for a payback of a few minutes for someone clicking about 3 times a se
 1. Swap the Clerk for the **Flyer**, make producers franchise-wide, hide the catalog. Saves reset. (Done.)
 2. Viridian: opening the next location plus item upgrades (stock items to raise the sale value); the route map and catalog return.
 3. Register upgrades on the new model: ×2 click sale and +5% of income per click each, names back, several on offer by location. (Done.)
-4. The remaining locations, their items and the next producers, one location at a time. Pewter, Cerulean, Vermilion and Lavender are built.
+4. The remaining locations, their items and the next producers, one location at a time. Pewter, Cerulean, Vermilion, Lavender and Celadon are built.
 
 ### Step 2: Viridian (built)
 
@@ -115,7 +116,7 @@ The route map comes back showing the franchise's reach (Pallet → Viridian, the
 | Poké Ball | ₽200 | +20% | ₽3,000 |
 | Paralyze Heal | ₽200 | +20% | ₽4,500 |
 
-The **Stock** list under the producers shows every open location's new items: stocked ones as "Stocked", the rest with their cost, plus the current ₽ per sale. Costs and the bonus formula get tuned with the pacing sim; +1% per ₽10 would make Celadon's vitamins +980% each, so the formula likely flattens for expensive items.
+The **Stock** section under the producers shows items still to stock as a grid of tiles (sprite and price; click to stock, hover for name, bonus and countdown), then every stocked item as a strip of sprites, plus the current ₽ per sale. Costs get tuned with the pacing sim. Celadon's items add a tenth of the usual bonus (see Step 4e: Celadon).
 
 **Producers 2–4** (Cookie Clicker's early ladder shape, about ×7–12 cost per step):
 
@@ -207,11 +208,38 @@ Same pattern again. The sim (3 clicks a second) opens Lavender at about 50 minut
 |---|---|---|---|---|---|---|
 | Factory | First Pressing | Assembly Line | Night Shift | Quality Control | Mass Production | Silph Co. Rival |
 
-**Placeholders for the rest of Kanto.** Opening Cerulean costs ₽500,000, more than the old placeholders for later locations. So every unbuilt location and register upgrade was rescaled to a rough ×7–10 per stop, keeping costs rising and each upgrade at or above its location's open cost. Each location gets real numbers when it's built. Lavender's real ₽100M leaves Celadon's placeholder only ×3 above it, so Celadon gets real numbers next.
+### Step 4e: Celadon (built)
+
+Celadon is the flagship: the **Celadon City Department Store**, with floors you open one at a time. The sim (3 clicks a second) opens Celadon at about 68 minutes, buys the first TM Workshop at about 74 and opens the roof at about 94. That makes it the longest stop so far, on purpose.
+
+| | |
+|---|---|
+| Open cost | ₽300M |
+| Needs | ₽1.5M/s of income |
+| Register upgrades | Conveyor Belt, ₽400M; Department Store Counter, ₽600M |
+| Producer 9 | TM Workshop: ₽1.5B, 200,000 sales/s. Cheaper than Cookie Clicker's ninth step (₽5.1B), so it isn't bought half an hour after Celadon opens. |
+
+**Floors.** Opening Celadon opens 2F. The rest are bought in order, each a small purchase with its own items to stock. Celadon's items to stock are grouped under floor headings, with the next floor as a dashed row at the bottom.
+
+| Floor | Open cost | New items |
+|---|---|---|
+| 2F · Trainer's Market | With Celadon | Revive and six TMs |
+| 4F · Wise Man Gifts | ₽1B | Four evolution stones |
+| 5F · Drugstore | ₽2B | Seven X items and six vitamins |
+| Roof · Vending Machines | ₽3B | Fresh Water, Soda Pop, Lemonade |
+
+**Gentler bonus.** Celadon adds 27 items, and its vitamins cost ₽9,800 each in FRLG. At the usual rate (+1% per ₽10) the floors would add about +9,000% sale value, against about +400% for everything before. So Celadon's items add +1% per ₽100, a tenth of the usual rate: +930% for all 27, taking a sale from about ₽5 to about ₽14. Each item costs 100,000× its FRLG price (Revive ₽150M, HP Up ₽980M), so they pay back in a few minutes at Celadon's income.
+
+**Eevee easter egg.** In FRLG, Eevee waits in a Poké Ball at the top of Celadon Mansion, through the back door. Here, clicking Celadon's dot on the route map 5 times once Celadon is open finds it, with nothing in the UI to hint at it. That earns the hidden achievement "Back Door of the Mansion", and Eevee starts wandering along the bottom of the screen. Clicking it offers to evolve it with a stocked Fire, Water or Thunder Stone into Flareon, Vaporeon or Jolteon. The Leaf Stone doesn't evolve Eevee in Gen 3. Evolving is one-way, so a save gets one evolution and its hidden achievement. Like every achievement, each adds +1% to the franchise bonus; nothing else changes. Reduced-motion users get an Eevee that stays put.
+
+| Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
+|---|---|---|---|---|---|---|
+| TM Workshop | First Disc | Move Tutor | Hyper Beam Batch | Burn Rate | Disc Jockey | Every Move in Kanto |
+
+**Placeholders for the rest of Kanto.** Opening Cerulean costs ₽500,000, more than the old placeholders for later locations. So every unbuilt location and register upgrade was rescaled to a rough ×7–10 per stop, keeping costs rising and each upgrade at or above its location's open cost. Each location gets real numbers when it's built. Celadon's numbers came out right at the old placeholder, because the floors stretch that stop out.
 
 | Location | Open cost | Needs |
 |---|---|---|
-| Celadon City | ₽300M | ₽1.5M/s |
 | Fuchsia City | ₽2B | ₽10M/s |
 | Saffron City | ₽15B | ₽70M/s |
 | Cinnabar Island | ₽100B | ₽500M/s |
@@ -227,13 +255,13 @@ Same pattern again. The sim (3 clicks a second) opens Lavender at about 50 minut
 - **Minigames:** games like the ones in the main series, such as Voltorb Flip and the Game Corner slots. They'd use our own rules and art, not copies of the originals. Where they live (Celadon's Game Corner is the obvious fit), what they cost to play and what they pay out aren't decided yet.
 - **Income achievements:** tiers for reaching ₽/s milestones, like Cookie Clicker's cookies-per-second achievements. Once earned, a tier stays earned, even when income resets after prestige. The goals and names wait until the Kanto income curve is set.
 
-### What's in the code now (steps 1–4d)
+### What's in the code now (steps 1–4e)
 
-The register, eight producers (Helping Hand, Delivery Bike, Vending Machine, Employee, Delivery Truck, Medicine Lab, Trader, Factory), opening Viridian, Pewter, Cerulean, Vermilion and Lavender, stocking their items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 5; renaming the producers reset older saves.
+The register, nine producers (Helping Hand, Delivery Bike, Vending Machine, Employee, Delivery Truck, Medicine Lab, Trader, Factory, TM Workshop), opening Viridian, Pewter, Cerulean, Vermilion, Lavender and Celadon with its floors, stocking their items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 5; renaming the producers reset older saves.
 
 - One franchise-wide producer list; each row has ×1 / ×10 / Max, how many you own and ₽/s each.
-- The route map shows the franchise's reach; a card under the register offers the next location (Viridian through Lavender) and goes away once Lavender is open.
-- Achievements (56 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade and Idle Hands. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
+- The route map shows the franchise's reach; a card under the register offers the next location (Viridian through Celadon) and goes away once Celadon is open.
+- Achievements (66 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade, and the hidden Idle Hands, Eevee and its three evolutions. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
 
   | Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
   |---|---|---|---|---|---|---|
@@ -245,8 +273,9 @@ The register, eight producers (Helping Hand, Delivery Bike, Vending Machine, Emp
   | Medicine Lab | First Batch | Lab Coats | Bubbling Beakers | Cerulean Formula | Full Restore | Kanto Pharmacy |
   | Trader | All Aboard | Full Manifest | Cargo Hold | Harbor Master | Seafoam Crossing | Kanto Fleet |
   | Factory | First Pressing | Assembly Line | Night Shift | Quality Control | Mass Production | Silph Co. Rival |
+  | TM Workshop | First Disc | Move Tutor | Hyper Beam Batch | Burn Rate | Disc Jockey | Every Move in Kanto |
 - Register upgrades: named again, ×2 click sale and +5% of income per click each (clicking only), every one from an open location on offer at once (Second Till in Pallet; Meowth Coin Counter and Machop Bagger in Viridian). A click is the sale value × franchise bonus × 2 per upgrade + (1% + 5% per upgrade) of income. Saves keep only upgrades from open locations.
-- Only Pallet through Lavender can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
+- Only Pallet through Celadon can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
 - Removed: per-mart producers, buying items as producers, order milestones, Premier Customer, the order, Stocked and Chain achievements.
 
 ## Core loop
@@ -413,8 +442,8 @@ One-time purchases.
   | Credit Card Machine | Vermilion City | 15M | ×2 sale, +5% of income per click |
   | Express Lane | Lavender Town | 100M | ×2 sale, +5% of income per click |
   | Loyalty Stamps | Lavender Town | 150M | ×2 sale, +5% of income per click |
-  | Conveyor Belt | Celadon City | 400M (placeholder) | ×2 sale, +5% of income per click |
-  | Department Store Counter | Celadon City | 600M (placeholder) | ×2 sale, +5% of income per click |
+  | Conveyor Belt | Celadon City | 400M | ×2 sale, +5% of income per click |
+  | Department Store Counter | Celadon City | 600M | ×2 sale, +5% of income per click |
   | Chansey Cashier | Fuchsia City | 3B (placeholder) | ×2 sale, +5% of income per click |
   | Silph Card Reader | Saffron City | 20B (placeholder) | ×2 sale, +5% of income per click |
   | Alakazam Price Check | Saffron City | 30B (placeholder) | ×2 sale, +5% of income per click |
