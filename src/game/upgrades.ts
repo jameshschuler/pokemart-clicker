@@ -76,7 +76,7 @@ export const REGISTER_UPGRADES: RegisterUpgrade[] = [
     name: 'Credit Card Machine',
     description: 'Takes cards, not just cash. Sailors off the S.S. Anne never carry cash.',
     location: 'vermilion',
-    cost: 6e6,
+    cost: 15e6,
   },
   {
     id: 'expressLane',

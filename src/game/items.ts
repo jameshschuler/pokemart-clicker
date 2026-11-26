@@ -140,6 +140,7 @@ export const ITEMS: Item[] = [
     name: 'Ice Heal',
     description: 'Thaws a frozen Pokémon. Seafoam Islands regulars keep a few.',
     price: 250,
+    stockCost: 5_000_000,
     sprite: 'ice-heal',
   },
   {

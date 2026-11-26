@@ -1,7 +1,13 @@
 import type { LocationId } from './locations'
 
 export type ProducerId =
-  'flyer' | 'deliveryBike' | 'vendingMachine' | 'stockClerk' | 'deliveryTruck' | 'cashier'
+  | 'flyer'
+  | 'deliveryBike'
+  | 'vendingMachine'
+  | 'stockClerk'
+  | 'deliveryTruck'
+  | 'cashier'
+  | 'shippingContainer'
 
 export interface Producer {
   id: ProducerId
@@ -70,5 +76,15 @@ export const PRODUCERS: Producer[] = [
     location: 'cerulean',
     baseCost: 1_400_000,
     salesPerSecond: 1_400,
+  },
+  {
+    id: 'shippingContainer',
+    name: 'Shipping Container',
+    plural: 'Shipping Containers',
+    description:
+      'Packed with stock and swung onto the docks at Vermilion Harbor, next to the S.S. Anne.',
+    location: 'vermilion',
+    baseCost: 20_000_000,
+    salesPerSecond: 7_800,
   },
 ]

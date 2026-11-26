@@ -89,6 +89,14 @@ const PRODUCER_TIER_NAMES: Record<ProducerId, TierNames> = {
     'Checkout Brigade',
     'Cashier Nation',
   ],
+  shippingContainer: [
+    'All Aboard',
+    'Full Manifest',
+    'Cargo Hold',
+    'Harbor Master',
+    'Seafoam Crossing',
+    'Kanto Fleet',
+  ],
 }
 
 function producerOwned(producer: Producer): Achievement {

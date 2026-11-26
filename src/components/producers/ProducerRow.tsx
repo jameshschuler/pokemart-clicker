@@ -27,7 +27,7 @@ export function ProducerRow({ producer }: ProducerRowProps) {
       </div>
       <div className="flex min-w-32 flex-1 flex-col gap-0.5">
         <Tooltip>
-          <TooltipTrigger className="min-w-0 truncate rounded-sm text-left text-base font-medium outline-none focus-visible:ring-1 focus-visible:ring-ring">
+          <TooltipTrigger className="min-w-0 rounded-sm text-left text-base leading-tight font-medium text-pretty outline-none focus-visible:ring-1 focus-visible:ring-ring">
             {producer.name}
           </TooltipTrigger>
           <TooltipContent className="max-w-64">{producer.description}</TooltipContent>

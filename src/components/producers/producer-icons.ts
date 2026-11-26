@@ -1,5 +1,6 @@
 import {
   BikeIcon,
+  ContainerIcon,
   CupSodaIcon,
   type LucideIcon,
   NewspaperIcon,
@@ -17,4 +18,5 @@ export const PRODUCER_ICONS: Record<ProducerId, LucideIcon> = {
   stockClerk: PackageOpenIcon,
   deliveryTruck: TruckIcon,
   cashier: ScanBarcodeIcon,
+  shippingContainer: ContainerIcon,
 }
