@@ -12,7 +12,7 @@ Pokémon Dollars (₽). Start with ₽0.
 
 **Naming:** the game says **location**, not town, for each stop on the route. Indigo Plateau isn't a town, and later regions add more places that aren't. Real names keep their own words (Pallet Town, Lavender Town).
 
-**Status:** build steps 1–3 done, and step 4 is underway: Pewter, Cerulean and Vermilion are built. See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
+**Status:** build steps 1–3 done, and step 4 is underway: Pewter, Cerulean, Vermilion and Lavender are built. See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
 
 **The idea.** You're building a **PokéMart franchise** across Kanto. You're the owner growing the brand, not the clerk behind one counter.
 
@@ -27,28 +27,32 @@ Pokémon Dollars (₽). Start with ₽0.
 
 ### Producers
 
-Bought repeatedly, +15% cost each, counted across the whole franchise. **One at a time:** each is built and playtested before the next is designed. Planned ladder, cheap to expensive:
+Bought repeatedly, +15% cost each, counted across the whole franchise. **One at a time:** each is built and playtested before the next is designed.
+
+**What makes a good producer.** Each one is something a growing store chain really owns many of, the way Cookie Clicker has many Farms and Factories. Employee is the only person you hire, like Cookie Clicker's Grandma (the Trader is a business partner). The transport ladder stops at the Trader. New producers are about the stores and the items: places that make what the marts sell.
+
+Ladder, cheap to expensive:
 
 | # | Producer | How it adds sales |
 |---|---|---|
-| 1 | Flyer | Local marketing brings walk-ins |
+| 1 | Helping Hand | Rings up sales at the register for you, like Cookie Clicker's cursor |
 | 2 | Delivery Bike | Brings orders to trainers on the routes |
 | 3 | Vending Machine | Sells on its own, day and night |
-| 4 | Stock Clerk | Keeps shelves full so nothing sells out (first employee) |
+| 4 | Employee | Stocks shelves and rings up sales (the only person on the ladder) |
 | 5 | Delivery Truck | A regional supply fleet (built, Pewter) |
-| 6 | Cashier | Works a register of their own (built, Cerulean) |
-| 7 | Shipping Container | Brings stock in through Vermilion Harbor (built, Vermilion) |
-| 8 | Franchise Store | A new PokéMart run by a franchisee, paying you royalties |
-| 9 | Distribution Center | Keeps every store stocked |
-| 10 | Department Store | A flagship, like Celadon |
+| 6 | Medicine Lab | Makes Potions, Antidotes and every Heal for the marts (built, Cerulean) |
+| 7 | Trader | A trading partner who ships stock in and out through Vermilion Harbor (built, Vermilion) |
+| 8 | Factory | Makes the non-medicine goods: Poké Balls, Repels, Escape Ropes (built, Lavender) |
 
-**Flyer (producer 1):**
+Later slots are decided when their location is built. Ideas: TM Workshop (Celadon's TMs), Berry Farm.
+
+**Helping Hand (producer 1):**
 
 | | |
 |---|---|
-| What it does | 0.1 sales per second (one walk-in every 10 seconds) |
+| What it does | 0.1 sales per second (one sale every 10 seconds) |
 | Cost | ₽15 (15 sales), +15% each |
-| At the start | ₽0.1/s each; the first flyer pays for itself in 150s |
+| At the start | ₽0.1/s each; the first helping hand pays for itself in 150s |
 
 ### Items: franchise upgrades
 
@@ -62,7 +66,7 @@ Opening a location unlocks its items to stock, may unlock the next producer, and
 
 ### Register upgrades (step 3, built)
 
-**The problem.** Every register upgrade adds a flat share of income per click, while costs climb fast. Upgrade 4 (₽6,000, +2%) at ₽50/s and 3 clicks/s adds ₽3/s and pays back in about 33 minutes; a Stock Clerk (₽12,000, ₽47/s) pays back in 4. They're also no help to anyone who isn't clicking.
+**The problem.** Every register upgrade adds a flat share of income per click, while costs climb fast. Upgrade 4 (₽6,000, +2%) at ₽50/s and 3 clicks/s adds ₽3/s and pays back in about 33 minutes; an Employee (₽12,000, ₽47/s) pays back in 4. They're also no help to anyone who isn't clicking.
 
 **The fix: bigger shares at sensible costs, and clicks count as sales.** Register upgrades only affect clicking; idle income doesn't depend on them. (An earlier draft had them boost all sales; clicking is what the register is for.)
 
@@ -85,7 +89,7 @@ Costs aim for a payback of a few minutes for someone clicking about 3 times a se
 1. Swap the Clerk for the **Flyer**, make producers franchise-wide, hide the catalog. Saves reset. (Done.)
 2. Viridian: opening the next location plus item upgrades (stock items to raise the sale value); the route map and catalog return.
 3. Register upgrades on the new model: ×2 click sale and +5% of income per click each, names back, several on offer by location. (Done.)
-4. The remaining locations, their items and the next producers, one location at a time. Pewter, Cerulean and Vermilion are built.
+4. The remaining locations, their items and the next producers, one location at a time. Pewter, Cerulean, Vermilion and Lavender are built.
 
 ### Step 2: Viridian (built)
 
@@ -117,14 +121,14 @@ The **Stock** list under the producers shows every open location's new items: st
 
 | Producer | Cost | Sales/s | Unlocks |
 |---|---|---|---|
-| Flyer | ₽15 | 0.1 | Pallet |
+| Helping Hand | ₽15 | 0.1 | Pallet |
 | Delivery Bike | ₽100 | 1 | Pallet |
 | Vending Machine | ₽1,100 | 8 | Pallet |
-| Stock Clerk | ₽12,000 | 47 | Viridian |
+| Employee | ₽12,000 | 47 | Viridian |
 
-**Later producers alternate employees and logistics, each tied to its location's real FRLG landmark.** Ideas: Store Manager, Regional Manager, Machop Mover (Vermilion's ground-stomping Machop); Crossroads Warehouse (Viridian, where Routes 1, 2 and 22 meet), Underground Path Runner (Cerulean–Vermilion, Lavender–Celadon), Cycling Road Courier (Celadon–Fuchsia), Silph Co. Supply Line (Saffron). The Pokémon Center Counter waits until every location has a Center to put one in.
+**Each producer's description ties it to its location's FRLG landmark** where one fits.
 
-A producer shows once its location is open. Pallet through Cerulean can open for now; the route map shows the rest locked.
+A producer shows once its location is open. Pallet through Lavender can open for now; the route map shows the rest locked.
 
 ### Step 4a: Pewter (built)
 
@@ -135,7 +139,7 @@ Same pattern as Viridian: open the location, stock its items, buy its register u
 | | |
 |---|---|
 | Cost | ₽20,000 |
-| Needs | ₽150/s of income (about 3 Stock Clerks plus the Pallet producers) |
+| Needs | ₽150/s of income (about 3 Employees plus the Pallet producers) |
 | Gives | +5% franchise bonus; Pewter's items, register upgrades and the Delivery Truck |
 
 **Pewter's items** (the bonus rule is unchanged, +1% per ₽10):
@@ -149,7 +153,7 @@ Same pattern as Viridian: open the location, stock its items, buy its register u
 
 **Register upgrades:** Electric Till (₽25,000) and Receipt Printer (₽40,000). A location's register upgrades never cost less than opening it, so they aren't free picks the moment it opens.
 
-**Producer 5: Delivery Truck** (logistics, after the Stock Clerk employee). ₽130,000, 260 sales/s, Cookie Clicker's fifth-step shape. It hauls stock up the road to Pewter and Mt. Moon orders back. It swaps places with the Franchise Store on the ladder so employees and logistics keep alternating.
+**Producer 5: Delivery Truck** (after the Employee). ₽130,000, 260 sales/s, Cookie Clicker's fifth-step shape. It hauls stock up the road to Pewter and Mt. Moon orders back.
 
 | Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
 |---|---|---|---|---|---|---|
@@ -157,7 +161,7 @@ Same pattern as Viridian: open the location, stock its items, buy its register u
 
 ### Step 4b: Cerulean (built)
 
-Same pattern again. The sim (3 clicks a second) opens Cerulean at about 23 minutes and buys the first Cashier at about 26.
+Same pattern again. The sim (3 clicks a second) opens Cerulean at about 23 minutes and buys the first Medicine Lab at about 26.
 
 | | |
 |---|---|
@@ -165,15 +169,15 @@ Same pattern again. The sim (3 clicks a second) opens Cerulean at about 23 minut
 | Needs | ₽4,000/s of income |
 | New item | Super Potion (FRLG ₽700, +70%), ₽700,000 to stock |
 | Register upgrade | Barcode Scanner, ₽600,000 |
-| Producer 6 | Cashier (employee, after the Delivery Truck): ₽1,400,000, 1,400 sales/s, Cookie Clicker's sixth-step shape |
+| Producer 6 | Medicine Lab: ₽1,400,000, 1,400 sales/s, Cookie Clicker's sixth-step shape |
 
 | Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
 |---|---|---|---|---|---|---|
-| Cashier | Open Register | Every Lane Open | Gym Rush | Cascade of Change | Checkout Brigade | Cashier Nation |
+| Medicine Lab | First Batch | Lab Coats | Bubbling Beakers | Cerulean Formula | Full Restore | Kanto Pharmacy |
 
 ### Step 4c: Vermilion (built)
 
-Same pattern again. The sim (3 clicks a second) opens Vermilion at about 36 minutes and buys the first Shipping Container at about 38. Costs grow faster than earlier stops because income compounds: the old ₽5M placeholder opened Vermilion only 8 minutes after Cerulean.
+Same pattern again. The sim (3 clicks a second) opens Vermilion at about 36 minutes and buys the first Trader at about 38. Costs grow faster than earlier stops because income compounds: the old ₽5M placeholder opened Vermilion only 8 minutes after Cerulean.
 
 | | |
 |---|---|
@@ -181,17 +185,32 @@ Same pattern again. The sim (3 clicks a second) opens Vermilion at about 36 minu
 | Needs | ₽80,000/s of income |
 | New item | Ice Heal (FRLG ₽250, +25%), ₽5M to stock |
 | Register upgrade | Credit Card Machine, ₽15M |
-| Producer 7 | Shipping Container (logistics, after the Cashier employee): ₽20M, 7,800 sales/s, Cookie Clicker's seventh-step shape. It takes the Franchise Store's place on the ladder so employees and logistics keep alternating. |
+| Producer 7 | Trader: ₽20M, 7,800 sales/s, Cookie Clicker's seventh-step shape. A business partner, not staff, so the Employee stays the only person you hire. It's the last transport producer. |
 
 | Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
 |---|---|---|---|---|---|---|
-| Shipping Container | All Aboard | Full Manifest | Cargo Hold | Harbor Master | Seafoam Crossing | Kanto Fleet |
+| Trader | All Aboard | Full Manifest | Cargo Hold | Harbor Master | Seafoam Crossing | Kanto Fleet |
 
-**Placeholders for the rest of Kanto.** Opening Cerulean costs ₽500,000, more than the old placeholders for later locations. So every unbuilt location and register upgrade was rescaled to a rough ×7–10 per stop, keeping costs rising and each upgrade at or above its location's open cost. Each location gets real numbers when it's built. Vermilion's real ₽15M left Lavender's placeholder only ×2.7 above it; Lavender is next, so it's fixed then.
+### Step 4d: Lavender (built)
+
+Same pattern again. The sim (3 clicks a second) opens Lavender at about 50 minutes, 14 after Vermilion, and buys the first Factory at about 57.
+
+| | |
+|---|---|
+| Open cost | ₽100M |
+| Needs | ₽400,000/s of income |
+| New items | Super Repel (FRLG ₽500, +50%), ₽50M to stock; Great Ball (FRLG ₽600, +60%), ₽70M to stock |
+| Register upgrades | Express Lane, ₽100M; Loyalty Stamps, ₽150M |
+| Producer 8 | Factory: ₽330M, 44,000 sales/s, Cookie Clicker's eighth-step shape. It sits on Route 8 outside Lavender. |
+
+| Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
+|---|---|---|---|---|---|---|
+| Factory | First Pressing | Assembly Line | Night Shift | Quality Control | Mass Production | Silph Co. Rival |
+
+**Placeholders for the rest of Kanto.** Opening Cerulean costs ₽500,000, more than the old placeholders for later locations. So every unbuilt location and register upgrade was rescaled to a rough ×7–10 per stop, keeping costs rising and each upgrade at or above its location's open cost. Each location gets real numbers when it's built. Lavender's real ₽100M leaves Celadon's placeholder only ×3 above it, so Celadon gets real numbers next.
 
 | Location | Open cost | Needs |
 |---|---|---|
-| Lavender Town | ₽40M | ₽200,000/s |
 | Celadon City | ₽300M | ₽1.5M/s |
 | Fuchsia City | ₽2B | ₽10M/s |
 | Saffron City | ₽15B | ₽70M/s |
@@ -208,25 +227,26 @@ Same pattern again. The sim (3 clicks a second) opens Vermilion at about 36 minu
 - **Minigames:** games like the ones in the main series, such as Voltorb Flip and the Game Corner slots. They'd use our own rules and art, not copies of the originals. Where they live (Celadon's Game Corner is the obvious fit), what they cost to play and what they pay out aren't decided yet.
 - **Income achievements:** tiers for reaching ₽/s milestones, like Cookie Clicker's cookies-per-second achievements. Once earned, a tier stays earned, even when income resets after prestige. The goals and names wait until the Kanto income curve is set.
 
-### What's in the code now (steps 1–4c)
+### What's in the code now (steps 1–4d)
 
-The register, seven producers (Flyer, Delivery Bike, Vending Machine, Stock Clerk, Delivery Truck, Cashier, Shipping Container), opening Viridian, Pewter, Cerulean and Vermilion, stocking their items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 4; stocked items merge into older version 4 saves as none.
+The register, eight producers (Helping Hand, Delivery Bike, Vending Machine, Employee, Delivery Truck, Medicine Lab, Trader, Factory), opening Viridian, Pewter, Cerulean, Vermilion and Lavender, stocking their items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 5; renaming the producers reset older saves.
 
 - One franchise-wide producer list; each row has ×1 / ×10 / Max, how many you own and ₽/s each.
-- The route map shows the franchise's reach; a card under the register offers the next location (Viridian through Vermilion) and goes away once Vermilion is open.
-- Achievements (50 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade and Idle Hands. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
+- The route map shows the franchise's reach; a card under the register offers the next location (Viridian through Lavender) and goes away once Lavender is open.
+- Achievements (56 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade and Idle Hands. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
 
   | Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
   |---|---|---|---|---|---|---|
-  | Flyer | Grand Opening | Papered the Town | Every Lamppost | Pallet Wallpaper | Paper Trail | Flyer Blizzard |
+  | Helping Hand | Grand Opening | Extra Hands | Many Hands | All Hands on Deck | Hand Over Fist | Thousand Hands |
   | Delivery Bike | First Delivery | Bike Shop Regular | Pedal Pushers | Route 1 Rush Hour | Cycling Road Club | Fleet of a Thousand |
   | Vending Machine | Coin Slot | Vending Row | Rooftop Envy | Thirst Quenched | Machine Kingdom | Every Corner Covered |
-  | Stock Clerk | First Hire | Full Shift | Night Crew | Shelf Command | Stockroom Army | Silph-Sized Staff |
+  | Employee | First Hire | Full Shift | Night Crew | Shelf Command | Stockroom Army | Silph-Sized Staff |
   | Delivery Truck | First Haul | Loading Dock | Convoy | Route 3 Traffic | Mt. Moon Express | Kanto Freight Line |
-  | Cashier | Open Register | Every Lane Open | Gym Rush | Cascade of Change | Checkout Brigade | Cashier Nation |
-  | Shipping Container | All Aboard | Full Manifest | Cargo Hold | Harbor Master | Seafoam Crossing | Kanto Fleet |
+  | Medicine Lab | First Batch | Lab Coats | Bubbling Beakers | Cerulean Formula | Full Restore | Kanto Pharmacy |
+  | Trader | All Aboard | Full Manifest | Cargo Hold | Harbor Master | Seafoam Crossing | Kanto Fleet |
+  | Factory | First Pressing | Assembly Line | Night Shift | Quality Control | Mass Production | Silph Co. Rival |
 - Register upgrades: named again, ×2 click sale and +5% of income per click each (clicking only), every one from an open location on offer at once (Second Till in Pallet; Meowth Coin Counter and Machop Bagger in Viridian). A click is the sale value × franchise bonus × 2 per upgrade + (1% + 5% per upgrade) of income. Saves keep only upgrades from open locations.
-- Only Pallet through Vermilion can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
+- Only Pallet through Lavender can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
 - Removed: per-mart producers, buying items as producers, order milestones, Premier Customer, the order, Stocked and Chain achievements.
 
 ## Core loop
@@ -346,6 +366,8 @@ To open the next mart you need **all three**:
 
 ## Staff
 
+The Employee producer now covers hiring. When staff is rebuilt, roles like these become upgrades for the Employee, not a second hiring system. The table is the old plan, kept for reference.
+
 Bought like items (+15% cost per hire).
 
 | Role | Unlock | Effect |
@@ -389,8 +411,8 @@ One-time purchases.
   | Receipt Printer | Pewter City | 40K | ×2 sale, +5% of income per click |
   | Barcode Scanner | Cerulean City | 600K | ×2 sale, +5% of income per click |
   | Credit Card Machine | Vermilion City | 15M | ×2 sale, +5% of income per click |
-  | Express Lane | Lavender Town | 50M (placeholder) | ×2 sale, +5% of income per click |
-  | Loyalty Stamps | Lavender Town | 80M (placeholder) | ×2 sale, +5% of income per click |
+  | Express Lane | Lavender Town | 100M | ×2 sale, +5% of income per click |
+  | Loyalty Stamps | Lavender Town | 150M | ×2 sale, +5% of income per click |
   | Conveyor Belt | Celadon City | 400M (placeholder) | ×2 sale, +5% of income per click |
   | Department Store Counter | Celadon City | 600M (placeholder) | ×2 sale, +5% of income per click |
   | Chansey Cashier | Fuchsia City | 3B (placeholder) | ×2 sale, +5% of income per click |

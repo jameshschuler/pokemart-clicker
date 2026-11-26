@@ -1,22 +1,24 @@
 import {
   BikeIcon,
-  ContainerIcon,
   CupSodaIcon,
+  FactoryIcon,
+  FlaskConicalIcon,
+  HandIcon,
   type LucideIcon,
-  NewspaperIcon,
-  PackageOpenIcon,
-  ScanBarcodeIcon,
+  ShipIcon,
   TruckIcon,
+  UserRoundIcon,
 } from 'lucide-react'
 import type { ProducerId } from '@/game/producers'
 
 /** Placeholder art until each producer gets its own. */
 export const PRODUCER_ICONS: Record<ProducerId, LucideIcon> = {
-  flyer: NewspaperIcon,
+  helpingHand: HandIcon,
   deliveryBike: BikeIcon,
   vendingMachine: CupSodaIcon,
-  stockClerk: PackageOpenIcon,
+  employee: UserRoundIcon,
   deliveryTruck: TruckIcon,
-  cashier: ScanBarcodeIcon,
-  shippingContainer: ContainerIcon,
+  medicineLab: FlaskConicalIcon,
+  trader: ShipIcon,
+  factory: FactoryIcon,
 }

@@ -19,7 +19,7 @@ import { PLAYABLE_LOCATIONS } from './locations'
 import { PRODUCERS } from './producers'
 import { emptyProducers, initialState } from './store'
 
-const [FLYER] = PRODUCERS
+const [HELPING_HAND] = PRODUCERS
 
 describe('bulkCost', () => {
   it('matches summing single purchases', () => {
@@ -75,7 +75,7 @@ describe('purchaseQuote', () => {
 
 describe('salesPerSecond', () => {
   it('adds up every producer', () => {
-    expect(salesPerSecond({ ...emptyProducers(), flyer: 3 })).toBeCloseTo(0.3)
+    expect(salesPerSecond({ ...emptyProducers(), helpingHand: 3 })).toBeCloseTo(0.3)
   })
 
   it('is zero with no producers', () => {
@@ -86,12 +86,12 @@ describe('salesPerSecond', () => {
 describe('producerIncome', () => {
   const franchise = initialState()
 
-  it('is a flyer’s sales times the sale value', () => {
-    expect(producerIncome(franchise, FLYER)).toBeCloseTo(0.1)
+  it('is a helping hand’s sales times the sale value', () => {
+    expect(producerIncome(franchise, HELPING_HAND)).toBeCloseTo(0.1)
   })
 
   it('includes the franchise bonus', () => {
-    expect(producerIncome({ ...franchise, martsOwned: 3 }, FLYER)).toBeCloseTo(0.11)
+    expect(producerIncome({ ...franchise, martsOwned: 3 }, HELPING_HAND)).toBeCloseTo(0.11)
   })
 })
 
@@ -99,7 +99,11 @@ describe('incomePerSecond', () => {
   const franchise = initialState()
 
   it('is sales per second times the sale value, with the franchise bonus', () => {
-    const grown = { ...franchise, martsOwned: 2, producers: { ...emptyProducers(), flyer: 10 } }
+    const grown = {
+      ...franchise,
+      martsOwned: 2,
+      producers: { ...emptyProducers(), helpingHand: 10 },
+    }
 
     expect(incomePerSecond(grown)).toBeCloseTo(1.05)
   })
@@ -107,7 +111,7 @@ describe('incomePerSecond', () => {
   it('grows with stocked items', () => {
     const stocked = {
       ...franchise,
-      producers: { ...emptyProducers(), flyer: 10 },
+      producers: { ...emptyProducers(), helpingHand: 10 },
       stockedItems: ['antidote' as const],
     }
 

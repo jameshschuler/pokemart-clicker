@@ -3,7 +3,7 @@ import { PLAYABLE_LOCATIONS } from './locations'
 import { loadGame } from './save'
 import { emptyProducers, initialState, useGame } from './store'
 
-function storeSave(state: object, savedAt: number | undefined = Date.now(), version = 4) {
+function storeSave(state: object, savedAt: number | undefined = Date.now(), version = 5) {
   const storage = new Map([['mart-clicker:save', JSON.stringify({ version, savedAt, state })]])
   vi.stubGlobal('localStorage', {
     getItem: (key: string) => storage.get(key) ?? null,
@@ -19,8 +19,11 @@ afterEach(() => {
 })
 
 describe('loadGame versions', () => {
-  it('starts fresh from a save made before the franchise', () => {
-    storeSave({ ...initialState(), coins: 5_000 }, Date.now(), 3)
+  it.each([
+    ['before the franchise', 3],
+    ['before the producers were renamed', 4],
+  ])('starts fresh from a save made %s', (_, version) => {
+    storeSave({ ...initialState(), coins: 5_000 }, Date.now(), version)
 
     loadGame()
 
@@ -75,12 +78,12 @@ describe('loadGame repairs bad values', () => {
     ['a negative count', -3, 0],
     ['a non-numeric count', 'many', 0],
     ['a large count', 120, 120],
-  ])('loads %s of flyers as %s', (_, saved, expected) => {
-    storeSave({ ...initialState(), producers: { flyer: saved, clerk: 9 } })
+  ])('loads %s of helping hands as %s', (_, saved, expected) => {
+    storeSave({ ...initialState(), producers: { helpingHand: saved, clerk: 9 } })
 
     loadGame()
 
-    expect(useGame.getState().producers).toEqual({ ...emptyProducers(), flyer: expected })
+    expect(useGame.getState().producers).toEqual({ ...emptyProducers(), helpingHand: expected })
   })
 
   it.each([
@@ -128,7 +131,7 @@ describe('loadGame offline earnings', () => {
     return {
       ...state,
       paidUntil,
-      producers: { ...emptyProducers(), flyer: 10 },
+      producers: { ...emptyProducers(), helpingHand: 10 },
     }
   }
 

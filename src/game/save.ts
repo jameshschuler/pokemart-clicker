@@ -8,7 +8,7 @@ import { type GameState, initialState, useGame } from './store'
 import { type RegisterUpgradeId, unlockedRegisterUpgrades } from './upgrades'
 
 const SAVE_KEY = 'mart-clicker:save'
-const SAVE_VERSION = 4
+const SAVE_VERSION = 5
 const AUTOSAVE_MS = 10_000
 
 interface SaveFile {

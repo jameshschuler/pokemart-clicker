@@ -64,6 +64,15 @@ describe('stockOffers', () => {
     expect(iceHeal?.cost).toBe(5_000_000)
   })
 
+  it.each([
+    ['superRepel', 50_000_000],
+    ['greatBall', 70_000_000],
+  ])("adds Lavender's %s once it opens", (itemId, cost) => {
+    const offer = stockOffers(6).find((stockOffer) => stockOffer.item.id === itemId)
+
+    expect(offer?.cost).toBe(cost)
+  })
+
   it('never offers the starting item', () => {
     expect(offeredIds(11)).not.toContain(STARTING_ITEM)
   })

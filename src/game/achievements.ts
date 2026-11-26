@@ -41,13 +41,13 @@ type TierNames = [string, string, string, string, string, string]
 
 /** Tier names for owning each producer. */
 const PRODUCER_TIER_NAMES: Record<ProducerId, TierNames> = {
-  flyer: [
+  helpingHand: [
     'Grand Opening',
-    'Papered the Town',
-    'Every Lamppost',
-    'Pallet Wallpaper',
-    'Paper Trail',
-    'Flyer Blizzard',
+    'Extra Hands',
+    'Many Hands',
+    'All Hands on Deck',
+    'Hand Over Fist',
+    'Thousand Hands',
   ],
   deliveryBike: [
     'First Delivery',
@@ -65,7 +65,7 @@ const PRODUCER_TIER_NAMES: Record<ProducerId, TierNames> = {
     'Machine Kingdom',
     'Every Corner Covered',
   ],
-  stockClerk: [
+  employee: [
     'First Hire',
     'Full Shift',
     'Night Crew',
@@ -81,21 +81,29 @@ const PRODUCER_TIER_NAMES: Record<ProducerId, TierNames> = {
     'Mt. Moon Express',
     'Kanto Freight Line',
   ],
-  cashier: [
-    'Open Register',
-    'Every Lane Open',
-    'Gym Rush',
-    'Cascade of Change',
-    'Checkout Brigade',
-    'Cashier Nation',
+  medicineLab: [
+    'First Batch',
+    'Lab Coats',
+    'Bubbling Beakers',
+    'Cerulean Formula',
+    'Full Restore',
+    'Kanto Pharmacy',
   ],
-  shippingContainer: [
+  trader: [
     'All Aboard',
     'Full Manifest',
     'Cargo Hold',
     'Harbor Master',
     'Seafoam Crossing',
     'Kanto Fleet',
+  ],
+  factory: [
+    'First Pressing',
+    'Assembly Line',
+    'Night Shift',
+    'Quality Control',
+    'Mass Production',
+    'Silph Co. Rival',
   ],
 }
 
