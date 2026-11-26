@@ -135,8 +135,8 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'lavender',
     name: 'Lavender Town',
-    openCost: 40e6,
-    requiredIncome: 200_000,
+    openCost: 100e6,
+    requiredIncome: 400_000,
     stock: [
       'antidote',
       'paralyzeHeal',
@@ -196,7 +196,7 @@ export const LOCATIONS: MartLocation[] = [
 ]
 
 /** Locations built on the franchise model so far; the rest open in later build steps. */
-export const PLAYABLE_LOCATIONS = 5
+export const PLAYABLE_LOCATIONS = 6
 
 const ROUTE_ORDER = new Map(LOCATIONS.map((location, index) => [location.id, index]))
 

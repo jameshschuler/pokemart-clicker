@@ -27,7 +27,7 @@ describe('achievement data', () => {
   })
 
   it('counts every tier in the total', () => {
-    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(50)
+    expect(TOTAL_ACHIEVEMENT_TIERS).toBe(56)
   })
 })
 
@@ -55,13 +55,13 @@ describe('checkAchievements', () => {
     const base = initialState()
     const state = {
       ...base,
-      producers: { ...emptyProducers(), flyer: 1 },
+      producers: { ...emptyProducers(), helpingHand: 1 },
       stats: { ...base.stats, clicks: 1_500 },
     }
 
     expect(checkAchievements(state)).toMatchObject({
       customersServed: 2,
-      flyerOwned: 1,
+      helpingHandOwned: 1,
       totalEarned: 0,
     })
   })
@@ -103,10 +103,10 @@ describe('producer achievements', () => {
   })
 
   it.each([
-    [0, 'Buy your first Stock Clerk.'],
-    [5, 'Own 1,000 Stock Clerks.'],
+    [0, 'Buy your first Employee.'],
+    [5, 'Own 1,000 Employees.'],
   ])('describes tier %i as "%s"', (tier, expected) => {
-    const clerk = ACHIEVEMENTS.find((achievement) => achievement.id === 'stockClerkOwned')
+    const clerk = ACHIEVEMENTS.find((achievement) => achievement.id === 'employeeOwned')
 
     expect(clerk?.tiers[tier].description).toBe(expected)
   })

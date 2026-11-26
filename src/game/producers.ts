@@ -1,13 +1,14 @@
 import type { LocationId } from './locations'
 
 export type ProducerId =
-  | 'flyer'
+  | 'helpingHand'
   | 'deliveryBike'
   | 'vendingMachine'
-  | 'stockClerk'
+  | 'employee'
   | 'deliveryTruck'
-  | 'cashier'
-  | 'shippingContainer'
+  | 'medicineLab'
+  | 'trader'
+  | 'factory'
 
 export interface Producer {
   id: ProducerId
@@ -23,10 +24,10 @@ export interface Producer {
 
 export const PRODUCERS: Producer[] = [
   {
-    id: 'flyer',
-    name: 'Flyer',
-    plural: 'Flyers',
-    description: 'Pinned up around Pallet Town. Brings in a walk-in every 10 seconds.',
+    id: 'helpingHand',
+    name: 'Helping Hand',
+    plural: 'Helping Hands',
+    description: 'Rings up a sale at the register every 10 seconds, so you don’t have to.',
     location: 'pallet',
     baseCost: 15,
     salesPerSecond: 0.1,
@@ -50,11 +51,11 @@ export const PRODUCERS: Producer[] = [
     salesPerSecond: 8,
   },
   {
-    id: 'stockClerk',
-    name: 'Stock Clerk',
-    plural: 'Stock Clerks',
+    id: 'employee',
+    name: 'Employee',
+    plural: 'Employees',
     description:
-      'Keeps the shelves full so trainers heading for Viridian Forest never find them empty.',
+      'Stocks shelves, rings up sales and keeps trainers heading for Viridian Forest supplied.',
     location: 'viridian',
     baseCost: 12_000,
     salesPerSecond: 47,
@@ -69,22 +70,31 @@ export const PRODUCERS: Producer[] = [
     salesPerSecond: 260,
   },
   {
-    id: 'cashier',
-    name: 'Cashier',
-    plural: 'Cashiers',
-    description: 'Works a register of their own when the Cerulean Gym rush lines up out the door.',
+    id: 'medicineLab',
+    name: 'Medicine Lab',
+    plural: 'Medicine Labs',
+    description: 'Brews Potions, Antidotes and every Heal with fresh water from Cerulean.',
     location: 'cerulean',
     baseCost: 1_400_000,
     salesPerSecond: 1_400,
   },
   {
-    id: 'shippingContainer',
-    name: 'Shipping Container',
-    plural: 'Shipping Containers',
-    description:
-      'Packed with stock and swung onto the docks at Vermilion Harbor, next to the S.S. Anne.',
+    id: 'trader',
+    name: 'Trader',
+    plural: 'Traders',
+    description: 'Ships stock in and out of Vermilion Harbor, trading with ports overseas.',
     location: 'vermilion',
     baseCost: 20_000_000,
     salesPerSecond: 7_800,
+  },
+  {
+    id: 'factory',
+    name: 'Factory',
+    plural: 'Factories',
+    description:
+      'Turns out Poké Balls, Repels and Escape Ropes on Route 8, just outside Lavender Town.',
+    location: 'lavender',
+    baseCost: 330_000_000,
+    salesPerSecond: 44_000,
   },
 ]

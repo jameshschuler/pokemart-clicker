@@ -7,9 +7,9 @@ beforeEach(() => {
   useGame.setState(initialState())
 })
 
-/** Each flyer earns ₽0.1/s: a ₽1 sale every 10 seconds. */
-function postFlyers(flyers: number) {
-  useGame.setState({ producers: { ...emptyProducers(), flyer: flyers } })
+/** Each helping hand earns ₽0.1/s: a ₽1 sale every 10 seconds. */
+function lendHands(hands: number) {
+  useGame.setState({ producers: { ...emptyProducers(), helpingHand: hands } })
 }
 
 describe('serveCustomer', () => {
@@ -26,18 +26,18 @@ describe('serveCustomer', () => {
 })
 
 describe('buyProducer', () => {
-  it('buys a flyer', () => {
+  it('buys a helping hand', () => {
     useGame.setState({ coins: 100 })
 
-    useGame.getState().buyProducer('flyer', 1)
+    useGame.getState().buyProducer('helpingHand', 1)
 
-    expect(useGame.getState()).toMatchObject({ coins: 85, producers: { flyer: 1 } })
+    expect(useGame.getState()).toMatchObject({ coins: 85, producers: { helpingHand: 1 } })
   })
 
   it('raises the price 15% per purchase', () => {
     useGame.setState({ coins: 1e6 })
 
-    useGame.getState().buyProducer('flyer', 10)
+    useGame.getState().buyProducer('helpingHand', 10)
 
     expect(useGame.getState().coins).toBeCloseTo(1e6 - (15 * (1.15 ** 10 - 1)) / 0.15)
   })
@@ -45,9 +45,9 @@ describe('buyProducer', () => {
   it('refuses without enough coins', () => {
     useGame.setState({ coins: 14 })
 
-    useGame.getState().buyProducer('flyer', 1)
+    useGame.getState().buyProducer('helpingHand', 1)
 
-    expect(useGame.getState()).toMatchObject({ coins: 14, producers: { flyer: 0 } })
+    expect(useGame.getState()).toMatchObject({ coins: 14, producers: { helpingHand: 0 } })
   })
 })
 
@@ -55,11 +55,11 @@ describe('buyProducer location', () => {
   it('refuses a producer whose location is not open', () => {
     useGame.setState({ coins: 1e9 })
 
-    useGame.getState().buyProducer('stockClerk', 1)
+    useGame.getState().buyProducer('employee', 1)
 
     expect(useGame.getState()).toMatchObject({
       coins: 1e9,
-      producers: { stockClerk: 0 },
+      producers: { employee: 0 },
     })
   })
 
@@ -218,7 +218,7 @@ describe('lifetime stats', () => {
   it('counts money spent', () => {
     useGame.setState({ coins: 1e6 })
 
-    useGame.getState().buyProducer('flyer', 10)
+    useGame.getState().buyProducer('helpingHand', 10)
     useGame.getState().buyRegisterUpgrade('secondTill')
 
     const { stats, coins } = useGame.getState()
@@ -226,13 +226,13 @@ describe('lifetime stats', () => {
   })
 
   it('ignores refused purchases', () => {
-    useGame.getState().buyProducer('flyer', 1)
+    useGame.getState().buyProducer('helpingHand', 1)
 
     expect(useGame.getState().stats.totalSpent).toBe(0)
   })
 
   it('counts play time and sales earnings', () => {
-    postFlyers(10)
+    lendHands(10)
 
     useGame.getState().tick(3)
 
@@ -242,7 +242,7 @@ describe('lifetime stats', () => {
 
 describe('tick', () => {
   it('pays sales with the franchise bonus', () => {
-    useGame.setState({ martsOwned: 3, producers: { ...emptyProducers(), flyer: 10 } })
+    useGame.setState({ martsOwned: 3, producers: { ...emptyProducers(), helpingHand: 10 } })
 
     useGame.getState().tick(2)
 
@@ -252,21 +252,24 @@ describe('tick', () => {
 
 describe('achievements', () => {
   it('are earned on the next tick and boost sales', () => {
-    postFlyers(1)
+    lendHands(1)
     useGame.setState((state) => ({ stats: { ...state.stats, clicks: 100 } }))
 
     useGame.getState().tick(0)
     const before = useGame.getState().coins
     useGame.getState().tick(1)
 
-    expect(useGame.getState().achievements).toMatchObject({ customersServed: 1, flyerOwned: 1 })
+    expect(useGame.getState().achievements).toMatchObject({
+      customersServed: 1,
+      helpingHandOwned: 1,
+    })
     expect(useGame.getState().coins - before).toBeCloseTo(0.1 * 1.02)
   })
 })
 
 describe('tick across a gap', () => {
   it('pays time away in full and reports it', () => {
-    postFlyers(10)
+    lendHands(10)
 
     useGame.getState().tick(1200)
 
@@ -278,7 +281,7 @@ describe('tick across a gap', () => {
   })
 
   it('pays a long time away in full', () => {
-    postFlyers(10)
+    lendHands(10)
 
     useGame.getState().tick(24 * 3600)
 
@@ -289,7 +292,7 @@ describe('tick across a gap', () => {
   })
 
   it('counts a gap under 15 minutes as play, with no report', () => {
-    postFlyers(10)
+    lendHands(10)
 
     useGame.getState().tick(899)
 
@@ -306,7 +309,7 @@ describe('tick across a gap', () => {
   })
 
   it('clears the report when dismissed', () => {
-    postFlyers(10)
+    lendHands(10)
     useGame.getState().tick(1200)
 
     useGame.getState().dismissAwayReport()
@@ -317,7 +320,7 @@ describe('tick across a gap', () => {
 
 describe('advanceTo', () => {
   it('pays for the wall-clock time since sales were last paid', () => {
-    postFlyers(10)
+    lendHands(10)
     useGame.setState({ paidUntil: 1_000 })
 
     useGame.getState().advanceTo(601_000)
@@ -326,7 +329,7 @@ describe('advanceTo', () => {
   })
 
   it('pays nothing when the clock goes backwards', () => {
-    postFlyers(10)
+    lendHands(10)
     useGame.setState({ paidUntil: 1_000 })
 
     useGame.getState().advanceTo(500)

@@ -114,6 +114,7 @@ describe('nextLocation', () => {
     [2, 'pewter'],
     [3, 'cerulean'],
     [4, 'vermilion'],
+    [5, 'lavender'],
   ])('with %i locations open is %s', (martsOwned, expected) => {
     expect(nextLocation(martsOwned)?.id).toBe(expected)
   })
@@ -130,6 +131,7 @@ describe('newStock', () => {
     ['pewter', ['awakening', 'burnHeal', 'repel', 'escapeRope']],
     ['cerulean', ['superPotion']],
     ['vermilion', ['iceHeal']],
+    ['lavender', ['superRepel', 'greatBall']],
     ['cinnabar', []],
   ] as const)('%s introduces %j', (locationId, expected) => {
     expect(newStock(locationById(locationId))).toEqual(expected)

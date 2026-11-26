@@ -29,7 +29,7 @@ describe('debug commands', () => {
   })
 
   it('away pays the time in full and opens the report', () => {
-    useGame.setState({ producers: { ...emptyProducers(), flyer: 10 } })
+    useGame.setState({ producers: { ...emptyProducers(), helpingHand: 10 } })
 
     debugCommands.away(1200)
 

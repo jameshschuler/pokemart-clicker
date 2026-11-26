@@ -183,6 +183,7 @@ export const ITEMS: Item[] = [
     name: 'Super Repel',
     description: 'Lasts longer. Rock Tunnel is dark and very long.',
     price: 500,
+    stockCost: 50_000_000,
     sprite: 'super-repel',
   },
   {
@@ -211,6 +212,7 @@ export const ITEMS: Item[] = [
     name: 'Great Ball',
     description: 'Better catch rate. Worth it once the wild Pokémon get tougher.',
     price: 600,
+    stockCost: 70_000_000,
     sprite: 'great-ball',
   },
   {

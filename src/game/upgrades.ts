@@ -83,14 +83,14 @@ export const REGISTER_UPGRADES: RegisterUpgrade[] = [
     name: 'Express Lane',
     description: 'Ten items or fewer. Trainers in a hurry love it.',
     location: 'lavender',
-    cost: 50e6,
+    cost: 100e6,
   },
   {
     id: 'loyaltyStamps',
     name: 'Loyalty Stamps',
     description: 'Every sale at the register earns a stamp, and regulars spend more.',
     location: 'lavender',
-    cost: 80e6,
+    cost: 150e6,
   },
   {
     id: 'conveyorBelt',
