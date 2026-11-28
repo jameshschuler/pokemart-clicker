@@ -10,6 +10,7 @@ export type ProducerId =
   | 'trader'
   | 'factory'
   | 'tmWorkshop'
+  | 'berryFarm'
 
 export interface Producer {
   id: ProducerId
@@ -106,6 +107,16 @@ export const PRODUCERS: Producer[] = [
     location: 'celadon',
     baseCost: 1_500_000_000,
     salesPerSecond: 200_000,
+  },
+  {
+    id: 'berryFarm',
+    name: 'Berry Farm',
+    plural: 'Berry Farms',
+    description:
+      'Grows Berries in the fields outside the Safari Zone, picked fresh for the shelves.',
+    location: 'fuchsia',
+    baseCost: 20_000_000_000,
+    salesPerSecond: 1_600_000,
   },
 ]
 

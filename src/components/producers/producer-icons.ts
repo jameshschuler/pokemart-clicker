@@ -1,5 +1,6 @@
 import {
   BikeIcon,
+  CherryIcon,
   CupSodaIcon,
   DiscIcon,
   FactoryIcon,
@@ -55,5 +56,9 @@ export const PRODUCER_ART: Record<ProducerId, ProducerArt> = {
   tmWorkshop: {
     icon: DiscIcon,
     tint: 'border-emerald-300 bg-emerald-50 text-emerald-600 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400',
+  },
+  berryFarm: {
+    icon: CherryIcon,
+    tint: 'border-pink-300 bg-pink-50 text-pink-600 dark:border-pink-800 dark:bg-pink-950/40 dark:text-pink-400',
   },
 }

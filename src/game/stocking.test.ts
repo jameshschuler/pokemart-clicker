@@ -112,6 +112,18 @@ describe('stockOffers', () => {
   })
 })
 
+describe('Fuchsia stock', () => {
+  it.each([
+    ['fullHeal', 3e9],
+    ['maxRepel', 4e9],
+    ['ultraBall', 8e9],
+  ])("adds Fuchsia's %s for %d once it opens", (itemId, cost) => {
+    const offer = stockOffers(8, 1).find((stockOffer) => stockOffer.item.id === itemId)
+
+    expect(offer?.cost).toBe(cost)
+  })
+})
+
 describe('stockSections', () => {
   it('has only the franchise section before Celadon opens', () => {
     const sections = stockSections(stockOffers(6, 1), 1)

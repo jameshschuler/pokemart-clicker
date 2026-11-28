@@ -12,7 +12,7 @@ Pokémon Dollars (₽). Start with ₽0.
 
 **Naming:** the game says **location**, not town, for each stop on the route. Indigo Plateau isn't a town, and later regions add more places that aren't. Real names keep their own words (Pallet Town, Lavender Town).
 
-**Status:** build steps 1–3 done, and step 4 is underway: Pewter, Cerulean, Vermilion, Lavender and Celadon are built. See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
+**Status:** build steps 1–3 done, and step 4 is underway: Pewter, Cerulean, Vermilion, Lavender, Celadon and Fuchsia are built. See "What's in the code now" at the end of this section. Where later sections talk about buying items, daily orders or order milestones, that's the old model, kept for reference until each part is rebuilt.
 
 **The idea.** You're building a **PokéMart franchise** across Kanto. You're the owner growing the brand, not the clerk behind one counter.
 
@@ -44,8 +44,9 @@ Ladder, cheap to expensive:
 | 7 | Trader | A trading partner who ships stock in and out through Vermilion Harbor (built, Vermilion) |
 | 8 | Factory | Makes the non-medicine goods: Poké Balls, Repels, Escape Ropes (built, Lavender) |
 | 9 | TM Workshop | Burns moves onto discs for the Department Store (built, Celadon) |
+| 10 | Berry Farm | Grows Berries for the marts, a new product line (built, Fuchsia) |
 
-Later slots are decided when their location is built. Idea: Berry Farm.
+Later slots are decided when their location is built.
 
 **Helping Hand (producer 1):**
 
@@ -90,7 +91,7 @@ Costs aim for a payback of a few minutes for someone clicking about 3 times a se
 1. Swap the Clerk for the **Flyer**, make producers franchise-wide, hide the catalog. Saves reset. (Done.)
 2. Viridian: opening the next location plus item upgrades (stock items to raise the sale value); the route map and catalog return.
 3. Register upgrades on the new model: ×2 click sale and +5% of income per click each, names back, several on offer by location. (Done.)
-4. The remaining locations, their items and the next producers, one location at a time. Pewter, Cerulean, Vermilion, Lavender and Celadon are built.
+4. The remaining locations, their items and the next producers, one location at a time. Pewter, Cerulean, Vermilion, Lavender, Celadon and Fuchsia are built.
 
 ### Step 2: Viridian (built)
 
@@ -236,14 +237,31 @@ Celadon is the flagship: the **Celadon City Department Store**, with floors you 
 |---|---|---|---|---|---|---|
 | TM Workshop | First Disc | Move Tutor | Hyper Beam Batch | Burn Rate | Disc Jockey | Every Move in Kanto |
 
-**Placeholders for the rest of Kanto.** Opening Cerulean costs ₽500,000, more than the old placeholders for later locations. So every unbuilt location and register upgrade was rescaled to a rough ×7–10 per stop, keeping costs rising and each upgrade at or above its location's open cost. Each location gets real numbers when it's built. Celadon's numbers came out right at the old placeholder, because the floors stretch that stop out.
+### Step 4f: Fuchsia (built)
+
+Back to the usual pattern after Celadon. The sim (3 clicks a second) opens Fuchsia at about 108 minutes, 15 after Celadon's roof, and buys the first Berry Farm at about 110.
+
+| | |
+|---|---|
+| Open cost | ₽20B |
+| Needs | ₽80M/s of income |
+| New items | Full Heal (FRLG ₽600, +60%), ₽3B; Max Repel (₽700, +70%), ₽4B; Ultra Ball (₽1,200, +120%), ₽8B. The normal bonus rate again, since there are only three. |
+| Register upgrade | Chansey Cashier, ₽25B |
+| Producer 10 | Berry Farm: ₽20B, 1.6M sales/s, Cookie Clicker's tenth-step sales (its ₽75B cost scaled down like the TM Workshop's). Gen 3 marts don't sell Berries, so it's a new product line grown in the fields outside the Safari Zone. |
+
+| Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
+|---|---|---|---|---|---|---|
+| Berry Farm | First Harvest | Berry Patch | Orchard Rows | Safari Fields | Bumper Crop | Kanto Breadbasket |
+
+### Placeholders for the rest of Kanto
+
+Opening Cerulean costs ₽500,000, more than the old placeholders for later locations. So every unbuilt location and register upgrade was rescaled to a rough ×7–10 per stop, keeping costs rising and each upgrade at or above its location's open cost. Each location gets real numbers when it's built. Fuchsia's real ₽20B was above the old Saffron placeholder, so Saffron onward was rescaled ×10 again.
 
 | Location | Open cost | Needs |
 |---|---|---|
-| Fuchsia City | ₽2B | ₽10M/s |
-| Saffron City | ₽15B | ₽70M/s |
-| Cinnabar Island | ₽100B | ₽500M/s |
-| Indigo Plateau | ₽700B | ₽3B/s |
+| Saffron City | ₽150B | ₽600M/s |
+| Cinnabar Island | ₽1T | ₽4B/s |
+| Indigo Plateau | ₽7T | ₽30B/s |
 
 ### Backlog
 
@@ -254,14 +272,16 @@ Celadon is the flagship: the **Celadon City Department Store**, with floors you 
 - **Stocking achievements:** tiers for how many items the franchise has stocked (for example 5, 10, 25, and every Kanto item). The goals depend on how many items each location ends up adding, so they're set once more locations are built.
 - **Minigames:** games like the ones in the main series, such as Voltorb Flip and the Game Corner slots. They'd use our own rules and art, not copies of the originals. Where they live (Celadon's Game Corner is the obvious fit), what they cost to play and what they pay out aren't decided yet.
 - **Income achievements:** tiers for reaching ₽/s milestones, like Cookie Clicker's cookies-per-second achievements. Once earned, a tier stays earned, even when income resets after prestige. The goals and names wait until the Kanto income curve is set.
+- **Financial producer:** something like Cookie Clicker's Bank: a bank, shares or a stock listing for the franchise. "Stock" already means stocking items, so a name like Shares, Investment Fund or PokéMart IPO avoids the clash. It should still be something you'd own many of. Where it sits on the ladder isn't decided.
+- **Click sound effects:** a short register sound on each click, with a mute toggle that's saved. Fast clicking needs the sound to overlap or throttle so it doesn't stutter.
 
-### What's in the code now (steps 1–4e)
+### What's in the code now (steps 1–4f)
 
-The register, nine producers (Helping Hand, Delivery Bike, Vending Machine, Employee, Delivery Truck, Medicine Lab, Trader, Factory, TM Workshop), opening Viridian, Pewter, Cerulean, Vermilion, Lavender and Celadon with its floors, stocking their items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 5; renaming the producers reset older saves.
+The register, ten producers (Helping Hand, Delivery Bike, Vending Machine, Employee, Delivery Truck, Medicine Lab, Trader, Factory, TM Workshop, Berry Farm), opening Viridian, Pewter, Cerulean, Vermilion, Lavender, Celadon with its floors and Fuchsia, stocking their items, register upgrades, achievements, offline earnings and lifetime stats. Saves are version 5; renaming the producers reset older saves.
 
 - One franchise-wide producer list; each row has ×1 / ×10 / Max, how many you own and ₽/s each.
-- The route map shows the franchise's reach; a card under the register offers the next location (Viridian through Celadon) and goes away once Celadon is open.
-- Achievements (66 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade, and the hidden Idle Hands, Eevee and its three evolutions. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
+- The route map shows the franchise's reach; a card under the register offers the next location (Viridian through Fuchsia) and goes away once Fuchsia is open.
+- Achievements (72 tiers): one per producer for owning 1 / 25 / 50 / 100 / 500 / 1,000, plus customers served, total earned, every register upgrade, and the hidden Idle Hands, Eevee and its three evolutions. A new producer needs exactly six tier names in `PRODUCER_TIER_NAMES`; the type won't compile otherwise. Location achievements come later.
 
   | Producer | 1 | 25 | 50 | 100 | 500 | 1,000 |
   |---|---|---|---|---|---|---|
@@ -274,8 +294,9 @@ The register, nine producers (Helping Hand, Delivery Bike, Vending Machine, Empl
   | Trader | All Aboard | Full Manifest | Cargo Hold | Harbor Master | Seafoam Crossing | Kanto Fleet |
   | Factory | First Pressing | Assembly Line | Night Shift | Quality Control | Mass Production | Silph Co. Rival |
   | TM Workshop | First Disc | Move Tutor | Hyper Beam Batch | Burn Rate | Disc Jockey | Every Move in Kanto |
+  | Berry Farm | First Harvest | Berry Patch | Orchard Rows | Safari Fields | Bumper Crop | Kanto Breadbasket |
 - Register upgrades: named again, ×2 click sale and +5% of income per click each (clicking only), every one from an open location on offer at once (Second Till in Pallet; Meowth Coin Counter and Machop Bagger in Viridian). A click is the sale value × franchise bonus × 2 per upgrade + (1% + 5% per upgrade) of income. Saves keep only upgrades from open locations.
-- Only Pallet through Celadon can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
+- Only Pallet through Fuchsia can open (`PLAYABLE_LOCATIONS`). Item and location data for the rest (FRLG prices, stock, Celadon's floors) stay in the code for later steps.
 - Removed: per-mart producers, buying items as producers, order milestones, Premier Customer, the order, Stocked and Chain achievements.
 
 ## Core loop
@@ -444,12 +465,12 @@ One-time purchases.
   | Loyalty Stamps | Lavender Town | 150M | ×2 sale, +5% of income per click |
   | Conveyor Belt | Celadon City | 400M | ×2 sale, +5% of income per click |
   | Department Store Counter | Celadon City | 600M | ×2 sale, +5% of income per click |
-  | Chansey Cashier | Fuchsia City | 3B (placeholder) | ×2 sale, +5% of income per click |
-  | Silph Card Reader | Saffron City | 20B (placeholder) | ×2 sale, +5% of income per click |
-  | Alakazam Price Check | Saffron City | 30B (placeholder) | ×2 sale, +5% of income per click |
-  | Machamp Bagger | Saffron City | 45B (placeholder) | ×2 sale, +5% of income per click |
-  | Porygon Tablet | Cinnabar Island | 150B (placeholder) | ×2 sale, +5% of income per click |
-  | Self Checkout | Indigo Plateau | 1T (placeholder) | ×2 sale, +5% of income per click |
+  | Chansey Cashier | Fuchsia City | 25B | ×2 sale, +5% of income per click |
+  | Silph Card Reader | Saffron City | 200B (placeholder) | ×2 sale, +5% of income per click |
+  | Alakazam Price Check | Saffron City | 300B (placeholder) | ×2 sale, +5% of income per click |
+  | Machamp Bagger | Saffron City | 450B (placeholder) | ×2 sale, +5% of income per click |
+  | Porygon Tablet | Cinnabar Island | 1.5T (placeholder) | ×2 sale, +5% of income per click |
+  | Self Checkout | Indigo Plateau | 10T (placeholder) | ×2 sale, +5% of income per click |
 
   (Old model, before step 3:) Click value = ₽1 × 2^(doublings) + (sales share × chain ₽/s): up to ₽16 base and 13% of chain ₽/s per click. At 3 clicks/s with every upgrade, clicking adds about 39% on top of order income. The pacing sim finishes Kanto in ~108m with them vs ~118m without.
 

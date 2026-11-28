@@ -372,6 +372,7 @@ export const ITEMS: Item[] = [
     name: 'Full Heal',
     description: 'Cures any status at once. Why carry five bottles?',
     price: 600,
+    stockCost: 3_000_000_000,
     sprite: 'full-heal',
   },
   {
@@ -387,6 +388,7 @@ export const ITEMS: Item[] = [
     name: 'Max Repel',
     description: 'The longest-lasting Repel. Victory Road regulars swear by it.',
     price: 700,
+    stockCost: 4_000_000_000,
     sprite: 'max-repel',
   },
   {
@@ -401,6 +403,7 @@ export const ITEMS: Item[] = [
     name: 'Ultra Ball',
     description: 'The Safari Zone crowd pays anything for a better catch.',
     price: 1_200,
+    stockCost: 8_000_000_000,
     sprite: 'ultra-ball',
   },
   {
