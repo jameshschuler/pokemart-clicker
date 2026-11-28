@@ -7,6 +7,8 @@ describe('nextLockedProducer', () => {
     [1, 'employee'],
     [2, 'deliveryTruck'],
     [5, 'factory'],
+    [6, 'tmWorkshop'],
+    [7, 'berryFarm'],
   ])('with %i locations open is %s', (martsOwned, expected) => {
     expect(nextLockedProducer(martsOwned)?.id).toBe(expected)
   })

@@ -122,6 +122,14 @@ const PRODUCER_TIER_NAMES: Record<ProducerId, TierNames> = {
     'Disc Jockey',
     'Every Move in Kanto',
   ],
+  berryFarm: [
+    'First Harvest',
+    'Berry Patch',
+    'Orchard Rows',
+    'Safari Fields',
+    'Bumper Crop',
+    'Kanto Breadbasket',
+  ],
 }
 
 function producerOwned(producer: Producer): Achievement {

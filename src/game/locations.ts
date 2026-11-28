@@ -170,22 +170,22 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'fuchsia',
     name: 'Fuchsia City',
-    openCost: 2e9,
-    requiredIncome: 10e6,
+    openCost: 20e9,
+    requiredIncome: 80e6,
     stock: ['superPotion', 'greatBall', 'revive', 'fullHeal', 'maxRepel', 'ultraBall'],
   },
   {
     id: 'saffron',
     name: 'Saffron City',
-    openCost: 15e9,
-    requiredIncome: 70e6,
+    openCost: 150e9,
+    requiredIncome: 600e6,
     stock: ['escapeRope', 'greatBall', 'revive', 'fullHeal', 'maxRepel', 'hyperPotion'],
   },
   {
     id: 'cinnabar',
     name: 'Cinnabar Island',
-    openCost: 100e9,
-    requiredIncome: 500e6,
+    openCost: 1e12,
+    requiredIncome: 4e9,
     stock: [
       'escapeRope',
       'greatBall',
@@ -199,14 +199,14 @@ export const LOCATIONS: MartLocation[] = [
   {
     id: 'indigoPlateau',
     name: 'Indigo Plateau',
-    openCost: 700e9,
-    requiredIncome: 3e9,
+    openCost: 7e12,
+    requiredIncome: 30e9,
     stock: ['greatBall', 'revive', 'fullHeal', 'ultraBall', 'maxRepel', 'maxPotion', 'fullRestore'],
   },
 ]
 
 /** Locations built on the franchise model so far; the rest open in later build steps. */
-export const PLAYABLE_LOCATIONS = 7
+export const PLAYABLE_LOCATIONS = 8
 
 const ROUTE_ORDER = new Map(LOCATIONS.map((location, index) => [location.id, index]))
 

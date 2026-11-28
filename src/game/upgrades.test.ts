@@ -68,6 +68,23 @@ describe('availableRegisterUpgrades', () => {
       6,
       ['expressLane', 'loyaltyStamps'],
     ],
+    [
+      [
+        'secondTill',
+        'meowthCoinCounter',
+        'machopBagger',
+        'electricTill',
+        'receiptPrinter',
+        'barcodeScanner',
+        'creditCardMachine',
+        'expressLane',
+        'loyaltyStamps',
+        'conveyorBelt',
+        'departmentCounter',
+      ],
+      8,
+      ['chanseyCashier'],
+    ],
   ] as const)('with %j owned and %i locations offers %j', (owned, martsOwned, expected) => {
     expect(ids([...owned], martsOwned)).toEqual(expected)
   })
